@@ -1,6 +1,14 @@
 package frc.robot.subsystems.drive;
 
-import com.kauailabs.navx.frc.AHRS;
+import java.util.Queue;
+
+import org.littletonrobotics.junction.Logger;
+
+import com.studica.frc.AHRS;
+import com.studica.frc.AHRS.NavXComType;
+
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -9,7 +17,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * 
  * Mostly utilizes the navX-MXP, but uses the ADXRS450 as backup if it disconnects
  */
-public class GyroIOReal {
+public class GyroIOReal implements GyroIO {
     // this class is not like the other Advantage Kit classes because we only want it
     // to run on the real robot
     // we can log all this stuff else where if we want to test it
@@ -20,16 +28,43 @@ public class GyroIOReal {
     private double resetPitch;
     private double resetYaw;
 
+    private final Queue<Double> yawPositionQueue;
+    private final Queue<Double> yawTimestampQueue;
     private final ADXRS450_Gyro gyro;
 
-    private GyroIOReal() {
-        navx = new AHRS();
+    public GyroIOReal() {
+        navx = new AHRS(NavXComType.kMXP_SPI);
         resetRoll = 0;
         resetPitch = 0;
         navx.reset();
 
         gyro = new ADXRS450_Gyro();
         gyro.calibrate();
+        yawPositionQueue =
+          SparkMaxOdometryThread.getInstance()
+              .registerSignal(() -> getYawAngle());
+        yawTimestampQueue =
+            SparkMaxOdometryThread.getInstance()
+                .makeTimestampQueue();
+    }
+
+    @Override
+    public void updateInputs(GyroIOInputs inputs) {
+        inputs.connected = navx.isConnected();
+        Logger.recordOutput("OtherGyro", gyro.getAngle());
+        inputs.yawPosition = Rotation2d.fromDegrees(getYawAngle());
+        inputs.rollPosition = Rotation2d.fromDegrees(getRollAngle());
+        inputs.pitchPosition = Rotation2d.fromDegrees(getPitchAngle());
+        inputs.yawVelocityRadPerSec = Units.degreesToRadians(getYawAngleVelocity());
+
+        inputs.odometryYawTimestamps =
+            yawTimestampQueue.stream().mapToDouble((Double value) -> value).toArray();
+        inputs.odometryYawPositions =
+            yawPositionQueue.stream()
+                .map((Double value) -> Rotation2d.fromDegrees(value))
+                .toArray(Rotation2d[]::new);
+        yawTimestampQueue.clear();
+        yawPositionQueue.clear();
     }
 
     /**
@@ -37,12 +72,13 @@ public class GyroIOReal {
      * 
      * @return The angle in degrees limited to the range -180 to 180.
      */
+    @Override
     public double getYawAngle() {
         double angle = navx.getAngle() - resetYaw;
         while(angle <= -180) angle += 360;
         while(angle > 180) angle -= 360;
 
-        return angle;
+        return -angle;
     }
 
     /**
@@ -160,6 +196,7 @@ public class GyroIOReal {
         gyro.reset();
     }
 
+    @Override
     public void zeroAll() {
         zeroYawAngle();
         zeroPitchAngle();

@@ -18,7 +18,7 @@ import org.photonvision.simulation.SimCameraProperties;
 import org.photonvision.simulation.VisionSystemSim;
 import org.photonvision.targeting.PhotonPipelineResult;
 
-import static frc.robot.Constants.Vision.*;
+import static frc.robot.subsystems.vision.VisionConstants.*;
 
 public class VisionIOSim implements VisionIO {
     private final PhotonCamera camera;
@@ -31,7 +31,7 @@ public class VisionIOSim implements VisionIO {
 
     public VisionIOSim() {
         camera = new PhotonCamera(kCameraName);
-        photonEstimator = new PhotonPoseEstimator(kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, camera, kRobotToCam);
+        photonEstimator = new PhotonPoseEstimator(kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, kRobotToCam);
         photonEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
 
         // Create the vision system simulation which handles cameras and targets on the field.
@@ -62,7 +62,7 @@ public class VisionIOSim implements VisionIO {
         var result = getLatestResult();
         inputs.estimate = currentEstimate;
         if (result.hasTargets()) {
-            photonEstimator.update().ifPresent(est -> {
+            photonEstimator.update(getLatestResult()).ifPresent(est -> {
                 inputs.estimate = est.estimatedPose.toPose2d();
             });
             inputs.tagCount = result.getTargets().size();
@@ -90,7 +90,7 @@ public class VisionIOSim implements VisionIO {
      *     used for estimation.
      */
     public Optional<EstimatedRobotPose> getEstimatedGlobalPose() {
-        var visionEst = photonEstimator.update();
+        var visionEst = photonEstimator.update(getLatestResult());
         double latestTimestamp = camera.getLatestResult().getTimestampSeconds();
         boolean newResult = Math.abs(latestTimestamp - lastEstTimestamp) > 1e-5;
         visionEst.ifPresentOrElse(

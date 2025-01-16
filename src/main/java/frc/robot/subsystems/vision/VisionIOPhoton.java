@@ -11,9 +11,8 @@ import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
-import frc.robot.Robot;
 
-import static frc.robot.Constants.Vision.*;
+import static frc.robot.subsystems.vision.VisionConstants.*;
 
 import java.util.Optional;
 
@@ -25,7 +24,7 @@ public class VisionIOPhoton implements VisionIO {
     
     public VisionIOPhoton() {
         camera = new PhotonCamera(kCameraName);
-        photonEstimator = new PhotonPoseEstimator(kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, camera, kRobotToCam);
+        photonEstimator = new PhotonPoseEstimator(kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, kRobotToCam);
         photonEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
 
     }
@@ -37,7 +36,7 @@ public class VisionIOPhoton implements VisionIO {
         var result = getLatestResult();
         inputs.estimate = currentEstimate;
         if (result.hasTargets()) {
-            photonEstimator.update().ifPresent(est -> {
+            photonEstimator.update(getLatestResult()).ifPresent(est -> {
                 inputs.estimate = est.estimatedPose.toPose2d();
             });
             inputs.tagCount = result.getTargets().size();
@@ -60,7 +59,7 @@ public class VisionIOPhoton implements VisionIO {
      *     used for estimation.
      */
     public Optional<EstimatedRobotPose> getEstimatedGlobalPose() {
-        var visionEst = photonEstimator.update();
+        var visionEst = photonEstimator.update(getLatestResult());
         double latestTimestamp = camera.getLatestResult().getTimestampSeconds();
         boolean newResult = Math.abs(latestTimestamp - lastEstTimestamp) > 1e-5;
         
