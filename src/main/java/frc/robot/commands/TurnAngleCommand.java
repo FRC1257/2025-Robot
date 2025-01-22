@@ -1,5 +1,7 @@
 package frc.robot.commands;
 
+import static frc.robot.subsystems.drive.DriveConstants.*;
+
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -9,63 +11,62 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.drive.Drive;
 
-import static frc.robot.subsystems.drive.DriveConstants.*;
-
 public class TurnAngleCommand extends Command {
-    private Drive drive;
-    private Rotation2d angle;
+  private Drive drive;
+  private Rotation2d angle;
 
-    private static PIDController angleController = new PIDController(kTurnAngleP, kTurnAngleI, kTurnAngleD);
-    
-    public TurnAngleCommand(Drive drive, Rotation2d angle) {
-        addRequirements(drive);
-        this.drive = drive;
-        this.angle = angle;
+  private static PIDController angleController =
+      new PIDController(kTurnAngleP, kTurnAngleI, kTurnAngleD);
 
-        angleController.setTolerance(kTurnAngleTolerance, kTurnAngleRateTolerance);
-        angleController.enableContinuousInput(-Math.PI, Math.PI);
-    }
+  public TurnAngleCommand(Drive drive, Rotation2d angle) {
+    addRequirements(drive);
+    this.drive = drive;
+    this.angle = angle;
 
-    @Override
-    public void initialize() {
-        angleController.reset();
-        angleController.setSetpoint(angle.getRadians());
-    }
+    angleController.setTolerance(kTurnAngleTolerance, kTurnAngleRateTolerance);
+    angleController.enableContinuousInput(-Math.PI, Math.PI);
+  }
 
-    @Override
-    public void execute() {
-        // No movement
-        double linearMagnitude = 0;
-        Rotation2d linearDirection = new Rotation2d();
-        
-        double omega = angleController.calculate(drive.getRotation().getRadians(), angle.getRadians());
+  @Override
+  public void initialize() {
+    angleController.reset();
+    angleController.setSetpoint(angle.getRadians());
+  }
 
-        // Square values
-        linearMagnitude = linearMagnitude * linearMagnitude;
-        omega = Math.copySign(omega * omega, omega);
+  @Override
+  public void execute() {
+    // No movement
+    double linearMagnitude = 0;
+    Rotation2d linearDirection = new Rotation2d();
 
-        // Calcaulate new linear velocity
-        Translation2d linearVelocity =
-            new Pose2d(new Translation2d(), linearDirection)
-                .transformBy(new Transform2d(linearMagnitude, 0.0, new Rotation2d()))
-                .getTranslation();
+    double omega = angleController.calculate(drive.getRotation().getRadians(), angle.getRadians());
 
-        // Convert to robot relative speeds & send command
-        drive.runVelocity(
-            ChassisSpeeds.fromFieldRelativeSpeeds(
-                linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
-                linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
-                omega * drive.getMaxAngularSpeedRadPerSec(),
-                drive.getRotation()));
-    }
+    // Square values
+    linearMagnitude = linearMagnitude * linearMagnitude;
+    omega = Math.copySign(omega * omega, omega);
 
-    @Override
-    public boolean isFinished() {
-        return angleController.atSetpoint();
-    }
+    // Calcaulate new linear velocity
+    Translation2d linearVelocity =
+        new Pose2d(new Translation2d(), linearDirection)
+            .transformBy(new Transform2d(linearMagnitude, 0.0, new Rotation2d()))
+            .getTranslation();
 
-    @Override
-    public void end(boolean interrupted) {
-        drive.stop();
-    }
+    // Convert to robot relative speeds & send command
+    drive.runVelocity(
+        ChassisSpeeds.fromFieldRelativeSpeeds(
+            linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
+            linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
+            omega * drive.getMaxAngularSpeedRadPerSec(),
+            drive.getRotation()));
+  }
+
+  @Override
+  public boolean isFinished() {
+    return angleController.atSetpoint();
+  }
+
+  @Override
+  public void end(boolean interrupted) {
+    drive.stop();
+  }
 }
