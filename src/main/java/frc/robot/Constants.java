@@ -4,26 +4,15 @@
 
 package frc.robot;
 
-import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.apriltag.AprilTagFields;
-import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.math.numbers.N1;
-import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.math.Matrix;
 
 /**
- * The Constants class provides a convenient place for teams to hold robot-wide
- * numerical or boolean constants. This class should not be used for any other
- * purpose. All constants should be declared globally (i.e. public static). Do
- * not put anything functional in this class.
+ * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
+ * constants. This class should not be used for any other purpose. All constants should be declared
+ * globally (i.e. public static). Do not put anything functional in this class.
  *
- * <p>
- * It is advised to statically import this class (or one of its inner classes)
- * wherever the constants are needed, to reduce verbosity.
+ * <p>It is advised to statically import this class (or one of its inner classes) wherever the
+ * constants are needed, to reduce verbosity.
  */
 public final class Constants {
   public static final Mode mode = Mode.SIM;
@@ -81,21 +70,22 @@ public final class Constants {
 
   public static class ElectricalLayout {
     // Controllers
-    public final static int CONTROLLER_DRIVER_ID = 0;
-    public final static int CONTROLLER_OPERATOR_ID = 1;
+    public static final int CONTROLLER_DRIVER_ID = 0;
+    public static final int CONTROLLER_OPERATOR_ID = 1;
 
     // Drivetrain Main
-    public final static int DRIVE_FRONT_LEFT = 1;
-    public final static int DRIVE_FRONT_RIGHT = 2;
-    public final static int DRIVE_BACK_LEFT = 3;
-    public final static int DRIVE_BACK_RIGHT = 4;
-  };
+    public static final int DRIVE_FRONT_LEFT = 1;
+    public static final int DRIVE_FRONT_RIGHT = 2;
+    public static final int DRIVE_BACK_LEFT = 3;
+    public static final int DRIVE_BACK_RIGHT = 4;
+  }
+  ;
 
   public static double PI = 3.141592653589793238462643;
   public static double UPDATE_PERIOD = 0.010; // seconds
-  public final static int NEO_550_CURRENT_LIMIT = 25; // amps
-  public final static int QUADRATURE_COUNTS_PER_REV = 8192; // encoder resolution
+  public static final int NEO_550_CURRENT_LIMIT = 25; // amps
+  public static final int QUADRATURE_COUNTS_PER_REV = 8192; // encoder resolution
   // https://www.revrobotics.com/rev-11-1271/
 
-  public final static int NEO_CURRENT_LIMIT = 80; // amps
+  public static final int NEO_CURRENT_LIMIT = 80; // amps
 }
