@@ -1,13 +1,13 @@
 package frc.robot.util.autonomous;
 
-import edu.wpi.first.math.Pair;
-import edu.wpi.first.math.geometry.Translation2d;
 import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.path.PathPoint;
-import com.pathplanner.lib.pathfinding.Pathfinder;
 import com.pathplanner.lib.pathfinding.LocalADStar;
+import com.pathplanner.lib.pathfinding.Pathfinder;
+import edu.wpi.first.math.Pair;
+import edu.wpi.first.math.geometry.Translation2d;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -126,7 +126,8 @@ public class LocalADStarAK implements Pathfinder {
 
       List<PathPoint> pathPoints = new ArrayList<>();
       for (int i = 0; i < pointsLogged.length; i += 2) {
-        pathPoints.add(new PathPoint(new Translation2d(pointsLogged[i], pointsLogged[i + 1]), null));
+        pathPoints.add(
+            new PathPoint(new Translation2d(pointsLogged[i], pointsLogged[i + 1]), null));
       }
 
       currentPathPoints = pathPoints;
