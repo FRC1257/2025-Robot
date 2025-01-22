@@ -23,13 +23,11 @@ import static frc.robot.subsystems.drive.ModuleConstants.kTurningI;
 import static frc.robot.subsystems.drive.ModuleConstants.kTurningP;
 import static frc.robot.subsystems.drive.ModuleConstants.kWheelDiameterMeters;
 
-import org.littletonrobotics.junction.Logger;
-
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-
 import frc.robot.Constants;
+import org.littletonrobotics.junction.Logger;
 
 public class Module {
   private static final double WHEEL_RADIUS = kWheelDiameterMeters / 2;
@@ -39,7 +37,7 @@ public class Module {
   private final ModuleIOInputsAutoLogged inputs = new ModuleIOInputsAutoLogged();
   private final int index;
 
-  //private final SimpleMotorFeedforward driveFeedforward;
+  // private final SimpleMotorFeedforward driveFeedforward;
   private Rotation2d angleSetpoint = null; // Setpoint for closed loop control, null for open loop
   private Double speedSetpoint = null; // Setpoint for closed loop control, null for open loop
   private Rotation2d turnRelativeOffset = null; // Relative + Offset = Absolute
@@ -83,9 +81,9 @@ public class Module {
 
     // On first cycle, reset relative turn encoder
     // Wait until absolute angle is nonzero in case it wasn't initialized yet
-   // if (turnRelativeOffset == null && inputs.turnAbsolutePosition.getRadians() != 0.0) {
-     // turnRelativeOffset = inputs.turnAbsolutePosition.minus(inputs.turnPosition);
-    //}
+    // if (turnRelativeOffset == null && inputs.turnAbsolutePosition.getRadians() != 0.0) {
+    // turnRelativeOffset = inputs.turnAbsolutePosition.minus(inputs.turnPosition);
+    // }
 
     // Run closed loop turn control
     if (angleSetpoint != null) {
@@ -99,7 +97,8 @@ public class Module {
         // When the error is 90 degrees, the velocity setpoint should be 0. As the wheel turns
         // towards the setpoint, its velocity should increase. This is achieved by
         // taking the component of the velocity in the direction of the setpoint.
-        // double adjustSpeedSetpoint = speedSetpoint * Math.cos(io.getTurnPositionError(angleSetpoint.getRadians()));
+        // double adjustSpeedSetpoint = speedSetpoint *
+        // Math.cos(io.getTurnPositionError(angleSetpoint.getRadians()));
 
         // Run drive controller
         // double velocityRadPerSec = adjustSpeedSetpoint;
@@ -171,12 +170,11 @@ public class Module {
 
   /** Returns the current turn angle of the module. */
   public Rotation2d getAngle() {
-     if (turnRelativeOffset == null) {
+    if (turnRelativeOffset == null) {
       return inputs.turnPosition;
     } else {
       return inputs.turnPosition.plus(turnRelativeOffset);
     }
-   
   }
 
   /** Returns the current drive position of the module in meters. */

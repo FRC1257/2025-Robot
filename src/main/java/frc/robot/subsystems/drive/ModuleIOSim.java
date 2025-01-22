@@ -13,6 +13,8 @@
 
 package frc.robot.subsystems.drive;
 
+import static frc.robot.subsystems.drive.ModuleConstants.*;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -22,7 +24,6 @@ import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 
-import static frc.robot.subsystems.drive.ModuleConstants.*;
 /**
  * Physics sim implementation of module IO.
  *
@@ -33,10 +34,16 @@ import static frc.robot.subsystems.drive.ModuleConstants.*;
 public class ModuleIOSim implements ModuleIO {
   private static final double LOOP_PERIOD_SECS = 0.02;
 
-  private DCMotorSim driveSim = new DCMotorSim(LinearSystemId.createDCMotorSystem(DCMotor.getNEO(1), 0.025, 4.71), DCMotor.getNEO(1));
-  private DCMotorSim turnSim = new DCMotorSim(LinearSystemId.createDCMotorSystem(DCMotor.getNeo550(1), 0.004, 150.0 / 7.0), DCMotor.getNeo550(1));
+  private DCMotorSim driveSim =
+      new DCMotorSim(
+          LinearSystemId.createDCMotorSystem(DCMotor.getNEO(1), 0.025, 4.71), DCMotor.getNEO(1));
+  private DCMotorSim turnSim =
+      new DCMotorSim(
+          LinearSystemId.createDCMotorSystem(DCMotor.getNeo550(1), 0.004, 150.0 / 7.0),
+          DCMotor.getNeo550(1));
 
-  private final Rotation2d turnAbsoluteInitPosition = new Rotation2d(); // new Rotation2d(Math.random() * 2.0 * Math.PI);
+  private final Rotation2d turnAbsoluteInitPosition =
+      new Rotation2d(); // new Rotation2d(Math.random() * 2.0 * Math.PI);
   private double driveAppliedVolts = 0.0;
   private double turnAppliedVolts = 0.0;
 
@@ -52,7 +59,8 @@ public class ModuleIOSim implements ModuleIO {
     inputs.drivePositionRad = driveSim.getAngularPositionRad();
     inputs.drivePositionMeters = driveSim.getAngularPositionRad() * kWheelDiameterMeters / 2;
     inputs.driveVelocityRadPerSec = driveSim.getAngularVelocityRadPerSec();
-    inputs.driveVelocityMeterPerSec = driveSim.getAngularVelocityRadPerSec() * kWheelDiameterMeters / 2;
+    inputs.driveVelocityMeterPerSec =
+        driveSim.getAngularVelocityRadPerSec() * kWheelDiameterMeters / 2;
     inputs.driveAppliedVolts = driveAppliedVolts;
     inputs.driveCurrentAmps = new double[] {Math.abs(driveSim.getCurrentDrawAmps())};
 
@@ -83,7 +91,9 @@ public class ModuleIOSim implements ModuleIO {
   @Override
   public void setDriveVelocity(double velocityRadPerSec) {
     velocityRadPerSec *= 2 / kWheelDiameterMeters;
-    setDriveVoltage(driveFeedforward.calculate(velocityRadPerSec) + driveFeedback.calculate(driveSim.getAngularVelocityRadPerSec(), velocityRadPerSec));
+    setDriveVoltage(
+        driveFeedforward.calculate(velocityRadPerSec)
+            + driveFeedback.calculate(driveSim.getAngularVelocityRadPerSec(), velocityRadPerSec));
   }
 
   @Override
