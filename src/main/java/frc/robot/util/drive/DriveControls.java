@@ -35,6 +35,10 @@ public class DriveControls {
   // Potential Hail Marry Program [Suggested by Owen]
   public static Trigger SHOOT_FROM_SOURCE;
 
+  // Coral Intake Controls
+  public static Trigger INTAKE_CORAL;
+  public static Trigger SHOOT_CORAL;
+
   // Setup the controls
   public static void configureControls() {
     switch (Constants.driver) {
@@ -56,6 +60,8 @@ public class DriveControls {
       case PROGRAMMERS:
       default:
         // Operator controls
+        INTAKE_CORAL = operator.a();
+        SHOOT_CORAL = operator.b();
 
         break;
 
