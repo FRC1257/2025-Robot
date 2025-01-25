@@ -35,6 +35,10 @@ public class DriveControls {
   // Potential Hail Marry Program [Suggested by Owen]
   public static Trigger SHOOT_FROM_SOURCE;
 
+  // Algae Intake Controls
+  public static Trigger INTAKE_ALGAE;
+  public static Trigger SHOOT_ALGAE;
+
   // Setup the controls
   public static void configureControls() {
     switch (Constants.driver) {
@@ -56,6 +60,9 @@ public class DriveControls {
       case PROGRAMMERS:
       default:
         // Operator controls
+
+        INTAKE_ALGAE = operator.leftBumper();
+        SHOOT_ALGAE = operator.rightBumper();
 
         break;
 

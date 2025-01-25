@@ -74,12 +74,13 @@ public final class Constants {
     public static final int CONTROLLER_OPERATOR_ID = 1;
 
     // Drivetrain Main
-    public final static int DRIVE_FRONT_LEFT = 1;
-    public final static int DRIVE_FRONT_RIGHT = 2;
-    public final static int DRIVE_BACK_LEFT = 3;
-    public final static int DRIVE_BACK_RIGHT = 4;
+    public static final int DRIVE_FRONT_LEFT = 1;
+    public static final int DRIVE_FRONT_RIGHT = 2;
+    public static final int DRIVE_BACK_LEFT = 3;
+    public static final int DRIVE_BACK_RIGHT = 4;
     public static final int ALGAE_INTAKE_MOTOR = 0;
-  };
+  }
+  ;
 
   public static double PI = 3.141592653589793238462643;
   public static double UPDATE_PERIOD = 0.010; // seconds
