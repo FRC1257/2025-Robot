@@ -8,7 +8,7 @@ public class AlgaeIntakeConstants {
     public static final double kAlgaeIntakeI = 0.0;
     public static final double kAlgaeIntakeD = 0.0;
 
-    public static final double kAlgaeIntakeGearing = 0.0;
+    public static final double kAlgaeIntakeGearing = 1.2;
     public static final double kAlgaeIntakeDrumRadius = 0.03;
     public static final double kCarriageMass = 0.15; // Mass in Kg
     public static final double kMomentOfInertia =

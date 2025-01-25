@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 public class AlgaeIntakeIOSim implements AlgaeIntakeIO {
   private final FlywheelSim sim =
       new FlywheelSim(
-          LinearSystemId.createFlywheelSystem(DCMotor.getNEO(1), 2, 1.2), DCMotor.getNEO(1));
+          LinearSystemId.createFlywheelSystem(DCMotor.getNEO(1), kMomentOfInertia, kAlgaeIntakeGearing), DCMotor.getNEO(1));
   private PIDController controller = new PIDController(0, 0, 0);
 
   private double appliedVoltage = 0.0;
