@@ -1,101 +1,172 @@
 package frc.robot.subsystems.vision;
 
-import static frc.robot.subsystems.vision.VisionConstants.*;
+import static frc.robot.subsystems.vision.VisionConstants.AMBIGUITY_THRESHOLD;
+import static frc.robot.subsystems.vision.VisionConstants.camNames;
+import static frc.robot.subsystems.vision.VisionConstants.camsRobotToCam;
+import static frc.robot.subsystems.vision.VisionConstants.kTagLayout;
+import static frc.robot.subsystems.vision.VisionConstants.numCameras;
 
-import edu.wpi.first.math.Matrix;
-import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.numbers.N1;
-import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.net.PortForwarder;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import java.util.ArrayList;
 import java.util.Optional;
-import org.photonvision.EstimatedRobotPose;
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.LoggedNetworkBoolean;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import org.photonvision.targeting.PhotonPipelineResult;
+import org.photonvision.targeting.PhotonTrackedTarget;
 
 public class VisionIOPhoton implements VisionIO {
+  private final PhotonCamera[] cameras = new PhotonCamera[numCameras];
+  private final PhotonPoseEstimator[] cameraEstimators = new PhotonPoseEstimator[numCameras];
 
-  private final PhotonCamera camera;
-  private final PhotonPoseEstimator photonEstimator;
-  private double lastEstTimestamp = 0;
+  private Pose2d lastEstimate = new Pose2d();
+
+  LoggedNetworkBoolean killSideCams =
+      new LoggedNetworkBoolean("/SmartDashboard/Vision/KillSideCams", false);
 
   public VisionIOPhoton() {
-    camera = new PhotonCamera(kCameraName);
-    photonEstimator =
-        new PhotonPoseEstimator(kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, kRobotToCam);
-    photonEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+    PortForwarder.add(5800, "photonvision.local", 5800);
+
+    for (int i = 0; i < numCameras; i++) {
+      cameras[i] = new PhotonCamera(camNames[i]);
+      cameraEstimators[i] =
+          new PhotonPoseEstimator(
+              kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, camsRobotToCam[i]);
+      cameraEstimators[i].setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+    }
+
+    SmartDashboard.putBoolean("KillSideCams", false);
   }
 
   @Override
   public void updateInputs(VisionIOInputs inputs, Pose2d currentEstimate) {
-    photonEstimator.setReferencePose(currentEstimate);
+    lastEstimate = currentEstimate;
 
-    var result = getLatestResult();
-    inputs.estimate = currentEstimate;
-    if (result.hasTargets()) {
-      photonEstimator
-          .update(getLatestResult())
-          .ifPresent(
-              est -> {
-                inputs.estimate = est.estimatedPose.toPose2d();
-              });
-      inputs.tagCount = result.getTargets().size();
-      lastEstTimestamp = inputs.timestamp;
+    PhotonPipelineResult[] results = getAprilTagResults();
+    PhotonPoseEstimator[] photonEstimators = getAprilTagEstimators(currentEstimate);
+
+    inputs.estimate = new Pose2d[] {new Pose2d()};
+
+    // add code to check if the closest target is in front or back
+    inputs.timestamp = estimateLatestTimestamp(results);
+
+    if (hasEstimate(results)) {
+      // inputs.results = results;
+      inputs.estimate = getEstimatesArray(results, photonEstimators);
+      inputs.hasEstimate = true;
+
+      int[][] cameraTargets = getCameraTargets(results);
+      inputs.camera1Targets = cameraTargets[0];
+
+      if (killSideCams.get()) {
+        inputs.camera2Targets = new int[0];
+        inputs.camera3Targets = new int[0];
+      } else {
+        inputs.camera2Targets = cameraTargets[1];
+        inputs.camera3Targets = cameraTargets[2];
+      }
+
+      Pose3d[] tags = getTargetsPositions(results);
+      Logger.recordOutput("Vision/Targets3D", tags);
+      Logger.recordOutput("Vision/Targets", Pose3dToPose2d(tags));
+      Logger.recordOutput("Vision/TagCounts", tagCounts(results));
     } else {
-      inputs.tagCount = 0;
+      inputs.timestamp = inputs.timestamp;
+      inputs.hasEstimate = false;
     }
-    inputs.timestamp = lastEstTimestamp;
-  }
 
-  public PhotonPipelineResult getLatestResult() {
-    return camera.getLatestResult();
-  }
-
-  /**
-   * The latest estimated robot pose on the field from vision data. This may be empty. This should
-   * only be called once per loop.
-   *
-   * @return An {@link EstimatedRobotPose} with an estimated pose, estimate timestamp, and targets
-   *     used for estimation.
-   */
-  public Optional<EstimatedRobotPose> getEstimatedGlobalPose() {
-    var visionEst = photonEstimator.update(getLatestResult());
-    double latestTimestamp = camera.getLatestResult().getTimestampSeconds();
-    boolean newResult = Math.abs(latestTimestamp - lastEstTimestamp) > 1e-5;
-
-    if (newResult) lastEstTimestamp = latestTimestamp;
-    return visionEst;
-  }
-
-  /**
-   * The standard deviations of the estimated pose from {@link #getEstimatedGlobalPose()}, for use
-   * with {@link edu.wpi.first.math.estimator.SwerveDrivePoseEstimator SwerveDrivePoseEstimator}.
-   * This should only be used when there are targets visible.
-   *
-   * @param estimatedPose The estimated pose to guess standard deviations for.
-   */
-  public Matrix<N3, N1> getEstimationStdDevs(Pose2d estimatedPose) {
-    var estStdDevs = kSingleTagStdDevs;
-    var targets = getLatestResult().getTargets();
-    int numTags = 0;
-    double avgDist = 0;
-    for (var tgt : targets) {
-      var tagPose = photonEstimator.getFieldTags().getTagPose(tgt.getFiducialId());
-      if (tagPose.isEmpty()) continue;
-      numTags++;
-      avgDist +=
-          tagPose.get().toPose2d().getTranslation().getDistance(estimatedPose.getTranslation());
+    // Log if the robot code can see these cameras
+    for (int i = 0; i < numCameras; i++) {
+      Logger.recordOutput("Vision/cam" + (i + 1) + "/Connected", cameras[i].isConnected());
     }
-    if (numTags == 0) return estStdDevs;
-    avgDist /= numTags;
-    // Decrease std devs if multiple targets are visible
-    if (numTags > 1) estStdDevs = kMultiTagStdDevs;
-    // Increase std devs based on (average) distance
-    if (numTags == 1 && avgDist > 4)
-      estStdDevs = VecBuilder.fill(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
-    else estStdDevs = estStdDevs.times(1 + (avgDist * avgDist / 30));
+  }
 
-    return estStdDevs;
+  public Optional<Pose2d>[] getEstimates(
+      PhotonPipelineResult[] results, PhotonPoseEstimator[] photonEstimator) {
+    ArrayList<Optional<Pose2d>> estimates = new ArrayList<>();
+    for (int i = 0; i < results.length; i++) {
+      PhotonPipelineResult result = results[i];
+      if (result.hasTargets()) {
+        var est = photonEstimator[i].update(result);
+        if (est.isPresent() && goodResult(result)) {
+          estimates.add(Optional.of(est.get().estimatedPose.toPose2d()));
+        } else {
+          estimates.add(Optional.empty());
+        }
+      } else {
+        estimates.add(Optional.empty());
+      }
+    }
+
+    Optional<Pose2d>[] estimatesArray = estimates.toArray(new Optional[0]);
+    return estimatesArray;
+  }
+
+  private PhotonPipelineResult[] getAprilTagResults() {
+    if (killSideCams.get()) {
+      PhotonPipelineResult cam1_result = getLatestResult(cameras[0]);
+
+      printStuff("cam1", cam1_result);
+
+      return new PhotonPipelineResult[] {cam1_result};
+    }
+
+    PhotonPipelineResult[] results = new PhotonPipelineResult[numCameras];
+
+    for (int i = 0; i < numCameras; i++) {
+      results[i] = cameras[i].getLatestResult();
+      printStuff("cam" + (i + 1), results[i]);
+    }
+
+    return results;
+  }
+
+  private void printStuff(String name, PhotonPipelineResult result) {
+    Logger.recordOutput("Vision/" + name + "/results", result.getTargets().size());
+
+    PhotonTrackedTarget target = result.getBestTarget();
+    if (target != null) {
+      Logger.recordOutput(
+          "Vision/" + name + "/PoseAmbiguity", result.getBestTarget().getPoseAmbiguity());
+      Logger.recordOutput("Vision/" + name + "/Yaw", result.getBestTarget().getYaw());
+    }
+  }
+
+  private PhotonPoseEstimator[] getAprilTagEstimators(Pose2d currentEstimate) {
+    if (killSideCams.get()) {
+      cameraEstimators[0].setReferencePose(currentEstimate);
+
+      return new PhotonPoseEstimator[] {cameraEstimators[0]};
+    }
+
+    for (PhotonPoseEstimator estimator : cameraEstimators) {
+      estimator.setReferencePose(currentEstimate);
+    }
+
+    return cameraEstimators;
+  }
+
+  @Override
+  public boolean goodResult(PhotonPipelineResult result) {
+    return result.hasTargets() && result.getBestTarget().getPoseAmbiguity() < AMBIGUITY_THRESHOLD
+    /*
+     * && kTagLayout.
+     * getTagPose(
+     * result.
+     * getBestTarget().
+     * getFiducialId())
+     * .get().toPose2d(
+     * ).getTranslation
+     * ()
+     * .getDistance(
+     * lastEstimate.
+     * getTranslation()
+     * ) < MAX_DISTANCE
+     */ ;
   }
 }

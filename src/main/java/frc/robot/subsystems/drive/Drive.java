@@ -27,6 +27,7 @@ import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.path.Waypoint;
 import com.pathplanner.lib.pathfinding.Pathfinding;
 import com.pathplanner.lib.util.PathPlannerLogging;
+import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -36,10 +37,14 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.subsystems.vision.VisionConstants;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOInputsAutoLogged;
 import frc.robot.util.autonomous.LocalADStarAK;
@@ -197,8 +202,23 @@ public class Drive extends SubsystemBase {
     if (useVision) {
       visionIO.updateInputs(visionInputs, getPose());
       Logger.processInputs("Vision", visionInputs);
-      poseEstimator.addVisionMeasurement(
-          visionInputs.estimate, visionInputs.timestamp, visionIO.getEstimationStdDevs(getPose()));
+      if (visionInputs.hasEstimate) {
+        List<Matrix<N3, N1>> stdDeviations = visionIO.getStdArray(visionInputs, getPose());
+
+        for (int i = 0; i < visionInputs.estimate.length; i++) {
+          if (stdDeviations.size() <= i) {
+            poseEstimator.addVisionMeasurement(
+                visionInputs.estimate[i],
+                Timer.getFPGATimestamp(),
+                VisionConstants.kSingleTagStdDevs);
+            // System.out.println("Ignoring");
+          } else {
+            poseEstimator.addVisionMeasurement(
+                visionInputs.estimate[i], Timer.getFPGATimestamp(), stdDeviations.get(i));
+            // System.out.println(stdDeviations.get(i));
+          }
+        }
+      }
     }
 
     for (var module : modules) {
