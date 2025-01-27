@@ -86,27 +86,6 @@ public class VisionIOPhoton implements VisionIO {
     }
   }
 
-  public Optional<Pose2d>[] getEstimates(
-      PhotonPipelineResult[] results, PhotonPoseEstimator[] photonEstimator) {
-    ArrayList<Optional<Pose2d>> estimates = new ArrayList<>();
-    for (int i = 0; i < results.length; i++) {
-      PhotonPipelineResult result = results[i];
-      if (result.hasTargets()) {
-        var est = photonEstimator[i].update(result);
-        if (est.isPresent() && goodResult(result)) {
-          estimates.add(Optional.of(est.get().estimatedPose.toPose2d()));
-        } else {
-          estimates.add(Optional.empty());
-        }
-      } else {
-        estimates.add(Optional.empty());
-      }
-    }
-
-    Optional<Pose2d>[] estimatesArray = estimates.toArray(new Optional[0]);
-    return estimatesArray;
-  }
-
   private PhotonPipelineResult[] getAprilTagResults() {
     if (killSideCams.get()) {
       PhotonPipelineResult cam1_result = getLatestResult(cameras[0]);
