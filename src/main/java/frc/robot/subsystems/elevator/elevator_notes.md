@@ -19,4 +19,5 @@ Implement **Control Flow** for the elevator motors:
 > [!WARNING]
 > Use the resetmode in `sparkmax`, **NOT** the resetmode in `servo
 
-When you use sparkmax
+
+**I used velocityFF for elevator pid. Ask if this is a problem?**

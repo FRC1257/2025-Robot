@@ -6,7 +6,7 @@ public interface ElevatorIO {
     @AutoLog
     public class ElevatorInputs {
         public double setPoint = 0.0;
-        public double height = 0.0;
+        public double position = 0.0;
         public double velocity = 0.0;
         public double appliedVoltage = 0.0;
 
@@ -25,10 +25,10 @@ public interface ElevatorIO {
      * Tells the elevator to start moving towards a setpoint (height)
      * @param setpoint the target height the elevator is trying to go to
      * */ 
-    public default void goToSetpoint(double setpoint) {}
-
     public default double getSetpoint() {return 0.0;}
 
+    public default void goToSetpoint(double setpoint) {}
+    
     /**
      * Gets the elevator's instantaneous height
      * */
@@ -39,11 +39,12 @@ public interface ElevatorIO {
      */
     public default boolean atSetpoint() {return false;}
 
+    public default double getVelocity() {return 0.0;}
     /**
      * Sets the elevator's speed
-     * @param velocity speed percentage (0 is nothing, 1 is maximum)
+     * @param velocity speed factor from -1 to 1 (1 is max velocity)
      * */
-    public default void setSpeed(double speed) {}
+    public default void setVelocity(double velocity) {}
 
     /**
      * Sets the brakemode of both motors
