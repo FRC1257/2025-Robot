@@ -18,6 +18,9 @@ public class ElevatorIOSparkMax implements ElevatorIO{
     AbsoluteEncoder leftEncoder;
     AbsoluteEncoder rightEncoder;
 
+    //used to track the target setpoint of the robot
+    double setpoint = 0;
+
     //Because sparkmax does not have getters for pid, use these variables to keep track of dynamic pid values
     double kP = ElevatorConstants.kP;
     double kI = ElevatorConstants.kI;
@@ -56,9 +59,33 @@ public class ElevatorIOSparkMax implements ElevatorIO{
         rightMotor.configure(config, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
     }
     @Override
+    public void updateInputs(ElevatorInputs inputs) {
+        
+    }
+    @Override
     public void goToSetpoint(double setpoint) {
+        this.setpoint = setpoint;
         leftController.setReference(setpoint, ControlType.kPosition);
         rightController.setReference(setpoint, ControlType.kPosition);
+    }
+    @Override
+    public double getSetpoint() {
+        return setpoint;
+    }
+    @Override
+    public double getPosition() {
+        //get the absolute position in radians, then convert to meters
+        return (leftEncoder.getPosition() + ElevatorConstants.ABSOLUTE_ENCODER_OFFSET_RADIANS)
+            *2*3.141592653589*ElevatorConstants.MOTOR_RADIUS_METERS;
+    }
+    @Override
+    public boolean atSetpoint() {
+        //if the difference between setpoint and position is less than the tolerance
+        return (Math.abs(getSetpoint() - getPosition())< ElevatorConstants.SETPOINT_TOLERANCE_METERS);
+    }
+    @Override
+    public void setSpeed(double speed) {
+        // Do this!!!!!1
     }
     @Override
     public void setBrakeMode(boolean brakeEnabled) {
@@ -66,20 +93,24 @@ public class ElevatorIOSparkMax implements ElevatorIO{
         config.idleMode(brakeEnabled ? IdleMode.kBrake : IdleMode.kCoast);
         updateMotorConfig(config);
     }
+
     @Override
     public void setP(double kP) {
+        this.kP = kP;
         SparkMaxConfig config = new SparkMaxConfig();
         config.closedLoop.p(kP);
         updateMotorConfig(config);
     }
     @Override
     public void setI(double kI) {
+        this.kI = kI;
         SparkMaxConfig config = new SparkMaxConfig();
         config.closedLoop.i(kI);
         updateMotorConfig(config);
     }
     @Override
     public void setD(double kD) {
+        this.kD = kD;
         SparkMaxConfig config = new SparkMaxConfig();
         config.closedLoop.d(kD);
         updateMotorConfig(config);
@@ -87,5 +118,13 @@ public class ElevatorIOSparkMax implements ElevatorIO{
     @Override
     public double getP() {
         return kP;
+    }
+    @Override
+    public double getI() {
+        return kI;
+    }
+    @Override
+    public double getD() {
+        return kD;
     }
 }

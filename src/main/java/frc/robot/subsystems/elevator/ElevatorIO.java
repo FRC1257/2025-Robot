@@ -27,10 +27,12 @@ public interface ElevatorIO {
      * */ 
     public default void goToSetpoint(double setpoint) {}
 
+    public default double getSetpoint() {return 0.0;}
+
     /**
      * Gets the elevator's instantaneous height
      * */
-    public default double getHeight() {return 0.0;}
+    public default double getPosition() {return 0.0;}
 
     /**
      * returns true if the elevator is at the setpoint
@@ -41,7 +43,7 @@ public interface ElevatorIO {
      * Sets the elevator's speed
      * @param velocity speed percentage (0 is nothing, 1 is maximum)
      * */
-    public default void setSpeed(double velocity) {}
+    public default void setSpeed(double speed) {}
 
     /**
      * Sets the brakemode of both motors
