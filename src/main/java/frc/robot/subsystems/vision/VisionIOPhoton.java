@@ -10,8 +10,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.net.PortForwarder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import java.util.ArrayList;
-import java.util.Optional;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedNetworkBoolean;
 import org.photonvision.PhotonCamera;
@@ -63,13 +61,13 @@ public class VisionIOPhoton implements VisionIO {
       int[][] cameraTargets = getCameraTargets(results);
       inputs.camera1Targets = cameraTargets[0];
 
-      if (killSideCams.get()) {
-        inputs.camera2Targets = new int[0];
-        inputs.camera3Targets = new int[0];
-      } else {
-        inputs.camera2Targets = cameraTargets[1];
-        inputs.camera3Targets = cameraTargets[2];
-      }
+      // if (killSideCams.get()) {
+      //   inputs.camera2Targets = new int[0];
+      //   inputs.camera3Targets = new int[0];
+      // } else {
+      //   inputs.camera2Targets = cameraTargets[1];
+      //   inputs.camera3Targets = cameraTargets[2];
+      // }
 
       Pose3d[] tags = getTargetsPositions(results);
       Logger.recordOutput("Vision/Targets3D", tags);

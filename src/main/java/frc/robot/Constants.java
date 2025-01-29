@@ -21,7 +21,7 @@ public final class Constants {
 
   public static final Mode currentMode = getRobotMode();
 
-  public static final boolean useVision = false;
+  public static final boolean useVision = true;
 
   public static enum Mode {
     /** Running on a real robot. */
