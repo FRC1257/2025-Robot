@@ -17,4 +17,6 @@ Implement **Control Flow** for the elevator motors:
 
 
 > [!WARNING]
-> Use the resetmode in `sparkmax`, **NOT** the resetmode in `servo`
+> Use the resetmode in `sparkmax`, **NOT** the resetmode in `servo
+
+When you use sparkmax

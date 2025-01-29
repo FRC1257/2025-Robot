@@ -7,6 +7,9 @@ public class ElevatorConstants {
     public static int MOTOR_CURRENT_LIMIT = 50;
     public static int LEFT_MOTOR_ID = 0;
     public static int RIGHT_MOTOR_ID = 1;
-
     public static IdleMode MOTOR_DEFAULT_IDLE_MODE = IdleMode.kBrake;
+    public static double kP;
+    public static double kI;
+    public static double kD;
+    public static double KF;
 }

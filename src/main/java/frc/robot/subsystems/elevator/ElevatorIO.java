@@ -49,14 +49,21 @@ public interface ElevatorIO {
      */
     public default void setBrakeMode(boolean brakeEnabled) {}
     
-    //PID getters and setters
+    /** Only use individual getters and setters for spontaneous changes during runtime. All PID constants are automatically set when the robot starts up*/
     public default double getP() {return 0.0;}
+    /** Only use individual getters and setters for spontaneous changes during runtime. All PID constants are automatically set when the robot starts up*/
     public default double getI() {return 0.0;}
+    /** Only use individual getters and setters for spontaneous changes during runtime. All PID constants are automatically set when the robot starts up*/
     public default double getD() {return 0.0;}
+    /** Only use individual getters and setters for spontaneous changes during runtime. All PID constants are automatically set when the robot starts up*/
     public default double getFF() {return 0.0;}
-
-    public default void setP() {}
-    public default void setI() {}
-    public default void setD() {}
-    public default void setFF() {}
+    
+    /** Only use individual getters and setters for spontaneous changes during runtime. All PID constants are automatically set when the robot starts up*/
+    public default void setP(double kP) {}
+    /** Only use individual getters and setters for spontaneous changes during runtime. All PID constants are automatically set when the robot starts up*/
+    public default void setI(double kI) {}
+    /** Only use individual getters and setters for spontaneous changes during runtime. All PID constants are automatically set when the robot starts up*/
+    public default void setD(double kD) {}
+    /** Only use individual getters and setters for spontaneous changes during runtime. All PID constants are automatically set when the robot starts up*/
+    public default void setFF(double kFF) {}
 }
