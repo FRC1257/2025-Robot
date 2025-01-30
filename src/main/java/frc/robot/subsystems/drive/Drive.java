@@ -41,6 +41,8 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -49,11 +51,14 @@ import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOInputsAutoLogged;
 import frc.robot.util.autonomous.LocalADStarAK;
 import frc.robot.util.drive.AllianceFlipUtil;
+import frc.robot.util.misc.Elastic;
+
 import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
+import frc.robot.FieldConstants;
 
 public class Drive extends SubsystemBase {
   // private static final double DRIVE_BASE_RADIUS = Math.hypot(kTrackWidthX / 2.0, kTrackWidthY /
@@ -94,6 +99,8 @@ public class Drive extends SubsystemBase {
 
   private Rotation2d simRotation = new Rotation2d();
 
+  private final SendableChooser<Translation2d> startPositionChooser = new SendableChooser<>();
+
   public Drive(
       GyroIO gyroIO,
       ModuleIO flModuleIO,
@@ -110,6 +117,12 @@ public class Drive extends SubsystemBase {
 
     this.visionIO = visionIO;
 
+    startPositionChooser.addOption("s1", FieldConstants.Barge.farCage);
+    startPositionChooser.addOption("s2", FieldConstants.Barge.middleCage);
+    startPositionChooser.addOption("s3", FieldConstants.Barge.closeCage);
+
+    SmartDashboard.putData("startPosition", startPositionChooser);
+    
     try {
       config = RobotConfig.fromGUISettings();
     } catch (Exception e) {
@@ -190,6 +203,11 @@ public class Drive extends SubsystemBase {
                 this));
   }
 
+  public void setStartPosition() {
+    Translation2d selectedPosition = startPositionChooser.getSelected();
+    poseEstimator.resetTranslation(selectedPosition);
+  }
+
   public void periodic() {
     odometryLock.lock(); // Prevents odometry updates while reading data
     gyroIO.updateInputs(gyroInputs);
@@ -213,9 +231,9 @@ public class Drive extends SubsystemBase {
                 VisionConstants.kSingleTagStdDevs);
             // System.out.println("Ignoring");
           } else {
-          poseEstimator.addVisionMeasurement(
-              visionInputs.estimate[i], Timer.getFPGATimestamp(), stdDeviations.get(i));
-          System.out.println(stdDeviations.get(i));
+            poseEstimator.addVisionMeasurement(
+                visionInputs.estimate[i], Timer.getFPGATimestamp(), stdDeviations.get(i));
+            System.out.println(stdDeviations.get(i));
           }
         }
       }

@@ -1,3 +1,5 @@
+// Copyright (c) 2025 FRC 6328
+// http://github.com/Mechanical-Advantage
 //
 // Use of this source code is governed by an MIT-style
 // license that can be found in the LICENSE file at
@@ -21,6 +23,7 @@ public class FieldConstants {
   public static final double fieldWidth = Units.inchesToMeters(317);
   public static final double startingLineX =
       Units.inchesToMeters(299.438); // Measured from the inside of starting line
+  public static final double algaeDiameter = Units.inchesToMeters(16);
 
   public static class Processor {
     public static final Pose2d centerFace =
@@ -137,8 +140,8 @@ public class FieldConstants {
                       Units.degreesToRadians(level.pitch),
                       poseDirection.getRotation().getRadians())));
         }
-        branchPositions.add((face * 2) + 1, fillRight);
-        branchPositions.add((face * 2) + 2, fillLeft);
+        branchPositions.add(fillRight);
+        branchPositions.add(fillLeft);
       }
     }
   }
@@ -167,4 +170,29 @@ public class FieldConstants {
     public final double height;
     public final double pitch;
   }
+
+  public static final double aprilTagWidth = Units.inchesToMeters(6.50);
+  // public static final AprilTagLayoutType defaultAprilTagType = AprilTagLayoutType.OFFICIAL;//
+  public static final int aprilTagCount = 22;
+
+  /*
+  public enum AprilTagLayoutType {
+    OFFICIAL("2025-official");
+
+    AprilTagLayoutType(String name) {
+      if (layout == null) {
+        layoutString = "";
+      } else {
+        try {
+          layoutString = new ObjectMapper().writeValueAsString(layout);
+        } catch (JsonProcessingException e) {
+          throw new RuntimeException(
+              "Failed to serialize AprilTag layout JSON " + toString() + "for Northstar");
+        }
+      }
+    }
+
+    private final AprilTagFieldLayout layout;
+    private final String layoutString;
+    */
 }
