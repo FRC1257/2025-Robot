@@ -5,8 +5,8 @@ import static frc.robot.Constants.ElectricalLayout.PIVOT_ARM_ID;
 import org.littletonrobotics.junction.Logger;
 
 import com.revrobotics.CANSparkBase.IdleMode;
-import com.revrobotics.CANSparkLowLevel.MotorType;
-import com.revrobotics.CANSparkMax;
+import com.revrobotics.SparkLowLevel.MotorType;
+import com.revrobotics.SparkMax;
 import com.revrobotics.RelativeEncoder;
 
 import edu.wpi.first.math.MathUtil;
@@ -20,7 +20,7 @@ import frc.robot.Constants.ElectricalLayout;
 
 public class CoralPivotIOSparkMax implements CoralPivotIO {
     // Motor and Encoders
-    private CANSparkMax pivotMotor;
+    private SparkMax pivotMotor;
     private final ProfiledPIDController pidController;
     private ArmFeedforward feedforward = new ArmFeedforward(0, 0, 0, 0);
     
@@ -30,7 +30,7 @@ public class CoralPivotIOSparkMax implements CoralPivotIO {
     private double setpoint = 0;
 
     public CoralPivotIOSparkMax() {
-        pivotMotor = new CANSparkMax(PIVOT_ARM_ID, MotorType.kBrushless);
+        pivotMotor = new SparkMax(PIVOT_ARM_ID, MotorType.kBrushless);
     
 
         pivotMotor.restoreFactoryDefaults();
