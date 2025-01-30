@@ -1,7 +1,5 @@
 package frc.robot.subsystems.coralPivot;
 
-import java.util.function.DoubleSupplier;
-
 import edu.wpi.first.math.util.Units;
 
 public class CoralPivotConstants {

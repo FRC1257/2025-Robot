@@ -1,8 +1,6 @@
-package frc.robot.subsystems.CoralPivot;
+package frc.robot.subsystems.coralPivot;
 
 import org.littletonrobotics.junction.AutoLog;
-
-import edu.wpi.first.wpilibj2.command.Command;
 
 public interface CoralPivotIO {
     @AutoLog
