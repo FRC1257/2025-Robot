@@ -46,8 +46,6 @@ public class Elevator extends SubsystemBase {
   // Mutable holder for unit-safe linear velocity values, persisted to avoid reallocation.
   private final MutLinearVelocity m_velocity = MetersPerSecond.mutable(0);
 
-  private double setpoint = 0;
-
   private final ElevatorIO io;
 
   // Create a Mechanism2d visualization of the arm
@@ -124,11 +122,6 @@ public class Elevator extends SubsystemBase {
     isVoltageClose(velocity);
   }
 
-  public void setPID(double setpoint) {
-    this.setpoint = setpoint;
-    Logger.recordOutput("Elevator/Setpoint", setpoint);
-  }
-
   public boolean atSetpoint() {
     return Math.abs(io.getPosition() - setpoint) < ElevatorConstants.ELEVATOR_PID_TOLERANCE
         && Math.abs(getVelocity()) < ElevatorConstants.ELEVATOR_PID_VELOCITY_TOLERANCE;
@@ -136,18 +129,6 @@ public class Elevator extends SubsystemBase {
 
   public void setMechanism(MechanismLigament2d mechanism) {
     armMechanism = mechanism;
-  }
-
-  public Rotation2d getAngle() {
-    return new Rotation2d(inputs.positionMeters);
-  }
-
-  public double getVelocity() {
-    return inputs.velocityMetersPerSec;
-  }
-
-  public Rotation2d getSetpoint() {
-    return new Rotation2d(setpoint);
   }
 
   public MechanismLigament2d append(MechanismLigament2d mechanism) {
