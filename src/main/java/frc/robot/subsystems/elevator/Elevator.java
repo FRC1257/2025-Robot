@@ -48,8 +48,8 @@ public class Elevator extends SubsystemBase {
 
   private final ElevatorIO io;
 
-  // Create a Mechanism2d visualization of the arm
-  private MechanismLigament2d armMechanism = getArmMechanism();
+  // Create a Mechanism2d visualization of the elevator
+  private MechanismLigament2d elevatorMechanism = getElevatorMechanism();
 
   private SysIdRoutine SysId;
 
@@ -67,7 +67,7 @@ public class Elevator extends SubsystemBase {
         new SysIdRoutine.Config(Volts.per(Second).of(ElevatorConstants.RAMP_RATE), Volts.of(ElevatorConstants.STEP_VOLTAGE), null),
         new SysIdRoutine.Mechanism(v -> io.setVelocity(v.in(Volts) / 12.0), 
             (sysidLog) -> {
-                sysidLog.motor("pivot")
+                sysidLog.motor("Elevator")
                 .voltage(
                     m_appliedVoltage.mut_replace(inputs.appliedVoltage, Volts))
                 .linearPosition(m_position.mut_replace(inputs.positionMeters, Meters))
@@ -83,7 +83,7 @@ public class Elevator extends SubsystemBase {
     io.updateInputs(inputs);
     Logger.processInputs("Elevator", inputs);
 
-    armMechanism.setLength(inputs.positionMeters);
+    elevatorMechanism.setLength(io.getPosition());
 
     // Update the PID constants if they have changed
     if (logP.get() != io.getP()) io.setP(logP.get());
@@ -98,102 +98,84 @@ public class Elevator extends SubsystemBase {
     Logger.processInputs("Elevator", inputs);
 
     Logger.recordOutput(
-        "Elevator/PivotAbsoluteEncoderConnected",
+        "Elevator/ElevatorAbsoluteEncoderConnected",
         inputs.positionMeters != ElevatorConstants.ELEVATOR_OFFSET);
+  }
+
+  public void setMechanism(MechanismLigament2d mechanism) {
+    elevatorMechanism = mechanism;
+  }
+
+  public MechanismLigament2d append(MechanismLigament2d mechanism) {
+    return elevatorMechanism.append(mechanism);
+  }
+
+  public MechanismLigament2d getElevatorMechanism() {
+    return new MechanismLigament2d("Elevator", 0.4, 0, 5, new Color8Bit(Color.kAqua));
   }
 
   public void setBrake(boolean brake) {
     io.setBrakeMode(brake);
   }
 
-  @AutoLogOutput(key = "Elevator/Close")
-  public boolean isVoltageClose(double setVoltage) {
-    double voltageDifference = Math.abs(setVoltage - inputs.appliedVoltage);
-    return voltageDifference <= ElevatorConstants.ELEVATOR_TOLERANCE;
-  }
-
-  public void setVelocity(double velocity) {
-    if (io.getPosition() > ElevatorConstants.ELEVATOR_MAX_ANGLE && velocity > 0) {
-      velocity = 0;
-    } else if (io.getPosition() < ElevatorConstants.ELEVATOR_MIN_ANGLE && velocity < 0) {
-      velocity = 0;
-    }
-
-    isVoltageClose(velocity);
+  public void setSetpoint(double setpoint) {
+    io.goToSetpoint()
   }
 
   public boolean atSetpoint() {
-    return Math.abs(io.getPosition() - setpoint) < ElevatorConstants.ELEVATOR_PID_TOLERANCE
-        && Math.abs(getVelocity()) < ElevatorConstants.ELEVATOR_PID_VELOCITY_TOLERANCE;
+    io.atSetpoint();
   }
 
-  public void setMechanism(MechanismLigament2d mechanism) {
-    armMechanism = mechanism;
+  public void setVelocity(double velocity) {
+    if io.getPosition() < ElevatorConstants.ELEVATOR_MIN_HEIGHT || io.getPosition() > ElevatorConstants.ELEVATOR_MAX_HEIGHT {
+      io.setVelocity(0);
+    } else {
+      io.setVelocity(velocity);
+    }
   }
 
-  public MechanismLigament2d append(MechanismLigament2d mechanism) {
-    return armMechanism.append(mechanism);
-  }
-
-  public MechanismLigament2d getArmMechanism() {
-    return new MechanismLigament2d("Pivot Arm", 0.4, 0, 5, new Color8Bit(Color.kAqua));
-  }
-
-  public Command PIDCommandForever(DoubleSupplier setpointSupplier) {
-    return new FunctionalCommand(
-        () -> setPID(setpointSupplier.getAsDouble()),
-        () -> {
-          setPID(setpointSupplier.getAsDouble());
-          io.goToSetpoint(setpoint);
-        },
-        (stop) -> {},
-        () -> false,
-        this);
-  }
-
+  /** Runs PID Command and keeps running it after it reaches setpoint */
   public Command PIDCommandForever(double setpoint) {
     return new FunctionalCommand(
-        () -> setPID(setpoint),
-        () -> io.goToSetpoint(setpoint),
-        (stop) -> {},
-        () -> false,
-        this);
+      () -> setSetpoint(setpoint),
+      () -> setSetpoint(setpoint),
+      (interrupted) -> setVelocity(0),
+      () -> false,
+      this);
+  }
+  /** Runs PID Command and keeps running it after it reaches setpoint */
+  public Command PIDCommandForever(DoubleSupplier setpointSupplier) {
+    return PIDCommandForever(setpointSupplier.getAsDouble());
   }
 
-  public Command PIDCommand(DoubleSupplier setpointSupplier) {
-    return new FunctionalCommand(
-        () -> setPID(setpointSupplier.getAsDouble()),
-        () -> {
-          Logger.recordOutput("ElevatorSpeakerAngle", setpointSupplier.getAsDouble());
-          setPID(setpointSupplier.getAsDouble());
-          io.goToSetpoint(setpoint);
-        },
-        (stop) -> setVelocity(0),
-        this::atSetpoint,
-        this);
-  }
-
+  /** Runs PID and stops when at setpoint */
   public Command PIDCommand(double setpoint) {
     return new FunctionalCommand(
-        () -> setPID(setpoint), () -> io.goToSetpoint(setpoint), (stop) -> setVelocity(0), io::atSetpoint, this);
+      () -> setSetpoint(setpoint),
+      () -> setSetpoint(setpoint),
+      (interrupted) -> setVelocity(0),
+      () -> atSetpoint(),
+      this);
+  }
+  /** Runs PID and stops when at setpoint */
+  public Command PIDCommand(DoubleSupplier setpointSupplier) {
+    return PIDCommand(setpointSupplier.getAsDouble());
   }
 
-  // Allows manual control of the pivot arm for PID tuning
-  public Command ManualCommand(DoubleSupplier speedSupplier) {
-    return new FunctionalCommand(
-        () -> setVelocity(speedSupplier.getAsDouble()),
-        () -> setVelocity(speedSupplier.getAsDouble()),
-        (stop) -> setVelocity(0),
-        () -> false,
-        this);
-  }
-
+  /** Control the elevator by providing a velocity */
   public Command ManualCommand(double speed) {
     return new FunctionalCommand(
-        () -> setVelocity(speed),
-        () -> setVelocity(speed),
-        (stop) -> setVelocity(0),
-        () -> false,
-        this);
+      () -> setVelocity(speed),
+      () -> setVelocity(speed),
+      (interrupted) -> setVelocity(0),
+      () -> false,
+      this);
+  }
+  /** Control the elevator by providing a velocity */
+  public Command ManualCommand(DoubleSupplier speedSupplier) {
+    ManualCommand(speedSupplier.getAsDouble());
   }
 }
+
+
+//add quasistatic and dynamic for sysid later !!!!! 

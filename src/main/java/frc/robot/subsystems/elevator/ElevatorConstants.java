@@ -11,11 +11,12 @@ public class ElevatorConstants {
 
   public static final double ELEVATOR_OFFSET = 0; // 1.14;
 
-  public static final double ELEVATOR_PID_TIME = 3;
+  //top height 50 inches (measured from bottom of elevator frame)
+  //bottom height 12.375 inches (measured from bottom of frame)
+  public static final double ELEVATOR_MAX_HEIGHT = 0.955675; //not including chasis
+  public static final double ELEVATOR_MIN_HEIGHT = 0;
 
-  public static final double ELEVATOR_MAX_ANGLE = Units.degreesToRadians(110.0);
-  public static final double ELEVATOR_MIN_ANGLE = Units.degreesToRadians(2.0);
-
+  //sysid stuff
   public static final double RAMP_RATE = 0.5;
   public static final double STEP_VOLTAGE = 3.0;
   public static final double ELEVATOR_TOLERANCE = 1.0;
@@ -32,10 +33,10 @@ public class ElevatorConstants {
   public static double POSITION_CONVERSION_FACTOR =
       2 * Constants.PI * ElevatorConstants.MOTOR_RADIUS_METERS * GEAR_RATIO;
 
-  /** 0 radians on the absolute encoder might not match a 0 position height */
+  /** When the elevator is on the bottom, what does the encoder say */
   public static double ELEVATOR_OFFSET_METERS = 0.0;
   /** Tolerance used when checking if the elevator is at the setpoint */
-  public static double SETPOINT_TOLERANCE_METERS = 5.0;
+  public static double SETPOINT_TOLERANCE_METERS = 0.01;
 
   public static final double[] kElevatorRealPID = {0, 0, 0, 0};
 
@@ -44,21 +45,9 @@ public class ElevatorConstants {
   public static class ElevatorSimConstants {
     public static final double[] kElevatorSimPID = {15, 0, 0, 0};
 
-    public static final int kMotorPort = 2;
-    public static final int kEncoderAChannel = 2;
-    public static final int kEncoderBChannel = 3;
+    // public static final int kMotorPort = 2;
+    // public static final int kEncoderAChannel = 2;
+    // public static final int kEncoderBChannel = 3;
 
-    // The P gain for the PID controller that drives this arm.
-    public static final double kDefaultArmSetpointDegrees = Units.degreesToRadians(75.0);
-
-    // distance per pulse = (angle per revolution) / (pulses per revolution)
-    // = (2 * PI rads) / (4096 pulses)
-    public static final double kArmEncoderDistPerPulse = 1 / 4096;
-
-    public static final double kArmReduction = 200;
-    public static final double kArmMass = 10.0; // Kilograms
-    public static final double kArmLength = Units.inchesToMeters(20);
-    public static final double kMinAngleRads = Units.degreesToRadians(0);
-    public static final double kMaxAngleRads = Units.degreesToRadians(180);
   }
 }
