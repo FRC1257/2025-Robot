@@ -146,15 +146,7 @@ public class CoralPivot extends SubsystemBase {
     isVoltageClose(motorVolts);
   }
 
-  public void move(double speed) {
-    setVoltage(speed);
-  }
-
   public void runPID() {
-    io.goToSetpoint(setpoint);
-  }
-
-  public void holdPID() {
     io.goToSetpoint(setpoint);
   }
 
@@ -205,7 +197,7 @@ public class CoralPivot extends SubsystemBase {
 
   public Command PIDCommand(double setpoint) {
     return new FunctionalCommand(
-        () -> setPID(setpoint), () -> runPID(), (stop) -> move(0), this::atSetpoint, this);
+        () -> setPID(setpoint), () -> runPID(), (stop) -> setVoltage(0), this::atSetpoint, this);
   }
 
   public Command PIDCommandForever(DoubleSupplier setpointSupplier) {
@@ -215,21 +207,21 @@ public class CoralPivot extends SubsystemBase {
           setPID(setpointSupplier.getAsDouble());
           runPID();
         },
-        (stop) -> move(0),
+        (stop) -> setVoltage(0),
         () -> false,
         this);
   }
 
   public Command PIDCommandForever(double setpoint) {
     return new FunctionalCommand(
-        () -> setPID(setpoint), () -> runPID(), (stop) -> move(0), () -> false, this);
+        () -> setPID(setpoint), () -> runPID(), (stop) -> setVoltage(0), () -> false, this);
   }
 
   public Command PIDHoldCommand() {
     return new FunctionalCommand(
         () -> setPID(getAngle().getRadians()),
         () -> holdPID(),
-        (stop) -> move(0),
+        (stop) -> setVoltage(0),
         () -> false,
         this);
   }
@@ -242,7 +234,7 @@ public class CoralPivot extends SubsystemBase {
           setPID(setpointSupplier.getAsDouble());
           runPID();
         },
-        (stop) -> move(0),
+        (stop) -> setVoltage(0),
         this::atSetpoint,
         this);
   }
@@ -250,9 +242,9 @@ public class CoralPivot extends SubsystemBase {
   // Allows manual control of the pivot arm for PID tuning
   public Command ManualCommand(DoubleSupplier speedSupplier) {
     return new FunctionalCommand(
-        () -> move(speedSupplier.getAsDouble()),
-        () -> move(speedSupplier.getAsDouble()),
-        (stop) -> move(0),
+        () -> setVoltage(speedSupplier.getAsDouble()),
+        () -> setVoltage(speedSupplier.getAsDouble()),
+        (stop) -> setVoltage(0),
         () -> false,
         this);
   }
@@ -267,11 +259,11 @@ public class CoralPivot extends SubsystemBase {
     return new FunctionalCommand(
         () -> {},
         () -> {
-          move(-1);
+          setVoltage(-1);
           setpoint = 0;
         },
         (interrupted) -> {
-          move(0);
+          setVoltage(0);
         },
         () -> {
           return io.getAngle() < 0.1;

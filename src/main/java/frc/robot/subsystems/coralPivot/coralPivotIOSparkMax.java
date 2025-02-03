@@ -3,17 +3,18 @@
 
 package frc.robot.subsystems.coralPivot;
 
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkBase.IdleMode;
-import com.revrobotics.SparkLowLevel.MotorType;
-import com.revrobotics.SparkMax;
+import com.revrobotics.AbsoluteEncoder;
+import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.spark.SparkBase.ResetMode;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import frc.robot.Constants;
-import frc.robot.Constants.ElectricalLayout;
 import org.littletonrobotics.junction.Logger;
 
 public class CoralPivotIOSparkMax implements CoralPivotIO {
@@ -22,30 +23,28 @@ public class CoralPivotIOSparkMax implements CoralPivotIO {
   private final ProfiledPIDController pidController;
   private ArmFeedforward feedforward = new ArmFeedforward(0, 0, 0, 0);
 
-  private DutyCycleEncoder absoluteEncoder;
-  private RelativeEncoder motorEncoder;
+  private AbsoluteEncoder absoluteEncoder;
 
   private double setpoint = 0;
 
   public CoralPivotIOSparkMax() {
-    pivotMotor = new SparkMax(PIVOT_ARM_ID, MotorType.kBrushless);
+    pivotMotor = new SparkMax(CoralPivotConstants.CORAL_PIVOT_ID, MotorType.kBrushless);
 
-    pivotMotor.restoreFactoryDefaults();
+    SparkMaxConfig config = new SparkMaxConfig();
 
     setBrake(true);
 
-    pivotMotor.enableVoltageCompensation(12.0);
+    config.voltageCompensation(12.0).smartCurrentLimit(Constants.NEO_CURRENT_LIMIT);
 
-    pivotMotor.setSmartCurrentLimit(Constants.NEO_CURRENT_LIMIT);
+    absoluteEncoder = pivotMotor.getAbsoluteEncoder();
 
-    pivotMotor.burnFlash();
+    config
+        .absoluteEncoder
+        .positionConversionFactor(2 * Constants.PI * CoralPivotConstants.POSITION_CONVERSION_FACTOR)
+        .velocityConversionFactor(
+            2 * Constants.PI * CoralPivotConstants.POSITION_CONVERSION_FACTOR / 60.0);
 
-    absoluteEncoder = new DutyCycleEncoder(ElectricalLayout.ABSOLUTE_ENCODER_ID);
-    absoluteEncoder.setDistancePerRotation(
-        2 * Constants.PI * CoralPivotConstants.POSITION_CONVERSION_FACTOR);
-    absoluteEncoder.setDutyCycleRange(1 / 1024.0, 1023.0 / 1024.0);
     // absoluteEncoder.reset();
-    Logger.recordOutput("Absolute Encoder Starting Position: ", absoluteEncoder.getDistance());
     // make sure the pivot starts at the bottom position every time
     // absoluteEncoder.reset();
 
@@ -62,11 +61,12 @@ public class CoralPivotIOSparkMax implements CoralPivotIO {
 
     // 0 position for absolute encoder is at 0.2585 rad, so subtract that value from everything
 
-    motorEncoder = pivotMotor.getEncoder();
-    motorEncoder.setPositionConversionFactor(CoralPivotConstants.POSITION_CONVERSION_FACTOR);
-    motorEncoder.setVelocityConversionFactor(CoralPivotConstants.POSITION_CONVERSION_FACTOR / 60.0);
+    pivotMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+
     configurePID();
     configureFeedForward();
+
+    Logger.recordOutput("Absolute Encoder Starting Position: ", absoluteEncoder.getPosition());
   }
 
   private void configurePID() {
@@ -88,9 +88,8 @@ public class CoralPivotIOSparkMax implements CoralPivotIO {
   @Override
   public void updateInputs(CoralPivotIOInputs inputs) {
     inputs.angleRads = getAngle();
-    Logger.recordOutput("CoralPivot/Absolute", absoluteEncoder.getAbsolutePosition());
-    Logger.recordOutput("CoralPivot/MotorEncoder", motorEncoder.getPosition());
-    inputs.angVelocityRadsPerSec = motorEncoder.getVelocity();
+    Logger.recordOutput("CoralPivot/Absolute", absoluteEncoder.getPosition());
+    inputs.angVelocityRadsPerSec = absoluteEncoder.getVelocity();
     inputs.appliedVolts = pivotMotor.getAppliedOutput() * pivotMotor.getBusVoltage();
     inputs.currentAmps = new double[] {pivotMotor.getOutputCurrent()};
     inputs.tempCelsius = new double[] {pivotMotor.getMotorTemperature()};
@@ -107,7 +106,7 @@ public class CoralPivotIOSparkMax implements CoralPivotIO {
   /** Returns the current distance measurement. */
   @Override
   public double getAngle() {
-    return -absoluteEncoder.getDistance() + CoralPivotConstants.CORAL_PIVOT_OFFSET;
+    return -absoluteEncoder.getPosition() + CoralPivotConstants.CORAL_PIVOT_OFFSET;
   }
 
   /** Go to Setpoint */
@@ -134,7 +133,10 @@ public class CoralPivotIOSparkMax implements CoralPivotIO {
 
   @Override
   public void setBrake(boolean brake) {
-    pivotMotor.setIdleMode(brake ? IdleMode.kBrake : IdleMode.kCoast);
+    SparkMaxConfig config = new SparkMaxConfig();
+    config.idleMode(brake ? IdleMode.kBrake : IdleMode.kCoast);
+    pivotMotor.configure(
+        config, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
   }
 
   @Override
@@ -164,22 +166,26 @@ public class CoralPivotIOSparkMax implements CoralPivotIO {
 
   @Override
   public void setkS(double kS) {
-    feedforward = new ArmFeedforward(kS, feedforward.getKg(), feedforward.getKv(), feedforward.getKa());
+    feedforward =
+        new ArmFeedforward(kS, feedforward.getKg(), feedforward.getKv(), feedforward.getKa());
   }
 
   @Override
   public void setkG(double kG) {
-    feedforward = new ArmFeedforward(feedforward.getKs(), kG, feedforward.getKv(), feedforward.getKa());
+    feedforward =
+        new ArmFeedforward(feedforward.getKs(), kG, feedforward.getKv(), feedforward.getKa());
   }
 
   @Override
   public void setkV(double kV) {
-    feedforward = new ArmFeedforward(feedforward.getKs(), feedforward.getKg(), kV, feedforward.getKa());
+    feedforward =
+        new ArmFeedforward(feedforward.getKs(), feedforward.getKg(), kV, feedforward.getKa());
   }
 
   @Override
   public void setkA(double kA) {
-    feedforward = new ArmFeedforward(feedforward.getKs(), feedforward.getKg(), feedforward.getKv(), kA);
+    feedforward =
+        new ArmFeedforward(feedforward.getKs(), feedforward.getKg(), feedforward.getKv(), kA);
   }
 
   @Override

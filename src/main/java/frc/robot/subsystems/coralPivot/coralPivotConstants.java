@@ -5,6 +5,8 @@ import edu.wpi.first.math.util.Units;
 public class CoralPivotConstants {
   // May have to change these constants, same as pivot arm from last year right now
 
+  public static final int CORAL_PIVOT_ID = 0; // Change later
+
   public static final double POSITION_CONVERSION_FACTOR = 21.0 / 35.0;
   public static final double CORAL_PIVOT_ROTATION_DIAM_M = 1;
 
