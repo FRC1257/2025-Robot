@@ -3,34 +3,34 @@ package frc.robot.subsystems.coralPivot;
 import edu.wpi.first.math.util.Units;
 
 public class CoralPivotConstants {
-    // May have to change these constants, same as pivot arm from last year right now
+  // May have to change these constants, same as pivot arm from last year right now
 
   public static final double POSITION_CONVERSION_FACTOR = 21.0 / 35.0;
   public static final double CORAL_PIVOT_ROTATION_DIAM_M = 1;
 
-  public static final double[] CORAL_PIVOT_PID_REAL = { 3.6, 0, 0, 0.01 };
-  public static final double[] CORAL_PIVOT_FEEDFORWARD_REAL = { 0, 0.45, 0, 0 };
+  public static final double[] CORAL_PIVOT_PID_REAL = {3.6, 0, 0, 0.01};
+  public static final double[] CORAL_PIVOT_FEEDFORWARD_REAL = {0, 0.45, 0, 0};
 
   public static final double CORAL_PIVOT_PID_TOLERANCE = Units.degreesToRadians(1);
   public static final double CORAL_PIVOT_PID_VELOCITY_TOLERANCE = 0.5;
 
-  public static final double CORAL_PIVOT_OFFSET = 1.5;// 1.14;
+  public static final double CORAL_PIVOT_OFFSET = 1.5; // 1.14;
 
   public static final double PIVOT_MAX_PID_TIME = 3;
 
   public static final double CORAL_PIVOT_MAX_ANGLE = Units.degreesToRadians(110.0);
   public static final double CORAL_PIVOT_MIN_ANGLE = Units.degreesToRadians(2.0);
 
-//deleted the old constants from last years code, this intake angle is from last year still
+  // deleted the old constants from last years code, this intake angle is from last year still
   public static final double CORAL_PIVOT_INTAKE_ANGLE = Units.degreesToRadians(2.0);
-//Will have to add constants for placing coral
+  // Will have to add constants for placing coral
 
   public static final double RAMP_RATE = 0.5;
   public static final double STEP_VOLTAGE = 3.0;
   public static final double CORAL_PIVOT_TOLERANCE = 1.0;
 
   public static class CoralPivotSimConstants {
-    public static final double[] kPivotSimPID = { 15, 0, 0, 0 };
+    public static final double[] kPivotSimPID = {15, 0, 0, 0};
 
     public static final int kMotorPort = 2;
     public static final int kEncoderAChannel = 2;
