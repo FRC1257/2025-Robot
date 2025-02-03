@@ -14,7 +14,7 @@ public class ElevatorIOSim implements ElevatorIO {
   // The P gain for the PID controller that drives this arm.
 
   // The arm gearbox represents a gearbox containing two Vex 775pro motors.
-  private final DCMotor m_armGearbox = DCMotor.getNEO(2);
+  private final DCMotor m_elevatorGearBox = DCMotor.getNEO(2);
 
   // Standard classes for controlling our arm
   private final ProfiledPIDController m_controller;
@@ -28,14 +28,14 @@ public class ElevatorIOSim implements ElevatorIO {
 
   private ElevatorSim sim =
       new ElevatorSim(
-          m_armGearbox,
-          ElevatorConstants.ElevatorSimConstants.kArmReduction,
+          m_elevatorGearBox,
+          ElevatorConstants.GEAR_RATIO,
           ElevatorConstants.ELEVATOR_MASS_KG,
-          ElevatorConstants.ElevatorSimConstants.kArmLength,
-          ElevatorConstants.ElevatorSimConstants.kMinAngleRads,
-          ElevatorConstants.ElevatorSimConstants.kMaxAngleRads,
+          ElevatorConstants.MOTOR_RADIUS_METERS,
+          ElevatorConstants.ELEVATOR_MIN_HEIGHT + ElevatorConstants.ELEVATOR_OFFSET_METERS,
+          ElevatorConstants.ELEVATOR_MAX_HEIGHT + ElevatorConstants.ELEVATOR_OFFSET_METERS,
           true, // change this to true later
-          0.1);
+          ElevatorConstants.ELEVATOR_STARTING_HEIGHT);
 
   private final EncoderSim m_encoderSim;
 
@@ -45,8 +45,7 @@ public class ElevatorIOSim implements ElevatorIO {
             ElevatorConstants.ElevatorSimConstants.kEncoderAChannel,
             ElevatorConstants.ElevatorSimConstants.kEncoderBChannel);
     m_encoderSim = new EncoderSim(m_encoder);
-    m_encoderSim.setDistancePerPulse(
-        ElevatorConstants.ElevatorSimConstants.kArmEncoderDistPerPulse);
+    m_encoderSim.setDistancePerPulse(ElevatorConstants.ElevatorSimConstants.ENCODER_DIST_PER_PULSE);
     m_controller =
         new ProfiledPIDController(
             ElevatorConstants.ElevatorSimConstants.kElevatorSimPID[0],

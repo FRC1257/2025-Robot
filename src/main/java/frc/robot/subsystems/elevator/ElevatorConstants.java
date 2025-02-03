@@ -9,14 +9,13 @@ public class ElevatorConstants {
   public static final double ELEVATOR_PID_TOLERANCE = Units.degreesToRadians(1);
   public static final double ELEVATOR_PID_VELOCITY_TOLERANCE = 0.5;
 
-  public static final double ELEVATOR_OFFSET = 0; // 1.14;
-
-  //top height 50 inches (measured from bottom of elevator frame)
-  //bottom height 12.375 inches (measured from bottom of frame)
-  public static final double ELEVATOR_MAX_HEIGHT = 0.955675; //not including chasis
+  // top height 50 inches (measured from bottom of elevator frame)
+  // bottom height 12.375 inches (measured from bottom of frame)
+  public static final double ELEVATOR_MAX_HEIGHT = 0.955675; // not including chasis
   public static final double ELEVATOR_MIN_HEIGHT = 0;
+  public static final double ELEVATOR_STARTING_HEIGHT = 0.1;
 
-  //sysid stuff
+  // sysid stuff
   public static final double RAMP_RATE = 0.5;
   public static final double STEP_VOLTAGE = 3.0;
   public static final double ELEVATOR_TOLERANCE = 1.0;
@@ -44,10 +43,15 @@ public class ElevatorConstants {
 
   public static class ElevatorSimConstants {
     public static final double[] kElevatorSimPID = {15, 0, 0, 0};
+    public static final int kEncoderAChannel = 2;
+    public static final int kEncoderBChannel = 3;
+    // Convert from encoder steps to meters
 
+    // 4096 pulses per revolution
+    // (2pi radians / 4096) * gear ratio
+    public static final double ENCODER_DIST_PER_PULSE =
+        2 * Math.PI / 4096 * MOTOR_RADIUS_METERS * GEAR_RATIO;
     // public static final int kMotorPort = 2;
-    // public static final int kEncoderAChannel = 2;
-    // public static final int kEncoderBChannel = 3;
 
   }
 }
