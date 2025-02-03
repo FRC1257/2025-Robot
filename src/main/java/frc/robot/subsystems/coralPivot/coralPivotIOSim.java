@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.simulation.EncoderSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 
 public class CoralPivotIOSim implements CoralPivotIO {
+public class CoralPivotIOSim implements CoralPivotIO {
 
   // idk what motor we're using for the pivots so check with someone and change this accordingingly
   private final DCMotor m_armGearbox = DCMotor.getNEO(1);
