@@ -3,7 +3,7 @@
 
 package frc.robot.subsystems.coralPivot;
 
-import static frc.robot.Constants.ElectricalLayout.PIVOT_ARM_ID;
+import static frc.robot.Constants.ElectricalLayout.CORAL_PIVOT_ID;
 
 import org.littletonrobotics.junction.Logger;
 
@@ -45,8 +45,6 @@ public class CoralPivotIOSparkMax implements CoralPivotIO {
         pivotMotor.setSmartCurrentLimit(Constants.NEO_CURRENT_LIMIT);
        
         pivotMotor.burnFlash();
-       
-        //wasn't burning the flash to all the motors, this might be the issue
 
         absoluteEncoder = new DutyCycleEncoder(ElectricalLayout.ABSOLUTE_ENCODER_ID);
         absoluteEncoder.setDistancePerRotation(2 * Constants.PI * CoralPivotConstants.POSITION_CONVERSION_FACTOR);
@@ -56,10 +54,10 @@ public class CoralPivotIOSparkMax implements CoralPivotIO {
         // make sure the pivot starts at the bottom position every time
         // absoluteEncoder.reset();
 
-        pidController = new ProfiledPIDController(CoralPivotConstants.PIVOT_ARM_PID_REAL[0], CoralPivotConstants.PIVOT_ARM_PID_REAL[1], CoralPivotConstants.PIVOT_ARM_PID_REAL[2],
+        pidController = new ProfiledPIDController(CoralPivotConstants.CORAL_PIVOT_PID_REAL[0], CoralPivotConstants.CORAL_PIVOT_PID_REAL[1], CoralPivotConstants.CORAL_PIVOT_PID_REAL[2],
                 new TrapezoidProfile.Constraints(2.45, 2.45));
         
-        pidController.setTolerance(CoralPivotConstants.PIVOT_ARM_PID_TOLERANCE, CoralPivotConstants.PIVOT_ARM_PID_VELOCITY_TOLERANCE);
+        pidController.setTolerance(CoralPivotConstants.CORAL_PIVOT_PID_TOLERANCE, CoralPivotConstants.CORAL_PIVOT_PID_VELOCITY_TOLERANCE);
 
  
         //0 position for absolute encoder is at 0.2585 rad, so subtract that value from everything
@@ -73,17 +71,17 @@ public class CoralPivotIOSparkMax implements CoralPivotIO {
     }
 
     private void configurePID() {
-        // pidController.setOutputRange(CoralPivotConstants.PIVOT_ARM_MIN_ANGLE, CoralPivotConstants.PIVOT_ARM_MAX_ANGLE);
-        pidController.setP(CoralPivotConstants.PIVOT_ARM_PID_REAL[0]);
-        pidController.setI(CoralPivotConstants.PIVOT_ARM_PID_REAL[1]);
-        pidController.setD(CoralPivotConstants.PIVOT_ARM_PID_REAL[2]);
+        // pidController.setOutputRange(CoralPivotConstants.CORAL_PIVOT_MIN_ANGLE, CoralPivotConstants.CORAL_PIVOT_MAX_ANGLE);
+        pidController.setP(CoralPivotConstants.CORAL_PIVOT_PID_REAL[0]);
+        pidController.setI(CoralPivotConstants.CORAL_PIVOT_PID_REAL[1]);
+        pidController.setD(CoralPivotConstants.CORAL_PIVOT_PID_REAL[2]);
     }
 
     private void configureFeedForward() {
-        setkS(CoralPivotConstants.PIVOT_ARM_FEEDFORWARD_REAL[0]);
-        setkG(CoralPivotConstants.PIVOT_ARM_FEEDFORWARD_REAL[1]);
-        setkV(CoralPivotConstants.PIVOT_ARM_FEEDFORWARD_REAL[2]);
-        setkA(CoralPivotConstants.PIVOT_ARM_FEEDFORWARD_REAL[3]);
+        setkS(CoralPivotConstants.CORAL_PIVOT_FEEDFORWARD_REAL[0]);
+        setkG(CoralPivotConstants.CORAL_PIVOT_FEEDFORWARD_REAL[1]);
+        setkV(CoralPivotConstants.CORAL_PIVOT_FEEDFORWARD_REAL[2]);
+        setkA(CoralPivotConstants.CORAL_PIVOT_FEEDFORWARD_REAL[3]);
     }
 
     /** Updates the set of loggable inputs. */
@@ -109,7 +107,7 @@ public class CoralPivotIOSparkMax implements CoralPivotIO {
     /** Returns the current distance measurement. */
     @Override
     public double getAngle() {
-        return -absoluteEncoder.getDistance() + CoralPivotConstants.PIVOT_ARM_OFFSET;
+        return -absoluteEncoder.getDistance() + CoralPivotConstants.CORAL_PIVOT_OFFSET;
     }
 
     /** Go to Setpoint */
@@ -140,7 +138,7 @@ public class CoralPivotIOSparkMax implements CoralPivotIO {
 
     @Override
     public boolean atSetpoint() {
-        return Math.abs(getAngle() - setpoint) < CoralPivotConstants.PIVOT_ARM_PID_TOLERANCE;
+        return Math.abs(getAngle() - setpoint) < CoralPivotConstants.CORAL_PIVOT_PID_TOLERANCE;
     }
 
     @Override
