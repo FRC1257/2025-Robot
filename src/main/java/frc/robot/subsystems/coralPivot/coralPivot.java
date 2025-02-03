@@ -1,5 +1,6 @@
 package frc.robot.subsystems.coralPivot;
 
+import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Second;
@@ -8,7 +9,9 @@ import static edu.wpi.first.units.Units.Volts;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.units.MutableMeasure;
+import edu.wpi.first.units.measure.MutAngle;
+import edu.wpi.first.units.measure.MutAngularVelocity;
+import edu.wpi.first.units.measure.MutVoltage;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
@@ -19,13 +22,14 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import frc.robot.subsystems.coralPivot.CoralPivotIO.CoralPivotIOInputs;
 import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
 public class CoralPivot extends SubsystemBase {
-  private final CoralPivotIOInputsAutoLogged inputs = new CoralPivotIOInputsAutoLogged();
+  private final CoralPivotIOInputs inputs = new CoralPivotIOInputs();
 
   private LoggedDashboardNumber logP;
   private LoggedDashboardNumber logI;
@@ -38,11 +42,11 @@ public class CoralPivot extends SubsystemBase {
   private LoggedDashboardNumber logkA;
 
   // Mutable holder for unit-safe voltage values, persisted to avoid reallocation.
-  private final MutableMeasure<Voltage> m_appliedVoltage = mutable(Volts.of(0));
+  private final MutVoltage m_appliedVoltage = Volts.mutable(0);
   // Mutable holder for unit-safe linear distance values, persisted to avoid reallocation.
-  private final MutableMeasure<Angle> m_angle = mutable(Rotations.of(0));
-  // Mutable holder for unit-safe linear velocity values, persisted to avoid reallocation.
-  private final MutableMeasure<Velocity<Angle>> m_velocity = mutable(RotationsPerSecond.of(0));
+  private final MutAngle m_angle = Radians.mutable(0);
+  // Mutable holder for unit-safe linear velocity values, persisted to avoid reall?ocation.
+  private final MutAngularVelocity m_velocity = RotationsPerSecond.mutable(0);
 
   private double setpoint = 0;
 
@@ -137,12 +141,6 @@ public class CoralPivot extends SubsystemBase {
       motorVolts = 0;
     }
 
-    if (DashboardValues.turboMode.get()) {
-      io.setVoltage(0);
-    } else {
-      io.setVoltage(motorVolts);
-    }
-
     isVoltageClose(motorVolts);
   }
 
@@ -220,7 +218,7 @@ public class CoralPivot extends SubsystemBase {
   public Command PIDHoldCommand() {
     return new FunctionalCommand(
         () -> setPID(getAngle().getRadians()),
-        () -> holdPID(),
+        () -> {},
         (stop) -> setVoltage(0),
         () -> false,
         this);
