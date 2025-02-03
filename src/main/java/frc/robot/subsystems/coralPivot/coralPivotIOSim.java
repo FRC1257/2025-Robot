@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.simulation.EncoderSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 
-public class coralPivotIOSim implements CoralPivotIO {
+public class CoralPivotIOSim implements coralPivotIO {
 
     // idk what motor we're using for the pivots so check with someone and change this accordingingly
     private final DCMotor m_armGearbox = DCMotor.getNEO(1);
@@ -22,21 +22,21 @@ public class coralPivotIOSim implements CoralPivotIO {
 
     private SingleJointedArmSim sim = new SingleJointedArmSim(
             m_armGearbox,
-            CoralPivotConstants.CoralPivotSimConstants.kArmReduction,
-            SingleJointedArmSim.estimateMOI(CoralPivotConstants.CoralPivotSimConstants.kArmLength, CoralPivotConstants.CoralPivotSimConstants.kArmMass),
-            CoralPivotConstants.CoralPivotSimConstants.kArmLength,
-            CoralPivotConstants.CoralPivotSimConstants.kMinAngleRads,
-            CoralPivotConstants.CoralPivotSimConstants.kMaxAngleRads,
+            coralPivotConstants.CoralPivotSimConstants.kArmReduction,
+            SingleJointedArmSim.estimateMOI(coralPivotConstants.CoralPivotSimConstants.kArmLength, coralPivotConstants.CoralPivotSimConstants.kArmMass),
+            coralPivotConstants.CoralPivotSimConstants.kArmLength,
+            coralPivotConstants.CoralPivotSimConstants.kMinAngleRads,
+            coralPivotConstants.CoralPivotSimConstants.kMaxAngleRads,
             true,
             0.1);
 
     private final EncoderSim m_encoderSim;
 
-    public coralPivotIOSim() {
-        m_encoder = new Encoder(CoralPivotConstants.CoralPivotSimConstants.kEncoderAChannel, CoralPivotConstants.CoralPivotSimConstants.kEncoderBChannel);
+    public CoralPivotIOSim() {
+        m_encoder = new Encoder(coralPivotConstants.CoralPivotSimConstants.kEncoderAChannel, coralPivotConstants.CoralPivotSimConstants.kEncoderBChannel);
         m_encoderSim = new EncoderSim(m_encoder);
-        m_encoderSim.setDistancePerPulse(CoralPivotConstants.CoralPivotSimConstants.kArmEncoderDistPerPulse);
-        m_controller = new ProfiledPIDController(CoralPivotConstants.CoralPivotSimConstants.kPivotSimPID[0], CoralPivotConstants.CoralPivotSimConstants.kPivotSimPID[1], CoralPivotConstants.CoralPivotSimConstants.kPivotSimPID[2],
+        m_encoderSim.setDistancePerPulse(coralPivotConstants.CoralPivotSimConstants.kArmEncoderDistPerPulse);
+        m_controller = new ProfiledPIDController(coralPivotConstants.CoralPivotSimConstants.kPivotSimPID[0], coralPivotConstants.CoralPivotSimConstants.kPivotSimPID[1], coralPivotConstants.CoralPivotSimConstants.kPivotSimPID[2],
                 new TrapezoidProfile.Constraints(2.45, 2.45));
         
         m_controller.setTolerance(0.1, 0.05);

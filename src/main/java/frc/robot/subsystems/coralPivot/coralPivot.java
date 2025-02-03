@@ -1,12 +1,9 @@
 package frc.robot.subsystems.coralPivot;
 
-import frc.robot.subsystems.coralPivot.CoralPivotConstants;
-import frc.robot.util.drive.DashboardValues;
-
+import frc.robot.subsystems.coralPivot.coralPivotConstants;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
-import static edu.wpi.first.units.MutableMeasure.mutable;
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
@@ -19,10 +16,7 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.units.Angle;
 import edu.wpi.first.units.MutableMeasure;
-import edu.wpi.first.units.Velocity;
-import edu.wpi.first.units.Voltage;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -36,7 +30,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 
 public class CoralPivot extends SubsystemBase {
-    private final CoralPivotIOInputsAutoLogged inputs = new CoralPivotIOInputsAutoLogged();
+    private final coralPivotIOInputsAutoLogged inputs = new coralPivotIOInputsAutoLogged();
 
     private LoggedDashboardNumber logP;
     private LoggedDashboardNumber logI;
@@ -58,14 +52,14 @@ public class CoralPivot extends SubsystemBase {
 
     private double setpoint = 0;
 
-    private final CoralPivotIO io;
+    private final coralPivotIO io;
 
     // Create a Mechanism2d visualization of the arm
     private MechanismLigament2d armMechanism = getArmMechanism();
 
     private SysIdRoutine SysId;
 
-    public CoralPivot(CoralPivotIO io) {
+    public CoralPivot(coralPivotIO io) {
         this.io = io;
        
         SmartDashboard.putData(getName(), this);
