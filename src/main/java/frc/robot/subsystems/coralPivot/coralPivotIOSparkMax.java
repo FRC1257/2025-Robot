@@ -46,7 +46,7 @@ public class CoralPivotIOSparkMax implements CoralPivotIO {
         //wasn't burning the flash to all the motors, this might be the issue
 
         absoluteEncoder = new DutyCycleEncoder(ElectricalLayout.ABSOLUTE_ENCODER_ID);
-        absoluteEncoder.setDistancePerRotation(2 * Constants.PI * coralPivotConstants.POSITION_CONVERSION_FACTOR);
+        absoluteEncoder.setDistancePerRotation(2 * Constants.PI * CoralPivotConstants.POSITION_CONVERSION_FACTOR);
         absoluteEncoder.setDutyCycleRange(1/1024.0, 1023.0/1024.0);
         // absoluteEncoder.reset();
         Logger.recordOutput("Absolute Encoder Starting Position: ", absoluteEncoder.getDistance());

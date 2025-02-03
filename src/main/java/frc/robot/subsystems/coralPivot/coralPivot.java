@@ -30,7 +30,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 
 public class CoralPivot extends SubsystemBase {
-    private final coralPivotIOInputsAutoLogged inputs = new coralPivotIOInputsAutoLogged();
+    private final CoralPivotIOInputsAutoLogged inputs = new CoralPivotIOInputsAutoLogged();
 
     private LoggedDashboardNumber logP;
     private LoggedDashboardNumber logI;
@@ -52,14 +52,14 @@ public class CoralPivot extends SubsystemBase {
 
     private double setpoint = 0;
 
-    private final coralPivotIO io;
+    private final CoralPivotIO io;
 
     // Create a Mechanism2d visualization of the arm
     private MechanismLigament2d armMechanism = getArmMechanism();
 
     private SysIdRoutine SysId;
 
-    public CoralPivot(coralPivotIO io) {
+    public CoralPivot(CoralPivotIO io) {
         this.io = io;
        
         SmartDashboard.putData(getName(), this);
