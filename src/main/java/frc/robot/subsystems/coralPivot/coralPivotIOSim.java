@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.simulation.EncoderSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 
-public class CoralPivotIOSim implements CoralPivotIO {
+public class coralPivotIOSim implements CoralPivotIO {
 
     // idk what motor we're using for the pivots so check with someone and change this accordingingly
     private final DCMotor m_armGearbox = DCMotor.getNEO(1);
@@ -32,7 +32,7 @@ public class CoralPivotIOSim implements CoralPivotIO {
 
     private final EncoderSim m_encoderSim;
 
-    public CoralPivotIOSim() {
+    public coralPivotIOSim() {
         m_encoder = new Encoder(CoralPivotConstants.CoralPivotSimConstants.kEncoderAChannel, CoralPivotConstants.CoralPivotSimConstants.kEncoderBChannel);
         m_encoderSim = new EncoderSim(m_encoder);
         m_encoderSim.setDistancePerPulse(CoralPivotConstants.CoralPivotSimConstants.kArmEncoderDistPerPulse);
@@ -93,12 +93,12 @@ public class CoralPivotIOSim implements CoralPivotIO {
 
     @Override
     public void setkS(double kS) {
-        m_feedforward = new SimpleMotorFeedforward(kS, m_feedforward.kv);
+        m_feedforward = new SimpleMotorFeedforward(kS, m_feedforward.getKv());
     }
 
     @Override
     public void setkV(double kV) {
-        m_feedforward = new SimpleMotorFeedforward(m_feedforward.ks, kV);
+        m_feedforward = new SimpleMotorFeedforward(m_feedforward.getKs(), kV);
     }
     
     @Override
@@ -118,12 +118,12 @@ public class CoralPivotIOSim implements CoralPivotIO {
 
     @Override
     public double getkS() {
-        return m_feedforward.ks;
+        return m_feedforward.getKs();
     }
 
     @Override
     public double getkV() {
-        return m_feedforward.kv;
+        return m_feedforward.getKv();
     }
 
 }
