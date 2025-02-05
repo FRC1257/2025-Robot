@@ -29,7 +29,7 @@ import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
 public class CoralPivot extends SubsystemBase {
-  private final CoralPivotIOInputs inputs = new CoralPivotIOInputs();
+  private final CoralPivotIOInputsAutoLogged inputs = new CoralPivotIOInputsAutoLogged();
 
   private LoggedDashboardNumber logP;
   private LoggedDashboardNumber logI;
@@ -94,7 +94,7 @@ public class CoralPivot extends SubsystemBase {
   @Override
   public void periodic() {
     io.updateInputs(inputs);
-    Logger.processInputs("CoralPivot", inputs);
+    Logger.processInputs(getName(), inputs);;
 
     armMechanism.setAngle(Units.radiansToDegrees(inputs.angleRads));
 
