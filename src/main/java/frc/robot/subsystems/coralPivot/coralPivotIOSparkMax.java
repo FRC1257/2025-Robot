@@ -1,224 +1,231 @@
+// Made just to change spark max because commit didn't work on a different laptop and I don't want
+// merging issues
+
 package frc.robot.subsystems.coralPivot;
 
-import static frc.robot.Constants.ElectricalLayout.PIVOT_ARM_ID;
-
-import org.littletonrobotics.junction.Logger;
-
-import com.revrobotics.CANSparkBase.IdleMode;
-import com.revrobotics.SparkLowLevel.MotorType;
-import com.revrobotics.SparkMax;
-import com.revrobotics.RelativeEncoder;
-
+import com.revrobotics.AbsoluteEncoder;
+import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.spark.SparkBase.ResetMode;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import frc.robot.Constants;
-import frc.robot.Constants.ElectricalLayout;
+import org.littletonrobotics.junction.Logger;
 
 public class CoralPivotIOSparkMax implements CoralPivotIO {
-    // Motor and Encoders
-    private SparkMax pivotMotor;
-    private final ProfiledPIDController pidController;
-    private ArmFeedforward feedforward = new ArmFeedforward(0, 0, 0, 0);
-    
-    private DutyCycleEncoder absoluteEncoder;
-    private RelativeEncoder motorEncoder;
+  // Motor and Encoders
+  private SparkMax pivotMotor;
+  private final ProfiledPIDController pidController;
+  private ArmFeedforward feedforward = new ArmFeedforward(0, 0, 0, 0);
 
-    private double setpoint = 0;
+  private AbsoluteEncoder absoluteEncoder;
 
-    public CoralPivotIOSparkMax() {
-        pivotMotor = new SparkMax(PIVOT_ARM_ID, MotorType.kBrushless);
-    
+  private double setpoint = 0;
 
-        pivotMotor.restoreFactoryDefaults();
+  public CoralPivotIOSparkMax() {
+    pivotMotor = new SparkMax(CoralPivotConstants.CORAL_PIVOT_ID, MotorType.kBrushless);
 
-        setBrake(true);
-        
-        pivotMotor.enableVoltageCompensation(12.0);
+    SparkMaxConfig config = new SparkMaxConfig();
 
-        pivotMotor.setSmartCurrentLimit(Constants.NEO_CURRENT_LIMIT);
-       
-        pivotMotor.burnFlash();
-       
-        //wasn't burning the flash to all the motors, this might be the issue
+    setBrake(true);
 
-        absoluteEncoder = new DutyCycleEncoder(ElectricalLayout.ABSOLUTE_ENCODER_ID);
-        absoluteEncoder.setDistancePerRotation(2 * Constants.PI * CoralPivotConstants.POSITION_CONVERSION_FACTOR);
-        absoluteEncoder.setDutyCycleRange(1/1024.0, 1023.0/1024.0);
-        // absoluteEncoder.reset();
-        Logger.recordOutput("Absolute Encoder Starting Position: ", absoluteEncoder.getDistance());
-        // make sure the pivot starts at the bottom position every time
-        // absoluteEncoder.reset();
+    config.voltageCompensation(12.0).smartCurrentLimit(Constants.NEO_CURRENT_LIMIT);
 
-        pidController = new ProfiledPIDController(CoralPivotConstants.PIVOT_ARM_PID_REAL[0], CoralPivotConstants.PIVOT_ARM_PID_REAL[1], CoralPivotConstants.PIVOT_ARM_PID_REAL[2],
-                new TrapezoidProfile.Constraints(2.45, 2.45));
-        
-        pidController.setTolerance(CoralPivotConstants.PIVOT_ARM_PID_TOLERANCE, CoralPivotConstants.PIVOT_ARM_PID_VELOCITY_TOLERANCE);
+    absoluteEncoder = pivotMotor.getAbsoluteEncoder();
 
- 
-        //0 position for absolute encoder is at 0.2585 rad, so subtract that value from everything
+    config
+        .absoluteEncoder
+        .positionConversionFactor(2 * Constants.PI * CoralPivotConstants.POSITION_CONVERSION_FACTOR)
+        .velocityConversionFactor(
+            2 * Constants.PI * CoralPivotConstants.POSITION_CONVERSION_FACTOR / 60.0);
 
-        motorEncoder = pivotMotor.getEncoder();
-        motorEncoder.setPositionConversionFactor(CoralPivotConstants.POSITION_CONVERSION_FACTOR);
-        motorEncoder.setVelocityConversionFactor(CoralPivotConstants.POSITION_CONVERSION_FACTOR / 60.0);
-        configurePID();
-        configureFeedForward();
+    // absoluteEncoder.reset();
+    // make sure the pivot starts at the bottom position every time
+    // absoluteEncoder.reset();
 
-    }
+    pidController =
+        new ProfiledPIDController(
+            CoralPivotConstants.CORAL_PIVOT_PID_REAL[0],
+            CoralPivotConstants.CORAL_PIVOT_PID_REAL[1],
+            CoralPivotConstants.CORAL_PIVOT_PID_REAL[2],
+            new TrapezoidProfile.Constraints(2.45, 2.45));
 
-    private void configurePID() {
-        // pidController.setOutputRange(CoralPivotConstants.PIVOT_ARM_MIN_ANGLE, CoralPivotConstants.PIVOT_ARM_MAX_ANGLE);
-        pidController.setP(CoralPivotConstants.PIVOT_ARM_PID_REAL[0]);
-        pidController.setI(CoralPivotConstants.PIVOT_ARM_PID_REAL[1]);
-        pidController.setD(CoralPivotConstants.PIVOT_ARM_PID_REAL[2]);
-    }
+    pidController.setTolerance(
+        CoralPivotConstants.CORAL_PIVOT_PID_TOLERANCE,
+        CoralPivotConstants.CORAL_PIVOT_PID_VELOCITY_TOLERANCE);
 
-    private void configureFeedForward() {
-        setkS(CoralPivotConstants.PIVOT_ARM_FEEDFORWARD_REAL[0]);
-        setkG(CoralPivotConstants.PIVOT_ARM_FEEDFORWARD_REAL[1]);
-        setkV(CoralPivotConstants.PIVOT_ARM_FEEDFORWARD_REAL[2]);
-        setkA(CoralPivotConstants.PIVOT_ARM_FEEDFORWARD_REAL[3]);
-    }
+    // 0 position for absolute encoder is at 0.2585 rad, so subtract that value from everything
 
-    /** Updates the set of loggable inputs. */
-    @Override
-    public void updateInputs(CoralPivotIOInputs inputs) {
-        inputs.angleRads = getAngle();
-        Logger.recordOutput("CoralPivot/Absolute", absoluteEncoder.getAbsolutePosition());
-        Logger.recordOutput("CoralPivot/MotorEncoder", motorEncoder.getPosition());
-        inputs.angVelocityRadsPerSec = motorEncoder.getVelocity();
-        inputs.appliedVolts = pivotMotor.getAppliedOutput() * pivotMotor.getBusVoltage();
-        inputs.currentAmps = new double[] {pivotMotor.getOutputCurrent()};
-        inputs.tempCelsius = new double[] {pivotMotor.getMotorTemperature()};
-        inputs.setpointAngleRads = setpoint;
-    }
+    pivotMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-    /** Run open loop at the specified voltage. */
-    @Override
-    public void setVoltage(double motorVolts) {
-        Logger.recordOutput("CoralPivot/AppliedVolts", motorVolts);
-        pivotMotor.setVoltage(motorVolts);
-    }
+    configurePID();
+    configureFeedForward();
 
-    /** Returns the current distance measurement. */
-    @Override
-    public double getAngle() {
-        return -absoluteEncoder.getDistance() + CoralPivotConstants.PIVOT_ARM_OFFSET;
-    }
+    Logger.recordOutput("Absolute Encoder Starting Position: ", absoluteEncoder.getPosition());
+  }
 
-    /** Go to Setpoint */
-    @Override
-    public void goToSetpoint(double setpoint) {
-        pidController.setGoal(setpoint);
-        // With the setpoint value we run PID control like normal
-        double pidOutput = MathUtil.clamp(pidController.calculate(getAngle()), -3, 3);
-        double feedforwardOutput = feedforward.calculate(getAngle(), pidController.getSetpoint().velocity);
+  private void configurePID() {
+    // pidController.setOutputRange(CoralPivotConstants.CORAL_PIVOT_MIN_ANGLE,
+    // CoralPivotConstants.CORAL_PIVOT_MAX_ANGLE);
+    pidController.setP(CoralPivotConstants.CORAL_PIVOT_PID_REAL[0]);
+    pidController.setI(CoralPivotConstants.CORAL_PIVOT_PID_REAL[1]);
+    pidController.setD(CoralPivotConstants.CORAL_PIVOT_PID_REAL[2]);
+  }
 
-        Logger.recordOutput("CoralPivot/FeedforwardOutput", feedforwardOutput);
-        Logger.recordOutput("CoralPivot/PIDOutput", pidOutput);
+  private void configureFeedForward() {
+    setkS(CoralPivotConstants.CORAL_PIVOT_FEEDFORWARD_REAL[0]);
+    setkG(CoralPivotConstants.CORAL_PIVOT_FEEDFORWARD_REAL[1]);
+    setkV(CoralPivotConstants.CORAL_PIVOT_FEEDFORWARD_REAL[2]);
+    setkA(CoralPivotConstants.CORAL_PIVOT_FEEDFORWARD_REAL[3]);
+  }
 
-        Logger.recordOutput("CoralPivot/VelocityError", pidController.getVelocityError());
+  /** Updates the set of loggable inputs. */
+  @Override
+  public void updateInputs(CoralPivotIOInputs inputs) {
+    inputs.angleRads = getAngle();
+    Logger.recordOutput("CoralPivot/Absolute", absoluteEncoder.getPosition());
+    inputs.angVelocityRadsPerSec = absoluteEncoder.getVelocity();
+    inputs.appliedVolts = pivotMotor.getAppliedOutput() * pivotMotor.getBusVoltage();
+    inputs.currentAmps = new double[] {pivotMotor.getOutputCurrent()};
+    inputs.tempCelsius = new double[] {pivotMotor.getMotorTemperature()};
+    inputs.setpointAngleRads = setpoint;
+  }
 
-        setVoltage(MathUtil.clamp(pidOutput + feedforwardOutput, -4, 4));
-    }
+  /** Run open loop at the specified voltage. */
+  @Override
+  public void setVoltage(double motorVolts) {
+    Logger.recordOutput("CoralPivot/AppliedVolts", motorVolts);
+    pivotMotor.setVoltage(motorVolts);
+  }
 
-    @Override
-    public void holdSetpoint(double setpoint) {
-        goToSetpoint(setpoint);
-    }
+  /** Returns the current distance measurement. */
+  @Override
+  public double getAngle() {
+    return -absoluteEncoder.getPosition() + CoralPivotConstants.CORAL_PIVOT_OFFSET;
+  }
 
-    @Override
-    public void setBrake(boolean brake) {
-        pivotMotor.setIdleMode(brake ? IdleMode.kBrake : IdleMode.kCoast);
-    }
+  /** Go to Setpoint */
+  @Override
+  public void goToSetpoint(double setpoint) {
+    pidController.setGoal(setpoint);
+    // With the setpoint value we run PID control like normal
+    double pidOutput = MathUtil.clamp(pidController.calculate(getAngle()), -3, 3);
+    double feedforwardOutput =
+        feedforward.calculate(getAngle(), pidController.getSetpoint().velocity);
 
-    @Override
-    public boolean atSetpoint() {
-        return Math.abs(getAngle() - setpoint) < CoralPivotConstants.PIVOT_ARM_PID_TOLERANCE;
-    }
+    Logger.recordOutput("CoralPivot/FeedforwardOutput", feedforwardOutput);
+    Logger.recordOutput("CoralPivot/PIDOutput", pidOutput);
 
-    @Override
-    public void setP(double p) {
-        pidController.setP(p);
-    }
+    Logger.recordOutput("CoralPivot/VelocityError", pidController.getVelocityError());
 
-    @Override
-    public void setI(double i) {
-        pidController.setI(i);
-    }
+    setVoltage(MathUtil.clamp(pidOutput + feedforwardOutput, -4, 4));
+  }
 
-    @Override
-    public void setD(double d) {
-        pidController.setD(d);
-    }
+  @Override
+  public void holdSetpoint(double setpoint) {
+    goToSetpoint(setpoint);
+  }
 
-    @Override
-    public void setFF(double ff) {
-        // pidController.setFF(ff);
-    }
+  @Override
+  public void setBrake(boolean brake) {
+    SparkMaxConfig config = new SparkMaxConfig();
+    config.idleMode(brake ? IdleMode.kBrake : IdleMode.kCoast);
+    pivotMotor.configure(
+        config, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+  }
 
-    @Override
-    public void setkS(double kS) {
-        feedforward = new ArmFeedforward(kS, feedforward.kg, feedforward.kv, feedforward.ka);
-    }
+  @Override
+  public boolean atSetpoint() {
+    return Math.abs(getAngle() - setpoint) < CoralPivotConstants.CORAL_PIVOT_PID_TOLERANCE;
+  }
 
-    @Override
-    public void setkG(double kG) {
-        feedforward = new ArmFeedforward(feedforward.ks, kG, feedforward.kv, feedforward.ka);
-    }
+  @Override
+  public void setP(double p) {
+    pidController.setP(p);
+  }
 
-    @Override
-    public void setkV(double kV) {
-        feedforward = new ArmFeedforward(feedforward.ks, feedforward.kg, kV, feedforward.ka);
-    }
+  @Override
+  public void setI(double i) {
+    pidController.setI(i);
+  }
 
-    @Override
-    public void setkA(double kA) {
-        feedforward = new ArmFeedforward(feedforward.ks, feedforward.kg, feedforward.kv, kA);
-    }
+  @Override
+  public void setD(double d) {
+    pidController.setD(d);
+  }
 
-    @Override 
-    public double getkS(){
-        return feedforward.ks;
-    }
+  @Override
+  public void setFF(double ff) {
+    // pidController.setFF(ff);
+  }
 
-    @Override 
-    public double getkG(){
-        return feedforward.kg;
-    }
+  @Override
+  public void setkS(double kS) {
+    feedforward =
+        new ArmFeedforward(kS, feedforward.getKg(), feedforward.getKv(), feedforward.getKa());
+  }
 
-    @Override 
-    public double getkV(){
-        return feedforward.kv;
-    }
+  @Override
+  public void setkG(double kG) {
+    feedforward =
+        new ArmFeedforward(feedforward.getKs(), kG, feedforward.getKv(), feedforward.getKa());
+  }
 
-    @Override 
-    public double getkA(){
-        return feedforward.ka;
-    }
+  @Override
+  public void setkV(double kV) {
+    feedforward =
+        new ArmFeedforward(feedforward.getKs(), feedforward.getKg(), kV, feedforward.getKa());
+  }
 
-    @Override
-    public double getP() {
-        return pidController.getP();
-    }
+  @Override
+  public void setkA(double kA) {
+    feedforward =
+        new ArmFeedforward(feedforward.getKs(), feedforward.getKg(), feedforward.getKv(), kA);
+  }
 
-    @Override
-    public double getI() {
-        return pidController.getI();
-    }
+  @Override
+  public double getkS() {
+    return feedforward.getKs();
+  }
 
-    @Override
-    public double getD() {
-        return pidController.getD();
-    }
+  @Override
+  public double getkG() {
+    return feedforward.getKg();
+  }
 
-    @Override
-    public double getFF() {
-        // return pidController.getFF();
-        return 0;
-    }
+  @Override
+  public double getkV() {
+    return feedforward.getKv();
+  }
 
+  @Override
+  public double getkA() {
+    return feedforward.getKa();
+  }
+
+  @Override
+  public double getP() {
+    return pidController.getP();
+  }
+
+  @Override
+  public double getI() {
+    return pidController.getI();
+  }
+
+  @Override
+  public double getD() {
+    return pidController.getD();
+  }
+
+  @Override
+  public double getFF() {
+    // return pidController.getFF();
+    return 0;
+  }
 }
