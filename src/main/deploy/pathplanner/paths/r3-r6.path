@@ -3,13 +3,18 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.692213114754098,
-        "y": 5.1098872950819665
+        "x": 3.44047131147541,
+        "y": 5.445543032786884
       },
       "prevControl": null,
       "nextControl": {
+<<<<<<< Updated upstream
         "x": 2.118946721310704,
         "y": 7.206856557377416
+=======
+        "x": 1.8672049180320158,
+        "y": 7.542512295082334
+>>>>>>> Stashed changes
       },
       "isLocked": false,
       "linkedName": "r3"
@@ -32,12 +37,12 @@
     },
     {
       "anchor": {
-        "x": 5.238627049180328,
-        "y": 5.1098872950819665
+        "x": 5.38247950819672,
+        "y": 5.493493852459016
       },
       "prevControl": {
-        "x": 4.405401639343491,
-        "y": 4.948692622951187
+        "x": 4.549254098359883,
+        "y": 5.332299180328237
       },
       "nextControl": null,
       "isLocked": false,
@@ -58,13 +63,21 @@
   },
   "goalEndState": {
     "velocity": 0,
+<<<<<<< Updated upstream
     "rotation": -119.00641590227018
+=======
+    "rotation": -123.14699583225605
+>>>>>>> Stashed changes
   },
   "reversed": false,
   "folder": "r3",
   "idealStartingState": {
     "velocity": 0,
+<<<<<<< Updated upstream
     "rotation": -59.13319054886288
+=======
+    "rotation": -59.65675111576034
+>>>>>>> Stashed changes
   },
   "useDefaultConstraints": true
 }
