@@ -16,6 +16,11 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.FeedForwardCharacterization;
+// this is for the coralPivot
+import frc.robot.subsystems.coralPivot.CoralPivot;
+import frc.robot.subsystems.coralPivot.CoralPivotIO;
+import frc.robot.subsystems.coralPivot.CoralPivotIOSim;
+import frc.robot.subsystems.coralPivot.CoralPivotIOSparkMax;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOReal;
@@ -36,6 +41,7 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 public class RobotContainer {
   // Subsystems
   private final Drive drive;
+  private final CoralPivot coralPivot;
 
   private Mechanism2d mech = new Mechanism2d(3, 3);
 
@@ -55,6 +61,8 @@ public class RobotContainer {
                 new ModuleIOSparkMax(2),
                 new ModuleIOSparkMax(3),
                 new VisionIOPhoton());
+        coralPivot = new CoralPivot(new CoralPivotIOSparkMax());
+
         break;
 
         // Sim robot, instantiate physics sim IO implementations
@@ -67,6 +75,9 @@ public class RobotContainer {
                 new ModuleIOSim(),
                 new ModuleIOSim(),
                 new VisionIOSim());
+
+        coralPivot = new CoralPivot(new CoralPivotIOSim());
+
         break;
 
         // Replayed robot, disable IO implementations
@@ -79,6 +90,8 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new VisionIO() {});
+
+        coralPivot = new CoralPivot(new CoralPivotIO() {});
         break;
     }
 
