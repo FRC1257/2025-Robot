@@ -20,8 +20,8 @@ public class ElevatorConstants {
   public static final double STEP_VOLTAGE = 3.0;
   public static final double ELEVATOR_TOLERANCE = 1.0;
 
-  public static int LEFT_MOTOR_ID = 0;
-  public static int RIGHT_MOTOR_ID = 1;
+  public static int LEFT_MOTOR_ID = 10;
+  public static int RIGHT_MOTOR_ID = 5;
   public static IdleMode MOTOR_DEFAULT_IDLE_MODE = IdleMode.kBrake;
   /** Used for converting angular displacement into linear displacement */
   public static double MOTOR_RADIUS_METERS = 1.0;
