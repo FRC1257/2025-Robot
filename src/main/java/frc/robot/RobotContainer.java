@@ -22,6 +22,10 @@ import frc.robot.subsystems.drive.GyroIOReal;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOSparkMax;
+import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.subsystems.elevator.ElevatorIO;
+import frc.robot.subsystems.elevator.ElevatorIOSim;
+import frc.robot.subsystems.elevator.ElevatorIOSparkMax;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOPhoton;
 import frc.robot.subsystems.vision.VisionIOSim;
@@ -36,6 +40,7 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 public class RobotContainer {
   // Subsystems
   private final Drive drive;
+  private final Elevator elevator;
 
   private Mechanism2d mech = new Mechanism2d(3, 3);
 
@@ -55,6 +60,7 @@ public class RobotContainer {
                 new ModuleIOSparkMax(2),
                 new ModuleIOSparkMax(3),
                 new VisionIOPhoton());
+        elevator = new Elevator(new ElevatorIOSparkMax());
         break;
 
         // Sim robot, instantiate physics sim IO implementations
@@ -67,6 +73,7 @@ public class RobotContainer {
                 new ModuleIOSim(),
                 new ModuleIOSim(),
                 new VisionIOSim());
+        elevator = new Elevator(new ElevatorIOSim());
         break;
 
         // Replayed robot, disable IO implementations
@@ -79,6 +86,7 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new VisionIO() {});
+        elevator = new Elevator(new ElevatorIO() {});
         break;
     }
 
@@ -116,6 +124,7 @@ public class RobotContainer {
   private void configureButtonBindings() {
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(drive, DRIVE_FORWARD, DRIVE_STRAFE, DRIVE_ROTATE));
+    elevator.setDefaultCommand(elevator.ManualCommand(ELEVATOR));
 
     DRIVE_SLOW.onTrue(new InstantCommand(DriveCommands::toggleSlowMode));
 

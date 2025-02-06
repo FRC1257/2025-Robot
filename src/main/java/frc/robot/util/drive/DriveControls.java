@@ -35,6 +35,9 @@ public class DriveControls {
   // Potential Hail Marry Program [Suggested by Owen]
   public static Trigger SHOOT_FROM_SOURCE;
 
+  // Elevator Controls
+  public static DoubleSupplier ELEVATOR;
+
   // Setup the controls
   public static void configureControls() {
     switch (Constants.driver) {
@@ -56,6 +59,7 @@ public class DriveControls {
       case PROGRAMMERS:
       default:
         // Operator controls
+        ELEVATOR = () -> operator.getRightYD();
 
         break;
 

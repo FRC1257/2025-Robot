@@ -20,6 +20,8 @@ public class ElevatorConstants {
   public static final double STEP_VOLTAGE = 3.0;
   public static final double ELEVATOR_TOLERANCE = 1.0;
 
+  public static final double ELEVATOR_MANUAL_VELOCITY = 1.0;
+
   public static int LEFT_MOTOR_ID = 0;
   public static int RIGHT_MOTOR_ID = 1;
   public static IdleMode MOTOR_DEFAULT_IDLE_MODE = IdleMode.kBrake;
