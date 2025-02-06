@@ -120,8 +120,8 @@ public class Elevator extends SubsystemBase {
   }
 
   public void setVelocity(double velocity) {
-    if (io.getPosition() < ElevatorConstants.ELEVATOR_MIN_HEIGHT
-        || io.getPosition() > ElevatorConstants.ELEVATOR_MAX_HEIGHT) {
+    if ((io.getPosition() < ElevatorConstants.ELEVATOR_MIN_HEIGHT && velocity < 0)
+        || (io.getPosition() > ElevatorConstants.ELEVATOR_MAX_HEIGHT && velocity > 0)) {
       io.setVelocity(0);
     } else {
       io.setVelocity(velocity);
