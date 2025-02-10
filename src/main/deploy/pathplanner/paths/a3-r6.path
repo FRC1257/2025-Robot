@@ -8,20 +8,66 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.4171166140382185,
-        "y": 2.3122916384012004
+        "x": 1.7430663791456353,
+        "y": 2.988161205381734
       },
       "isLocked": false,
-      "linkedName": "a3"
+      "linkedName": null
     },
     {
       "anchor": {
-        "x": 5.238627049180328,
-        "y": 5.1098872950819665
+<<<<<<< Updated upstream
+        "x": 2.361577868852459,
+        "y": 3.9410860655737707
       },
       "prevControl": {
-        "x": 4.136787080893085,
-        "y": 4.907809227236367
+        "x": 2.0252533315772006,
+        "y": 3.463565940995603
+      },
+      "nextControl": {
+        "x": 3.1045448646264684,
+        "y": 4.995965068021064
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 4.015881147540983,
+        "y": 6.146823770491803
+      },
+      "prevControl": {
+        "x": 3.235564532903159,
+        "y": 6.065902749610682
+      },
+      "nextControl": {
+        "x": 4.712890378310204,
+        "y": 6.219105582078742
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 5.38247950819672,
+        "y": 5.493493852459016
+      },
+      "prevControl": {
+<<<<<<< Updated upstream
+        "x": 4.947253012725646,
+        "y": 5.355436917566354
+=======
+        "x": 4.280639539909477,
+        "y": 5.291415784613417
+>>>>>>> Stashed changes
+=======
+        "x": 5.38247950819672,
+        "y": 5.493493852459016
+      },
+      "prevControl": {
+        "x": 4.280639539909477,
+        "y": 5.291415784613417
+>>>>>>> Stashed changes
       },
       "nextControl": null,
       "isLocked": false,
@@ -42,13 +88,21 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -118.35300000000002
+<<<<<<< Updated upstream
+<<<<<<< Updated upstream
+    "rotation": -119.00641590227018
+=======
+    "rotation": -123.14699583225605
+>>>>>>> Stashed changes
+=======
+    "rotation": -123.14699583225605
+>>>>>>> Stashed changes
   },
   "reversed": false,
   "folder": "a3",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 4.313216953209095
   },
   "useDefaultConstraints": true
 }

@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.9799180327868857,
-        "y": 5.25373975409836
+        "x": 3.692213114754098,
+        "y": 5.55343237704918
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.106752232142857,
-        "y": 5.999653286007025
+        "x": 3.8190473141100694,
+        "y": 6.299345908957845
       },
       "isLocked": false,
       "linkedName": "r4"
@@ -64,7 +64,15 @@
   "folder": "r4",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -59.931
+<<<<<<< Updated upstream
+<<<<<<< Updated upstream
+    "rotation": -59.80837703904244
+=======
+    "rotation": -62.52556837372293
+>>>>>>> Stashed changes
+=======
+    "rotation": -62.52556837372293
+>>>>>>> Stashed changes
   },
   "useDefaultConstraints": true
 }

@@ -8,14 +8,22 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.722246797922557,
-        "y": 3.2355519844267935
+        "x": 1.6999559776442421,
+        "y": 2.7088708728009663
       },
       "isLocked": false,
       "linkedName": "a3"
     },
     {
       "anchor": {
+<<<<<<< Updated upstream
+        "x": 3.1527663934426227,
+        "y": 4.186834016393442
+      },
+      "prevControl": {
+        "x": 2.748699146434469,
+        "y": 3.7721742175300883
+=======
         "x": 2.7202499999999996,
         "y": 5.0195
       },
@@ -32,12 +40,16 @@
     },
     {
       "anchor": {
-        "x": 3.1527663934426227,
-        "y": 4.186834016393442
+        "x": 2.6612704918032786,
+        "y": 4.150870901639344
       },
       "prevControl": {
-        "x": 2.944888789915313,
-        "y": 4.047956725406966
+        "x": 2.453392888275969,
+        "y": 4.011993610652867
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
+>>>>>>> Stashed changes
       },
       "nextControl": null,
       "isLocked": false,
@@ -58,13 +70,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 1.5911402711945906
   },
   "reversed": false,
   "folder": "a3",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 4.313216953209095
   },
   "useDefaultConstraints": true
 }

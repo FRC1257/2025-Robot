@@ -8,27 +8,11 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.064857598706156,
-        "y": 4.454622377482656
+        "x": 2.033698435305623,
+        "y": 4.525359246338849
       },
       "isLocked": false,
       "linkedName": "a2"
-    },
-    {
-      "anchor": {
-        "x": 5.430749999997232,
-        "y": 6.832999999998489
-      },
-      "prevControl": {
-        "x": 4.276128567560113,
-        "y": 7.283929950347224
-      },
-      "nextControl": {
-        "x": 6.4413810573088615,
-        "y": 6.43830456157024
-      },
-      "isLocked": false,
-      "linkedName": null
     },
     {
       "anchor": {
@@ -36,8 +20,8 @@
         "y": 5.25373975409836
       },
       "prevControl": {
-        "x": 3.9026722790453547,
-        "y": 5.015972865047544
+        "x": 3.6802254098360656,
+        "y": 5.38560450819672
       },
       "nextControl": null,
       "isLocked": false,
@@ -58,13 +42,17 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -59.931
+<<<<<<< Updated upstream
+    "rotation": -59.80837703904244
+=======
+    "rotation": -63.43494882292206
+>>>>>>> Stashed changes
   },
   "reversed": false,
   "folder": "a2",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": -34.15969454566939
   },
   "useDefaultConstraints": true
 }

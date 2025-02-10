@@ -58,13 +58,17 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+<<<<<<< Updated upstream
+    "rotation": -91.21022912918558
+=======
+    "rotation": -90.0
+>>>>>>> Stashed changes
   },
   "reversed": false,
   "folder": "a2",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": -34.15969454566939
   },
   "useDefaultConstraints": true
 }

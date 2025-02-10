@@ -3,57 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.692213114754098,
-        "y": 5.1098872950819665
+        "x": 3.44047131147541,
+        "y": 5.445543032786884
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.9167021319885724,
-        "y": 5.239662163858065
+        "x": 4.9969549180327855,
+        "y": 5.504762295081966
       },
       "isLocked": false,
       "linkedName": "r3"
     },
     {
       "anchor": {
-        "x": 4.0638319672131145,
-        "y": 5.445543032786884
+        "x": 5.394467213114754,
+        "y": 5.481506147540983
       },
       "prevControl": {
-        "x": 3.4623017953452333,
-        "y": 4.992843529374192
-      },
-      "nextControl": {
-        "x": 4.263584333625392,
-        "y": 5.595872644349926
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 4.651229508196721,
-        "y": 5.445543032786884
-      },
-      "prevControl": {
-        "x": 4.406595347460229,
-        "y": 5.52681893314847
-      },
-      "nextControl": {
-        "x": 4.94662825107825,
-        "y": 5.3474013884593035
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 4.998872950819672,
-        "y": 5.25373975409836
-      },
-      "prevControl": {
-        "x": 4.774380715939667,
-        "y": 5.363754464381034
+        "x": 6.813651639344263,
+        "y": 5.436512295081966
       },
       "nextControl": null,
       "isLocked": false,
@@ -74,13 +42,29 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -120.069
+<<<<<<< Updated upstream
+<<<<<<< Updated upstream
+    "rotation": -119.86691685151308
+=======
+    "rotation": -124.33021719550338
+>>>>>>> Stashed changes
+=======
+    "rotation": -124.33021719550338
+>>>>>>> Stashed changes
   },
   "reversed": false,
   "folder": "r3",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -59.931
+<<<<<<< Updated upstream
+<<<<<<< Updated upstream
+    "rotation": -59.13319054886288
+=======
+    "rotation": -59.65675111576034
+>>>>>>> Stashed changes
+=======
+    "rotation": -59.65675111576034
+>>>>>>> Stashed changes
   },
   "useDefaultConstraints": true
 }
