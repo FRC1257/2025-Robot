@@ -16,28 +16,12 @@
     },
     {
       "anchor": {
-        "x": 3.92925,
-        "y": 6.735499999999999
+        "x": 3.692213114754098,
+        "y": 5.1098872950819665
       },
       "prevControl": {
-        "x": 3.1092207086592025,
-        "y": 6.910364909931224
-      },
-      "nextControl": {
-        "x": 4.456498182922113,
-        "y": 6.623068399090561
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 3.44047131147541,
-        "y": 5.445543032786884
-      },
-      "prevControl": {
-        "x": 3.632296640270703,
-        "y": 5.224184891890229
+        "x": 3.884038443549391,
+        "y": 4.888529154185312
       },
       "nextControl": null,
       "isLocked": false,
@@ -59,13 +43,9 @@
   "goalEndState": {
     "velocity": 0,
 <<<<<<< Updated upstream
-<<<<<<< Updated upstream
     "rotation": -59.13319054886288
 =======
-    "rotation": -59.65675111576034
->>>>>>> Stashed changes
-=======
-    "rotation": -59.65675111576034
+    "rotation": -61.47688139368797
 >>>>>>> Stashed changes
   },
   "reversed": false,

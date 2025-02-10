@@ -74,7 +74,11 @@
   },
   "goalEndState": {
     "velocity": 0,
+<<<<<<< Updated upstream
     "rotation": -126.28526712513879
+=======
+    "rotation": -130.76360520094119
+>>>>>>> Stashed changes
   },
   "reversed": false,
   "folder": "a1",
