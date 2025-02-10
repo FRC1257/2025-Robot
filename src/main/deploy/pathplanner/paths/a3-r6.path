@@ -16,7 +16,6 @@
     },
     {
       "anchor": {
-<<<<<<< Updated upstream
         "x": 2.361577868852459,
         "y": 3.9410860655737707
       },
@@ -53,21 +52,8 @@
         "y": 5.493493852459016
       },
       "prevControl": {
-<<<<<<< Updated upstream
-        "x": 4.947253012725646,
-        "y": 5.355436917566354
-=======
         "x": 4.280639539909477,
         "y": 5.291415784613417
->>>>>>> Stashed changes
-=======
-        "x": 5.38247950819672,
-        "y": 5.493493852459016
-      },
-      "prevControl": {
-        "x": 4.280639539909477,
-        "y": 5.291415784613417
->>>>>>> Stashed changes
       },
       "nextControl": null,
       "isLocked": false,
@@ -88,15 +74,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-    "rotation": -119.00641590227018
-=======
     "rotation": -123.14699583225605
->>>>>>> Stashed changes
-=======
-    "rotation": -123.14699583225605
->>>>>>> Stashed changes
   },
   "reversed": false,
   "folder": "a3",

@@ -16,16 +16,12 @@
     },
     {
       "anchor": {
-<<<<<<< Updated upstream
         "x": 3.1527663934426227,
         "y": 4.186834016393442
       },
       "prevControl": {
         "x": 2.748699146434469,
         "y": 3.7721742175300883
-=======
-        "x": 2.7202499999999996,
-        "y": 5.0195
       },
       "prevControl": {
         "x": 2.0019521614430893,
@@ -46,10 +42,7 @@
       "prevControl": {
         "x": 2.453392888275969,
         "y": 4.011993610652867
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
+
       },
       "nextControl": null,
       "isLocked": false,
