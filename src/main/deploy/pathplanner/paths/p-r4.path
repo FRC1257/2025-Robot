@@ -8,20 +8,52 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.249012234046673,
-        "y": 1.5344318756884077
+        "x": 6.615956004831077,
+        "y": 1.2321420439715167
       },
       "isLocked": false,
       "linkedName": "p"
     },
     {
       "anchor": {
-        "x": 3.9799180327868857,
-        "y": 5.25373975409836
+        "x": 2.8530737704918034,
+        "y": 2.748309426229507
       },
       "prevControl": {
-        "x": 3.948013454416457,
-        "y": 5.005783915532286
+        "x": 3.305151654874669,
+        "y": 2.062327204671186
+      },
+      "nextControl": {
+        "x": 2.562522440893955,
+        "y": 3.189191525176549
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.6133196721311474,
+        "y": 5.1698258196721305
+      },
+      "prevControl": {
+        "x": 2.3183106839280407,
+        "y": 4.853421062326731
+      },
+      "nextControl": {
+        "x": 2.9450369424030587,
+        "y": 5.525601157389644
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 3.692213114754098,
+        "y": 5.55343237704918
+      },
+      "prevControl": {
+        "x": 3.3205942622950815,
+        "y": 5.565420081967213
       },
       "nextControl": null,
       "isLocked": false,
@@ -42,7 +74,15 @@
   },
   "goalEndState": {
     "velocity": 0,
+<<<<<<< Updated upstream
+<<<<<<< Updated upstream
     "rotation": -59.80837703904244
+=======
+    "rotation": -62.52556837372293
+>>>>>>> Stashed changes
+=======
+    "rotation": -62.52556837372293
+>>>>>>> Stashed changes
   },
   "reversed": false,
   "folder": "p",

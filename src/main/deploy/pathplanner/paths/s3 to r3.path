@@ -16,12 +16,12 @@
     },
     {
       "anchor": {
-        "x": 3.692213114754098,
-        "y": 5.1098872950819665
+        "x": 3.44047131147541,
+        "y": 5.445543032786884
       },
       "prevControl": {
-        "x": 4.153726692285611,
-        "y": 5.449854018762135
+        "x": 3.901984889006923,
+        "y": 5.785509756467053
       },
       "nextControl": null,
       "isLocked": false,
@@ -42,7 +42,15 @@
   },
   "goalEndState": {
     "velocity": 0,
+<<<<<<< Updated upstream
+<<<<<<< Updated upstream
     "rotation": -59.13319054886288
+=======
+    "rotation": -59.65675111576034
+>>>>>>> Stashed changes
+=======
+    "rotation": -59.65675111576034
+>>>>>>> Stashed changes
   },
   "reversed": false,
   "folder": "s3",
