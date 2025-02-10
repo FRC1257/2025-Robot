@@ -64,7 +64,7 @@
   "folder": "r4",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -179.33741608587974
+    "rotation": -59.931
   },
   "useDefaultConstraints": true
 }

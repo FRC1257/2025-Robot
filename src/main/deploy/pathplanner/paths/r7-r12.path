@@ -3,50 +3,61 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 6.008667452830188,
-        "y": 1.465625
+        "x": 5.802049180327868,
+        "y": 4.186834016393442
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.223839021820438,
-        "y": 1.9432227759093592
+        "x": 5.96179366279292,
+        "y": 4.40704645255318
       },
       "isLocked": false,
-      "linkedName": "p"
+      "linkedName": "r7"
     },
     {
       "anchor": {
-        "x": 3.1527663934426227,
-        "y": 3.024026639344262
+        "x": 5.1786885245901635,
+        "y": 2.520543032786885
       },
       "prevControl": {
-        "x": 3.336514702146675,
-        "y": 2.6202443726627247
+        "x": 5.7917702839288365,
+        "y": 2.8359399970588828
       },
       "nextControl": {
-        "x": 3.010279657650771,
-        "y": 3.3371376418664775
+        "x": 4.4885193213663355,
+        "y": 2.1654888035342883
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 3.1527663934426227,
-        "y": 3.87515368852459
+        "x": 3.692213114754098,
+        "y": 2.9521004098360653
       },
       "prevControl": {
-        "x": 3.188894722277208,
-        "y": 3.545795556372844
+        "x": 3.505422849790662,
+        "y": 3.118261166077993
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "r1"
+      "linkedName": "r12"
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
-  "pointTowardsZones": [],
+  "pointTowardsZones": [
+    {
+      "fieldPosition": {
+        "x": 4.5,
+        "y": 4.05
+      },
+      "rotationOffset": 0.0,
+      "minWaypointRelativePos": 0.25,
+      "maxWaypointRelativePos": 1.5719108710330847,
+      "name": "Point Towards Zone"
+    }
+  ],
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 3.0,
@@ -58,13 +69,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 60.06900000000001
   },
   "reversed": false,
-  "folder": "p",
+  "folder": "r7",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 180.0
   },
   "useDefaultConstraints": true
 }
