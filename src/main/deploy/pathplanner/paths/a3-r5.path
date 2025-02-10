@@ -32,6 +32,7 @@
     },
     {
       "anchor": {
+<<<<<<< Updated upstream
         "x": 3.7401639344262296,
         "y": 5.727254098360657
       },
@@ -59,6 +60,14 @@
         "x": 5.168200642224167,
         "y": 5.318611603978939
 >>>>>>> Stashed changes
+=======
+        "x": 5.394467213114754,
+        "y": 5.481506147540983
+      },
+      "prevControl": {
+        "x": 5.168200642224167,
+        "y": 5.318611603978939
+>>>>>>> Stashed changes
       },
       "nextControl": null,
       "isLocked": false,
@@ -80,7 +89,11 @@
   "goalEndState": {
     "velocity": 0,
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     "rotation": -119.86691685151308
+=======
+    "rotation": -124.33021719550338
+>>>>>>> Stashed changes
 =======
     "rotation": -124.33021719550338
 >>>>>>> Stashed changes

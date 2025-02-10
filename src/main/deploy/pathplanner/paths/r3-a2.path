@@ -9,8 +9,13 @@
       "prevControl": null,
       "nextControl": {
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
         "x": 2.518696721311475,
         "y": 6.9241065573770495
+=======
+        "x": 2.266954918032787,
+        "y": 7.259762295081967
+>>>>>>> Stashed changes
 =======
         "x": 2.266954918032787,
         "y": 7.259762295081967
@@ -54,7 +59,11 @@
   "idealStartingState": {
     "velocity": 0,
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     "rotation": -59.13319054886288
+=======
+    "rotation": -59.65675111576034
+>>>>>>> Stashed changes
 =======
     "rotation": -59.65675111576034
 >>>>>>> Stashed changes

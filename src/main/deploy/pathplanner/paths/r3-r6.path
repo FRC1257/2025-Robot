@@ -9,8 +9,13 @@
       "prevControl": null,
       "nextControl": {
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
         "x": 2.118946721310704,
         "y": 7.206856557377416
+=======
+        "x": 1.8672049180320158,
+        "y": 7.542512295082334
+>>>>>>> Stashed changes
 =======
         "x": 1.8672049180320158,
         "y": 7.542512295082334
@@ -64,7 +69,11 @@
   "goalEndState": {
     "velocity": 0,
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     "rotation": -119.00641590227018
+=======
+    "rotation": -123.14699583225605
+>>>>>>> Stashed changes
 =======
     "rotation": -123.14699583225605
 >>>>>>> Stashed changes
@@ -74,7 +83,11 @@
   "idealStartingState": {
     "velocity": 0,
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     "rotation": -59.13319054886288
+=======
+    "rotation": -59.65675111576034
+>>>>>>> Stashed changes
 =======
     "rotation": -59.65675111576034
 >>>>>>> Stashed changes
