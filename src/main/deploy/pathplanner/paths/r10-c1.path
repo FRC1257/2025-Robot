@@ -80,7 +80,7 @@
   "folder": "r10",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 122.21654605857567
+    "rotation": 120.069
   },
   "useDefaultConstraints": true
 }
