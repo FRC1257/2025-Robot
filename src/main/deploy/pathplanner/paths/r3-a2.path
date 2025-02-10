@@ -8,18 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-        "x": 2.518696721311475,
-        "y": 6.9241065573770495
-=======
         "x": 2.266954918032787,
         "y": 7.259762295081967
->>>>>>> Stashed changes
-=======
-        "x": 2.266954918032787,
-        "y": 7.259762295081967
->>>>>>> Stashed changes
       },
       "isLocked": false,
       "linkedName": "r3"
@@ -30,8 +20,8 @@
         "y": 4.00701844262295
       },
       "prevControl": {
-        "x": 1.005995597417403,
-        "y": 3.8824419375359316
+        "x": 0.952629606628052,
+        "y": 3.8428312410340877
       },
       "nextControl": null,
       "isLocked": false,
@@ -58,15 +48,7 @@
   "folder": "r3",
   "idealStartingState": {
     "velocity": 0,
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-    "rotation": -59.13319054886288
-=======
     "rotation": -59.65675111576034
->>>>>>> Stashed changes
-=======
-    "rotation": -59.65675111576034
->>>>>>> Stashed changes
   },
   "useDefaultConstraints": true
 }

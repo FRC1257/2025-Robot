@@ -20,8 +20,8 @@
         "y": 5.853125
       },
       "prevControl": {
-        "x": 0.9626547697837938,
-        "y": 5.88386080228105
+        "x": 0.9627429624918239,
+        "y": 5.884564522739576
       },
       "nextControl": null,
       "isLocked": false,
@@ -48,15 +48,7 @@
   "folder": "r3",
   "idealStartingState": {
     "velocity": 0,
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-    "rotation": -59.13319054886288
-=======
     "rotation": -59.65675111576034
->>>>>>> Stashed changes
-=======
-    "rotation": -59.65675111576034
->>>>>>> Stashed changes
   },
   "useDefaultConstraints": true
 }

@@ -20,18 +20,9 @@
         "y": 3.899129098360655
       },
       "prevControl": {
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-        "x": 2.9133036278529176,
-        "y": 3.6763530808311207
-=======
         "x": 2.392143732394874,
         "y": 3.514497256584015
->>>>>>> Stashed changes
-=======
-        "x": 2.392143732394874,
-        "y": 3.514497256584015
->>>>>>> Stashed changes
+
       },
       "nextControl": null,
       "isLocked": false,
