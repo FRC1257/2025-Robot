@@ -3,50 +3,61 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.44047131147541,
-        "y": 5.445543032786884
+        "x": 5.802049180327868,
+        "y": 4.186834016393442
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.0329549180327855,
-        "y": 7.367012295081966
+        "x": 6.040970612470605,
+        "y": 4.260431226006741
       },
       "isLocked": false,
-      "linkedName": "r3"
+      "linkedName": "r7"
     },
     {
       "anchor": {
-        "x": 3.020901639344262,
-        "y": 4.750256147540983
+        "x": 5.802049180327868,
+        "y": 3.0480020491803272
       },
       "prevControl": {
-        "x": 3.2246926229508195,
-        "y": 5.097899590163934
+        "x": 6.114172293210542,
+        "y": 3.453842275991151
       },
       "nextControl": {
-        "x": 2.874231982930772,
-        "y": 4.500054968953266
+        "x": 5.489926067445195,
+        "y": 2.6421618223695034
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.2107581967213117,
-        "y": 0.95015368852459
+        "x": 4.998872950819672,
+        "y": 2.7722848360655736
       },
       "prevControl": {
-        "x": 2.7330353466765724,
-        "y": 3.068466129155573
+        "x": 4.803320375027567,
+        "y": 2.616531216200503
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "c2"
+      "linkedName": "r10"
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
-  "pointTowardsZones": [],
+  "pointTowardsZones": [
+    {
+      "fieldPosition": {
+        "x": 4.5,
+        "y": 4.05
+      },
+      "rotationOffset": 0.0,
+      "minWaypointRelativePos": 0.0,
+      "maxWaypointRelativePos": 1.744767049290999,
+      "name": "Point Towards Zone"
+    }
+  ],
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 3.0,
@@ -58,21 +69,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -126.28526712513879
+    "rotation": 120.069
   },
   "reversed": false,
-  "folder": "r3",
+  "folder": "r7",
   "idealStartingState": {
     "velocity": 0,
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-    "rotation": -59.13319054886288
-=======
-    "rotation": -59.65675111576034
->>>>>>> Stashed changes
-=======
-    "rotation": -59.65675111576034
->>>>>>> Stashed changes
+    "rotation": 180.0
   },
   "useDefaultConstraints": true
 }
