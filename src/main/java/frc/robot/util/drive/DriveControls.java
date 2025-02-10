@@ -5,6 +5,8 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
+import frc.robot.util.drive.CommandSnailController.DPad;
+
 import java.util.function.DoubleSupplier;
 
 public class DriveControls {
@@ -36,7 +38,8 @@ public class DriveControls {
   public static Trigger SHOOT_FROM_SOURCE;
 
   // Elevator Controls
-  public static DoubleSupplier ELEVATOR;
+  public static DoubleSupplier ELEVATOR_SPEED;
+  public static Trigger ELEVATOR_L1;
 
   // Setup the controls
   public static void configureControls() {
@@ -59,7 +62,8 @@ public class DriveControls {
       case PROGRAMMERS:
       default:
         // Operator controls
-        ELEVATOR = () -> operator.getRightYD();
+        ELEVATOR_SPEED = () -> operator.getRightYD();
+        ELEVATOR_L1 = operator.getDPad(DPad.UP);
 
         break;
 

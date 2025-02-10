@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.FeedForwardCharacterization;
 import frc.robot.subsystems.drive.Drive;
@@ -92,9 +93,10 @@ public class RobotContainer {
 
     // Set up robot state manager
 
-    MechanismRoot2d root = mech.getRoot("pivot", 1, 0.5);
+    MechanismRoot2d root = mech.getRoot("elevator", 1, 0.5);
+    root.append(elevator.getElevatorMechanism());
     // add subsystem mechanisms
-    SmartDashboard.putData("Arm Mechanism", mech);
+    SmartDashboard.putData("Elevator Mechanism", mech);
 
     // Set up auto routines
     /* NamedCommands.registerCommand(
@@ -124,7 +126,6 @@ public class RobotContainer {
   private void configureButtonBindings() {
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(drive, DRIVE_FORWARD, DRIVE_STRAFE, DRIVE_ROTATE));
-    elevator.setDefaultCommand(elevator.ManualCommand(ELEVATOR));
 
     DRIVE_SLOW.onTrue(new InstantCommand(DriveCommands::toggleSlowMode));
 
@@ -135,6 +136,9 @@ public class RobotContainer {
               drive.resetYaw();
             },
             drive));
+
+    elevator.setDefaultCommand(elevator.ManualCommand(ELEVATOR_SPEED));
+    ELEVATOR_L1.onTrue(elevator.PIDCommand(0.5));
   }
 
   /**

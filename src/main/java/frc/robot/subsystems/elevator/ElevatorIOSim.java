@@ -4,9 +4,7 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
-import edu.wpi.first.wpilibj.simulation.EncoderSim;
 
 public class ElevatorIOSim implements ElevatorIO {
   // from here
@@ -19,7 +17,6 @@ public class ElevatorIOSim implements ElevatorIO {
   // Standard classes for controlling our arm
   private final ProfiledPIDController m_controller;
   private SimpleMotorFeedforward m_feedforward = new SimpleMotorFeedforward(0, 0);
-  private final Encoder m_encoder;
 
   // Simulation classes help us simulate what's going on, including gravity.
   // This arm sim represents an arm that can travel from -75 degrees (rotated down
@@ -32,20 +29,12 @@ public class ElevatorIOSim implements ElevatorIO {
           ElevatorConstants.GEAR_RATIO,
           ElevatorConstants.ELEVATOR_MASS_KG,
           ElevatorConstants.MOTOR_RADIUS_METERS,
-          ElevatorConstants.ELEVATOR_MIN_HEIGHT + ElevatorConstants.ELEVATOR_OFFSET_METERS,
-          ElevatorConstants.ELEVATOR_MAX_HEIGHT + ElevatorConstants.ELEVATOR_OFFSET_METERS,
+          ElevatorConstants.ELEVATOR_MIN_HEIGHT,
+          ElevatorConstants.ELEVATOR_MAX_HEIGHT,
           true, // change this to true later
           ElevatorConstants.ELEVATOR_STARTING_HEIGHT);
 
-  private final EncoderSim m_encoderSim;
-
   public ElevatorIOSim() {
-    m_encoder =
-        new Encoder(
-            ElevatorConstants.ElevatorSimConstants.kEncoderAChannel,
-            ElevatorConstants.ElevatorSimConstants.kEncoderBChannel);
-    m_encoderSim = new EncoderSim(m_encoder);
-    m_encoderSim.setDistancePerPulse(ElevatorConstants.ElevatorSimConstants.ENCODER_DIST_PER_PULSE);
     m_controller =
         new ProfiledPIDController(
             ElevatorConstants.ElevatorSimConstants.kElevatorSimPID[0],
@@ -83,7 +72,7 @@ public class ElevatorIOSim implements ElevatorIO {
 
   @Override
   public double getPosition() {
-    return m_encoderSim.getDistance();
+    return sim.getPositionMeters();
   }
 
   @Override
@@ -99,6 +88,7 @@ public class ElevatorIOSim implements ElevatorIO {
   @Override
   public void setVelocity(double velocity) {
     sim.setInputVoltage(velocity * 12);
+    System.out.println("Velocity is " + velocity);
   }
 
   @Override

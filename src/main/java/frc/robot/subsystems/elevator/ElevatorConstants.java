@@ -12,8 +12,8 @@ public class ElevatorConstants {
   // top height 50 inches (measured from bottom of elevator frame)
   // bottom height 12.375 inches (measured from bottom of frame)
   public static final double ELEVATOR_MAX_HEIGHT = 0.955675; // not including chasis
-  public static final double ELEVATOR_MIN_HEIGHT = 0;
-  public static final double ELEVATOR_STARTING_HEIGHT = 0.1;
+  public static final double ELEVATOR_MIN_HEIGHT = 0.213;
+  public static final double ELEVATOR_STARTING_HEIGHT = 0.3;
 
   // sysid stuff
   public static final double RAMP_RATE = 0.5;
@@ -24,7 +24,7 @@ public class ElevatorConstants {
   public static int RIGHT_MOTOR_ID = 5;
   public static IdleMode MOTOR_DEFAULT_IDLE_MODE = IdleMode.kBrake;
   /** Used for converting angular displacement into linear displacement */
-  public static double MOTOR_RADIUS_METERS = 1.0;
+  public static double MOTOR_RADIUS_METERS = 0.02;
   /** Gear ratio of the elevator motors */
   public static double GEAR_RATIO = 1.0;
 
@@ -37,14 +37,12 @@ public class ElevatorConstants {
   /** Tolerance used when checking if the elevator is at the setpoint */
   public static double SETPOINT_TOLERANCE_METERS = 0.01;
 
-  public static final double[] kElevatorRealPID = {0, 0, 0, 0};
+  public static final double[] kElevatorRealPID = {0.1, 0, 0, 0};
 
   public static final double ELEVATOR_MASS_KG = 5;
 
   public static class ElevatorSimConstants {
     public static final double[] kElevatorSimPID = {15, 0, 0, 0};
-    public static final int kEncoderAChannel = 2;
-    public static final int kEncoderBChannel = 3;
     // Convert from encoder steps to meters
 
     // 4096 pulses per revolution

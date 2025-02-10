@@ -37,7 +37,11 @@ public class ElevatorIOSparkMax implements ElevatorIO {
     leftEncoder = leftMotor.getAbsoluteEncoder();
 
     SparkMaxConfig leftConfig = new SparkMaxConfig();
-    leftConfig.smartCurrentLimit(Constants.NEO_CURRENT_LIMIT).idleMode(IdleMode.kBrake);
+    leftConfig
+      .smartCurrentLimit(Constants.NEO_CURRENT_LIMIT)
+      .idleMode(IdleMode.kBrake)
+      .voltageCompensation(12.0)
+      .inverted(true);
     leftConfig.closedLoop.pidf(kP, kI, kD, kFF);
     leftConfig
         .encoder
