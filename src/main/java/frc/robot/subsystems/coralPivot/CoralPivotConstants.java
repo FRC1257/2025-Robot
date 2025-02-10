@@ -31,6 +31,8 @@ public class CoralPivotConstants {
   public static final double STEP_VOLTAGE = 3.0;
   public static final double CORAL_PIVOT_TOLERANCE = 1.0;
 
+  public static final double CORAL_PIVOT_CONTROL_SPEED_FACTOR = 1.0;
+
   public static class CoralPivotSimConstants {
     public static final double[] kPivotSimPID = {15, 0, 0, 0};
 
@@ -50,5 +52,6 @@ public class CoralPivotConstants {
     public static final double kArmLength = Units.inchesToMeters(20);
     public static final double kMinAngleRads = Units.degreesToRadians(0);
     public static final double kMaxAngleRads = Units.degreesToRadians(180);
+
   }
 }

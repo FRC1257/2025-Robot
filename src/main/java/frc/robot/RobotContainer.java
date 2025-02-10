@@ -139,6 +139,9 @@ public class RobotContainer {
               drive.resetYaw();
             },
             drive));
+    coralPivot.setDefaultCommand(
+      coralPivot.ManualCommand(CORAL_PIVOT_ROTATE)
+    );
   }
 
   /**

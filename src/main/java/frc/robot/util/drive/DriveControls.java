@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
 import java.util.function.DoubleSupplier;
+import frc.robot.subsystems.coralPivot.CoralPivotConstants;
 
 public class DriveControls {
   // Controllers
@@ -23,6 +24,9 @@ public class DriveControls {
   public static Trigger DRIVE_SLOW;
   public static Trigger DRIVE_STOP;
   public static Trigger DRIVE_ROBOT_RELATIVE;
+
+  //Coral pivot controls
+  public static DoubleSupplier CORAL_PIVOT_ROTATE;
 
   // Drive Turns
   public static Trigger TURN_90;
@@ -56,6 +60,7 @@ public class DriveControls {
       case PROGRAMMERS:
       default:
         // Operator controls
+        CORAL_PIVOT_ROTATE = () -> (operator.getLeftY() * CoralPivotConstants.CORAL_PIVOT_CONTROL_SPEED_FACTOR);
 
         break;
 
