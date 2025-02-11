@@ -1,10 +1,10 @@
 package frc.robot.subsystems.elevator;
 
 import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
+import frc.robot.subsystems.elevator.ElevatorConstants.ElevatorSimConstants;
 
 public class ElevatorIOSim implements ElevatorIO {
   // from here
@@ -16,7 +16,7 @@ public class ElevatorIOSim implements ElevatorIO {
 
   // Standard classes for controlling our arm
   private final ProfiledPIDController m_controller;
-  private SimpleMotorFeedforward m_feedforward = new SimpleMotorFeedforward(0, 0);
+  private double kFF = ElevatorSimConstants.ELEVATOR_SIM_PID[3];
 
   // Simulation classes help us simulate what's going on, including gravity.
   // This arm sim represents an arm that can travel from -75 degrees (rotated down
@@ -26,9 +26,9 @@ public class ElevatorIOSim implements ElevatorIO {
   private ElevatorSim sim =
       new ElevatorSim(
           m_elevatorGearBox,
-          ElevatorConstants.GEAR_RATIO,
+          ElevatorSimConstants.GEAR_RATIO_SIM,
           ElevatorConstants.ELEVATOR_MASS_KG,
-          ElevatorConstants.MOTOR_RADIUS_METERS,
+          ElevatorConstants.DRUM_RADIUS_METERS,
           ElevatorConstants.ELEVATOR_MIN_HEIGHT,
           ElevatorConstants.ELEVATOR_MAX_HEIGHT,
           true, // change this to true later
@@ -37,9 +37,9 @@ public class ElevatorIOSim implements ElevatorIO {
   public ElevatorIOSim() {
     m_controller =
         new ProfiledPIDController(
-            ElevatorConstants.ElevatorSimConstants.kElevatorSimPID[0],
-            ElevatorConstants.ElevatorSimConstants.kElevatorSimPID[1],
-            ElevatorConstants.ElevatorSimConstants.kElevatorSimPID[2],
+            ElevatorSimConstants.ELEVATOR_SIM_PID[0],
+            ElevatorSimConstants.ELEVATOR_SIM_PID[1],
+            ElevatorSimConstants.ELEVATOR_SIM_PID[2],
             new TrapezoidProfile.Constraints(2.45, 2.45));
 
     m_controller.setTolerance(0.1, 0.05);
@@ -65,9 +65,8 @@ public class ElevatorIOSim implements ElevatorIO {
     m_controller.setGoal(setpoint);
     // With the setpoint value we run PID control like normal
     double pidOutput = m_controller.calculate(getPosition());
-    double feedforwardOutput = m_feedforward.calculate(m_controller.getSetpoint().velocity);
 
-    sim.setInputVoltage(feedforwardOutput + pidOutput);
+    sim.setInputVoltage(kFF + pidOutput);
   }
 
   @Override
@@ -86,9 +85,8 @@ public class ElevatorIOSim implements ElevatorIO {
   }
 
   @Override
-  public void setVelocity(double velocity) {
-    sim.setInputVoltage(velocity * 12);
-    System.out.println("Velocity is " + velocity);
+  public void setSpeed(double speed) {
+    sim.setInputVoltage(speed * 12);
   }
 
   @Override
@@ -107,6 +105,11 @@ public class ElevatorIOSim implements ElevatorIO {
   }
 
   @Override
+  public void setFF(double ff) {
+    this.kFF = ff;
+  }
+
+  @Override
   public double getP() {
     return m_controller.getP();
   }
@@ -119,5 +122,10 @@ public class ElevatorIOSim implements ElevatorIO {
   @Override
   public double getD() {
     return m_controller.getD();
+  }
+
+  @Override
+  public double getFF() {
+    return kFF;
   }
 }

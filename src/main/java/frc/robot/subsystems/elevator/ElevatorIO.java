@@ -22,18 +22,19 @@ public interface ElevatorIO {
    */
   public default void updateInputs(ElevatorIOInputs inputs) {}
 
-  /**
-   * Tells the elevator to start moving towards a setpoint (height)
-   *
-   * @param setpoint the target height the elevator is trying to go to
-   */
+  /** Returns the setpoint of the elevator */
   public default double getSetpoint() {
     return 0.0;
   }
 
+  /**
+   * Tells the elevator to start moving towards a setpoint (height)
+   *
+   * @param setpoint the target height, in meters, the elevator is trying to go to
+   */
   public default void goToSetpoint(double setpoint) {}
 
-  /** Gets the elevator's instantaneous height */
+  /** Returns the elevator's instantaneous height */
   public default double getPosition() {
     return 0.0;
   }
@@ -43,15 +44,17 @@ public interface ElevatorIO {
     return false;
   }
 
+  /** Returns the velocity of the elevator in meters per second */
   public default double getVelocity() {
     return 0.0;
   }
+
   /**
    * Sets the elevator's speed
    *
-   * @param velocity speed factor from -1 to 1 (1 is max velocity)
+   * @param speed speed factor from -1 to 1
    */
-  public default void setVelocity(double velocity) {}
+  public default void setSpeed(double speed) {}
 
   /**
    * Sets the brakemode of both motors

@@ -1,6 +1,7 @@
 package frc.robot.subsystems.elevator;
 
 import com.revrobotics.AbsoluteEncoder;
+import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
@@ -23,10 +24,10 @@ public class ElevatorIOSparkMax implements ElevatorIO {
 
   // Because sparkmax does not have getters for pid, use these variables to keep track of dynamic
   // pid values
-  private double kP = ElevatorConstants.kElevatorRealPID[0];
-  private double kI = ElevatorConstants.kElevatorRealPID[1];
-  private double kD = ElevatorConstants.kElevatorRealPID[2];
-  private double kFF = ElevatorConstants.kElevatorRealPID[3];
+  private double kP = ElevatorConstants.ELEVATOR_REAL_PID[0];
+  private double kI = ElevatorConstants.ELEVATOR_REAL_PID[1];
+  private double kD = ElevatorConstants.ELEVATOR_REAL_PID[2];
+  private double kFF = ElevatorConstants.ELEVATOR_REAL_PID[3];
 
   public ElevatorIOSparkMax() {
     leftMotor = new SparkMax(ElevatorConstants.LEFT_MOTOR_ID, MotorType.kBrushless);
@@ -38,15 +39,17 @@ public class ElevatorIOSparkMax implements ElevatorIO {
 
     SparkMaxConfig leftConfig = new SparkMaxConfig();
     leftConfig
-      .smartCurrentLimit(Constants.NEO_CURRENT_LIMIT)
-      .idleMode(IdleMode.kBrake)
-      .voltageCompensation(12.0)
-      .inverted(true);
-    leftConfig.closedLoop.pidf(kP, kI, kD, kFF);
+        .smartCurrentLimit(Constants.NEO_CURRENT_LIMIT)
+        .idleMode(ElevatorConstants.MOTOR_DEFAULT_IDLE_MODE)
+        .voltageCompensation(12.0)
+        .inverted(true);
     leftConfig
         .encoder
         .positionConversionFactor(ElevatorConstants.POSITION_CONVERSION_FACTOR)
         .velocityConversionFactor(ElevatorConstants.POSITION_CONVERSION_FACTOR / 60.0);
+
+    leftConfig.closedLoop.pidf(kP, kI, kD, 0);
+    leftConfig.closedLoop.maxMotion.maxVelocity(1).maxAcceleration(1);
 
     SparkMaxConfig rightConfig = new SparkMaxConfig();
     rightConfig.apply(leftConfig);
@@ -84,6 +87,11 @@ public class ElevatorIOSparkMax implements ElevatorIO {
   }
 
   @Override
+  public double getSetpoint() {
+    return setpoint;
+  }
+
+  @Override
   public double getPosition() {
     // get the absolute position in radians, then convert to meters
     return (leftEncoder.getPosition() + ElevatorConstants.ELEVATOR_OFFSET_METERS);
@@ -92,7 +100,9 @@ public class ElevatorIOSparkMax implements ElevatorIO {
   @Override
   public void goToSetpoint(double setpoint) {
     this.setpoint = setpoint;
-    leftController.setReference(setpoint, ControlType.kPosition);
+
+    leftController.setReference(
+        setpoint, ControlType.kMAXMotionPositionControl, ClosedLoopSlot.kSlot0, kFF);
   }
 
   @Override
@@ -107,8 +117,8 @@ public class ElevatorIOSparkMax implements ElevatorIO {
   }
 
   @Override
-  public void setVelocity(double velocity) {
-    leftMotor.set(velocity);
+  public void setSpeed(double speed) {
+    leftMotor.set(speed);
   }
 
   @Override
@@ -165,8 +175,5 @@ public class ElevatorIOSparkMax implements ElevatorIO {
   @Override
   public void setFF(double kFF) {
     this.kFF = kFF;
-    SparkMaxConfig config = new SparkMaxConfig();
-    config.closedLoop.velocityFF(kFF);
-    updateMotorConfig(config);
   }
 }

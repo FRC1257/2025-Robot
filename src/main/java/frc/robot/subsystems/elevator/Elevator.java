@@ -18,7 +18,6 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
-
 import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
@@ -62,7 +61,7 @@ public class Elevator extends SubsystemBase {
                 Volts.of(ElevatorConstants.STEP_VOLTAGE),
                 null),
             new SysIdRoutine.Mechanism(
-                v -> io.setVelocity(v.in(Volts) / 12.0),
+                v -> io.setSpeed(v.in(Volts) / 12.0),
                 (sysidLog) -> {
                   sysidLog
                       .motor("Elevator")
@@ -123,12 +122,12 @@ public class Elevator extends SubsystemBase {
     return io.atSetpoint();
   }
 
-  public void setVelocity(double velocity) {
-    if ((io.getPosition() < ElevatorConstants.ELEVATOR_MIN_HEIGHT && velocity < 0)
-        || (io.getPosition() > ElevatorConstants.ELEVATOR_MAX_HEIGHT && velocity > 0)) {
-      io.setVelocity(0);
+  public void setSpeed(double speed) {
+    if ((io.getPosition() < ElevatorConstants.ELEVATOR_MIN_HEIGHT && speed < 0)
+        || (io.getPosition() > ElevatorConstants.ELEVATOR_MAX_HEIGHT && speed > 0)) {
+      io.setSpeed(0);
     } else {
-    io.setVelocity(velocity);
+      io.setSpeed(speed);
     }
   }
 
@@ -137,7 +136,7 @@ public class Elevator extends SubsystemBase {
     return new FunctionalCommand(
         () -> setSetpoint(setpoint),
         () -> setSetpoint(setpoint),
-        (interrupted) -> setVelocity(0),
+        (interrupted) -> setSpeed(0),
         () -> false,
         this);
   }
@@ -151,7 +150,7 @@ public class Elevator extends SubsystemBase {
     return new FunctionalCommand(
         () -> setSetpoint(setpoint),
         () -> setSetpoint(setpoint),
-        (interrupted) -> setVelocity(0),
+        (interrupted) -> setSpeed(0),
         () -> atSetpoint(),
         this);
   }
@@ -160,7 +159,7 @@ public class Elevator extends SubsystemBase {
     return new FunctionalCommand(
         () -> setSetpoint(setpointSupplier.getAsDouble()),
         () -> setSetpoint(setpointSupplier.getAsDouble()),
-        (interrupted) -> setVelocity(0),
+        (interrupted) -> setSpeed(0),
         () -> atSetpoint(),
         this);
   }
@@ -168,48 +167,52 @@ public class Elevator extends SubsystemBase {
   /** Control the elevator by providing a velocity */
   public Command ManualCommand(double speed) {
     return new FunctionalCommand(
-        () -> setVelocity(speed),
-        () -> setVelocity(speed),
-        (interrupted) -> setVelocity(0),
+        () -> setSpeed(speed),
+        () -> setSpeed(speed),
+        (interrupted) -> setSpeed(0),
         () -> false,
         this);
   }
   /** Control the elevator by providing a velocity */
   public Command ManualCommand(DoubleSupplier speedSupplier) {
     return new FunctionalCommand(
-        () -> setVelocity(speedSupplier.getAsDouble()),
-        () -> setVelocity(speedSupplier.getAsDouble()),
-        (interrupted) -> setVelocity(0),
+        () -> setSpeed(speedSupplier.getAsDouble()),
+        () -> setSpeed(speedSupplier.getAsDouble()),
+        (interrupted) -> setSpeed(0),
         () -> false,
         this);
   }
 
   public Command quasistaticForward() {
-      return SysId
-          .quasistatic(Direction.kForward)
-          .until(() -> io.getPosition() > ElevatorConstants.ELEVATOR_MAX_HEIGHT)
-              .alongWith(new InstantCommand(() -> Logger.recordOutput("PivotArm/sysid-test-state-", "quasistatic-forward")));
-    }
-  
+    return SysId.quasistatic(Direction.kForward)
+        .until(() -> io.getPosition() > ElevatorConstants.ELEVATOR_MAX_HEIGHT)
+        .alongWith(
+            new InstantCommand(
+                () -> Logger.recordOutput("Elevator/sysid-test-state-", "quasistatic-forward")));
+  }
+
   public Command quasistaticBack() {
-      return SysId
-          .quasistatic(Direction.kReverse)
-          .until(() -> io.getPosition() > ElevatorConstants.ELEVATOR_MIN_HEIGHT)
-              .alongWith(new InstantCommand(() -> Logger.recordOutput("PivotArm/sysid-test-state-", "quasistatic-reverse")));
+    return SysId.quasistatic(Direction.kReverse)
+        .until(() -> io.getPosition() > ElevatorConstants.ELEVATOR_MIN_HEIGHT)
+        .alongWith(
+            new InstantCommand(
+                () -> Logger.recordOutput("Elevator/sysid-test-state-", "quasistatic-reverse")));
   }
 
   public Command dynamicForward() {
-      return SysId
-          .dynamic(Direction.kForward)
-          .until(() -> io.getPosition() > ElevatorConstants.ELEVATOR_MAX_HEIGHT)
-              .alongWith(new InstantCommand(() -> Logger.recordOutput("PivotArm/sysid-test-state-", "dynamic-forward")));
+    return SysId.dynamic(Direction.kForward)
+        .until(() -> io.getPosition() > ElevatorConstants.ELEVATOR_MAX_HEIGHT)
+        .alongWith(
+            new InstantCommand(
+                () -> Logger.recordOutput("Elevator/sysid-test-state-", "dynamic-forward")));
   }
 
   public Command dynamicBack() {
-      return SysId
-          .dynamic(Direction.kReverse)
-          .until(() -> io.getPosition() > ElevatorConstants.ELEVATOR_MIN_HEIGHT)
-              .alongWith(new InstantCommand(() -> Logger.recordOutput("PivotArm/sysid-test-state-", "dynamic-reverse")));
+    return SysId.dynamic(Direction.kReverse)
+        .until(() -> io.getPosition() > ElevatorConstants.ELEVATOR_MIN_HEIGHT)
+        .alongWith(
+            new InstantCommand(
+                () -> Logger.recordOutput("Elevator/sysid-test-state-", "dynamic-reverse")));
   }
 }
 
