@@ -91,10 +91,7 @@ public class VisionIOSim implements VisionIO {
       inputs.estimate = getEstimatesArray(results, camEstimators);
       inputs.hasEstimate = true;
 
-      int[][] cameraTargets = getCameraTargets(results);
-      inputs.camera1Targets = cameraTargets[0];
-      inputs.camera2Targets = cameraTargets[1];
-      inputs.camera3Targets = cameraTargets[2];
+      inputs.cameraTargets = getCameraTargets(results);
 
       Pose3d[] tags = getTargetsPositions(results);
       Logger.recordOutput("Vision/Targets3D", tags);
@@ -106,8 +103,8 @@ public class VisionIOSim implements VisionIO {
     }
 
     Logger.recordOutput("Vision/OrangeConnected", cameras[0].isConnected());
-    Logger.recordOutput("Vision/RaspberryConnected", cameras[1].isConnected());
-    Logger.recordOutput("Vision/Raspberry2Connected", cameras[2].isConnected());
+    // Logger.recordOutput("Vision/RaspberryConnected", cameras[1].isConnected());
+    // Logger.recordOutput("Vision/Raspberry2Connected", cameras[2].isConnected());
   }
 
   /** A Field2d for visualizing our robot and objects on the field. */

@@ -23,6 +23,7 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
+import frc.robot.Constants;
 
 /**
  * Physics sim implementation of module IO.
@@ -50,6 +51,10 @@ public class ModuleIOSim implements ModuleIO {
   private final SimpleMotorFeedforward driveFeedforward = new SimpleMotorFeedforward(0.0, 0.13);
   private final PIDController driveFeedback = new PIDController(0.1, 0.0, 0.0);
   private final PIDController turnFeedback = new PIDController(10.0, 0.0, 0.0);
+
+  public ModuleIOSim() {
+    turnFeedback.enableContinuousInput(0, 2 * Constants.PI);
+  }
 
   @Override
   public void updateInputs(ModuleIOInputs inputs) {

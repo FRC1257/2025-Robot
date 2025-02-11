@@ -41,24 +41,21 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.FieldConstants;
 import frc.robot.subsystems.vision.VisionConstants;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOInputsAutoLogged;
 import frc.robot.util.autonomous.LocalADStarAK;
 import frc.robot.util.drive.AllianceFlipUtil;
-import frc.robot.util.misc.Elastic;
-
 import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
-import frc.robot.FieldConstants;
+import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 public class Drive extends SubsystemBase {
   // private static final double DRIVE_BASE_RADIUS = Math.hypot(kTrackWidthX / 2.0, kTrackWidthY /
@@ -99,7 +96,8 @@ public class Drive extends SubsystemBase {
 
   private Rotation2d simRotation = new Rotation2d();
 
-  private final SendableChooser<Translation2d> startPositionChooser = new SendableChooser<>();
+  private final LoggedDashboardChooser<Translation2d> startPositionChooser =
+      new LoggedDashboardChooser("startPosition");
 
   public Drive(
       GyroIO gyroIO,
@@ -117,12 +115,17 @@ public class Drive extends SubsystemBase {
 
     this.visionIO = visionIO;
 
-    startPositionChooser.addOption("s1", FieldConstants.Barge.farCage);
-    startPositionChooser.addOption("s2", FieldConstants.Barge.middleCage);
-    startPositionChooser.addOption("s3", FieldConstants.Barge.closeCage);
+    Translation2d startPos1 =
+        new Translation2d(FieldConstants.startingLineX, FieldConstants.Barge.farCage.getY());
+    Translation2d startPos2 =
+        new Translation2d(FieldConstants.startingLineX, FieldConstants.Barge.middleCage.getY());
+    Translation2d startPos3 =
+        new Translation2d(FieldConstants.startingLineX, FieldConstants.Barge.closeCage.getY());
 
-    SmartDashboard.putData("startPosition", startPositionChooser);
-    
+    startPositionChooser.addDefaultOption("s1", startPos1);
+    startPositionChooser.addOption("s2", startPos2);
+    startPositionChooser.addOption("s3", startPos3);
+
     try {
       config = RobotConfig.fromGUISettings();
     } catch (Exception e) {
@@ -204,8 +207,8 @@ public class Drive extends SubsystemBase {
   }
 
   public void setStartPosition() {
-    Translation2d selectedPosition = startPositionChooser.getSelected();
-    poseEstimator.resetTranslation(selectedPosition);
+    Translation2d selectedPosition = startPositionChooser.get();
+    poseEstimator.resetTranslation(AllianceFlipUtil.apply(selectedPosition));
   }
 
   public void periodic() {
@@ -265,9 +268,10 @@ public class Drive extends SubsystemBase {
     // Update gyro angle
     if (gyroInputs.connected) {
       // Use the real gyro angle
-      rawGyroRotation = gyroInputs.yawPosition;
+      rawGyroRotation = Rotation2d.fromDegrees(gyroIO.getYawAngle());
     } else {
       rawGyroRotation = simRotation;
+      gyroInputs.yawPosition = simRotation;
     }
 
     poseEstimator.update(rawGyroRotation, modulePositions);
@@ -308,6 +312,7 @@ public class Drive extends SubsystemBase {
 
   public void resetYaw() {
     gyroIO.zeroAll();
+    simRotation = Rotation2d.fromDegrees(0);
     setPose(AllianceFlipUtil.apply(new Pose2d()));
   }
 
@@ -383,8 +388,8 @@ public class Drive extends SubsystemBase {
     return getPose().getRotation();
   } */
   public Rotation2d getRotation() {
-    return Rotation2d.fromDegrees(gyroIO.getYawAngle());
-    // return getPose().getRotation();
+    // return Rotation2d.fromDegrees(gyroIO.getYawAngle());
+    return getPose().getRotation();
   }
 
   /** Resets the current odometry pose. */
@@ -442,7 +447,7 @@ public class Drive extends SubsystemBase {
   }
 
   /* Configure trajectory following */
-  public Command goToPose(Pose2d target_pose, double end_velocity, double time_before_turn) {
+  public Command goToPose(Pose2d target_pose, double end_velocity) {
     return AutoBuilder.pathfindToPose(target_pose, kPathConstraints, end_velocity);
   }
 

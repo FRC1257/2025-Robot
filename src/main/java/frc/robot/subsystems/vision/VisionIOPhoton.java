@@ -58,16 +58,7 @@ public class VisionIOPhoton implements VisionIO {
       inputs.estimate = getEstimatesArray(results, photonEstimators);
       inputs.hasEstimate = true;
 
-      int[][] cameraTargets = getCameraTargets(results);
-      inputs.camera1Targets = cameraTargets[0];
-
-      // if (killSideCams.get()) {
-      //   inputs.camera2Targets = new int[0];
-      //   inputs.camera3Targets = new int[0];
-      // } else {
-      //   inputs.camera2Targets = cameraTargets[1];
-      //   inputs.camera3Targets = cameraTargets[2];
-      // }
+      inputs.cameraTargets = getCameraTargets(results);
 
       Pose3d[] tags = getTargetsPositions(results);
       Logger.recordOutput("Vision/Targets3D", tags);
