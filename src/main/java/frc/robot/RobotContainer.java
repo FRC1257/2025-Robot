@@ -28,6 +28,10 @@ import frc.robot.subsystems.drive.GyroIOReal;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOSparkMax;
+import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.subsystems.elevator.ElevatorIO;
+import frc.robot.subsystems.elevator.ElevatorIOSim;
+import frc.robot.subsystems.elevator.ElevatorIOSparkMax;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOPhoton;
 import frc.robot.subsystems.vision.VisionIOSim;
@@ -43,8 +47,10 @@ public class RobotContainer {
   // Subsystems
   private final Drive drive;
   private final CoralPivot coralPivot;
+  private final Elevator elevator;
 
-  private Mechanism2d mech = new Mechanism2d(3, 3);
+  private Mechanism2d coralPivotMech = new Mechanism2d(3, 3);
+  private Mechanism2d elevatorMech = new Mechanism2d(3, 3);
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -62,7 +68,9 @@ public class RobotContainer {
                 new ModuleIOSparkMax(2),
                 new ModuleIOSparkMax(3),
                 new VisionIOPhoton());
+        
         coralPivot = new CoralPivot(new CoralPivotIOSparkMax());
+        elevator = new Elevator(new ElevatorIOSparkMax());
 
         break;
 
@@ -78,7 +86,7 @@ public class RobotContainer {
                 new VisionIOSim());
 
         coralPivot = new CoralPivot(new CoralPivotIOSim());
-
+        elevator = new Elevator(new ElevatorIOSim());
         break;
 
         // Replayed robot, disable IO implementations
@@ -93,15 +101,21 @@ public class RobotContainer {
                 new VisionIO() {});
 
         coralPivot = new CoralPivot(new CoralPivotIO() {});
+        elevator = new Elevator(new ElevatorIO() {});
         break;
     }
 
     // Set up robot state manager
 
-    MechanismRoot2d root = mech.getRoot("pivot", 1, 0.5);
-    root.append(coralPivot.getArmMechanism());
+    MechanismRoot2d coralPivotRoot = coralPivotMech.getRoot("coral pivot", 1, 0.5);
+    coralPivotRoot.append(coralPivot.getArmMechanism());
     // add subsystem mechanisms
-    SmartDashboard.putData("Coral Pivot Mechanism", mech);
+    SmartDashboard.putData("Coral Pivot Mechanism", coralPivotMech);
+
+    MechanismRoot2d elevatorRoot = elevatorMech.getRoot("elevator", 1, 0.5);
+    elevatorRootoot.append(elevator.getElevatorMechanism());
+    // add subsystem mechanisms
+    SmartDashboard.putData("Elevator Mechanism", elevatorMech);
 
     // Set up auto routines
     /* NamedCommands.registerCommand(
@@ -141,9 +155,14 @@ public class RobotContainer {
               drive.resetYaw();
             },
             drive));
+
     coralPivot.setDefaultCommand(coralPivot.ManualCommand(CORAL_PIVOT_ROTATE));
     CORAL_PIVOT_L2_3.onTrue(coralPivot.InstantPIDCommand(-0.2));
     CORAL_PIVOT_DOWN.onTrue(coralPivot.InstantPIDCommand(Units.degreesToRadians(-70)));
+
+    elevator.setDefaultCommand(elevator.ManualCommand(ELEVATOR_SPEED));
+    ELEVATOR_L1.onTrue(elevator.InstantPIDCommand(0.5));
+    ELEVATOR_DOWN.onTrue(elevator.InstantPIDCommand(0));
   }
 
   /**
