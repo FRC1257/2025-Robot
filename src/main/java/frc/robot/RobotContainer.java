@@ -137,7 +137,8 @@ public class RobotContainer {
             drive));
 
     elevator.setDefaultCommand(elevator.ManualCommand(ELEVATOR_SPEED));
-    ELEVATOR_L1.whileTrue(elevator.PIDCommandForever(0.5));
+    ELEVATOR_L1.onTrue(elevator.InstantPIDCommand(0.5));
+    ELEVATOR_DOWN.onTrue(elevator.InstantPIDCommand(0));
   }
 
   /**

@@ -7,8 +7,7 @@ public class ElevatorConstants {
   // top height 50 inches (measured from bottom of elevator frame)
   // bottom height 12.375 inches (measured from bottom of frame)
   public static final double ELEVATOR_MAX_HEIGHT = 0.955675; // not including chasis
-  public static final double ELEVATOR_MIN_HEIGHT = 0.213;
-  public static final double ELEVATOR_STARTING_HEIGHT = 0.3;
+  public static final double ELEVATOR_MIN_HEIGHT = 0;
 
   // sysid stuff
   public static final double RAMP_RATE = 0.5;
@@ -46,6 +45,7 @@ public class ElevatorConstants {
     // Convert from encoder steps to meters
 
     public static final double GEAR_RATIO_SIM = 1;
+    public static final double ELEVATOR_STARTING_HEIGHT = 0.2;
 
     // 4096 pulses per revolution
     // (2pi radians / 4096) * gear ratio

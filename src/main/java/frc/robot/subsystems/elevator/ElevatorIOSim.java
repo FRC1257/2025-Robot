@@ -34,7 +34,7 @@ public class ElevatorIOSim implements ElevatorIO {
           ElevatorConstants.ELEVATOR_MIN_HEIGHT,
           ElevatorConstants.ELEVATOR_MAX_HEIGHT,
           true, // change this to true later
-          ElevatorConstants.ELEVATOR_STARTING_HEIGHT);
+          ElevatorSimConstants.ELEVATOR_STARTING_HEIGHT);
 
   public ElevatorIOSim() {
     m_controller =

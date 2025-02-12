@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
@@ -43,6 +44,16 @@ public class Elevator extends SubsystemBase {
   private MechanismLigament2d elevatorMechanism = getElevatorMechanism();
 
   private SysIdRoutine SysId;
+
+  public static enum State {
+    MANUAL,
+    PID,
+    SYSID
+  }
+
+  private State elevatorState = State.MANUAL;
+  private double setpoint = 0;
+  private double manualSpeed = 0;
 
   public Elevator(ElevatorIO io) {
     this.io = io;
@@ -78,6 +89,18 @@ public class Elevator extends SubsystemBase {
     io.updateInputs(inputs);
     Logger.processInputs("Elevator", inputs);
 
+    // Move elevator based on state
+    switch (elevatorState) {
+      case MANUAL:
+        move(manualSpeed);
+        break;
+      case PID:
+        io.goToSetpoint(setpoint);
+        break;
+      default:
+        break;
+    }
+
     elevatorMechanism.setLength(io.getPosition());
 
     // Update the PID constants if they have changed
@@ -95,6 +118,18 @@ public class Elevator extends SubsystemBase {
     Logger.recordOutput(
         "Elevator/ElevatorAbsoluteEncoderConnected",
         inputs.positionMeters != ElevatorConstants.ELEVATOR_OFFSET_METERS);
+  }
+
+  public void setPID(double setpoint) {
+    this.setpoint = setpoint;
+    elevatorState = State.PID;
+  }
+
+  public void setManual(double speed) {
+    manualSpeed = speed;
+    if (speed != 0) {
+      elevatorState = State.MANUAL;
+    }
   }
 
   public void setMechanism(MechanismLigament2d mechanism) {
@@ -131,67 +166,39 @@ public class Elevator extends SubsystemBase {
     }
   }
 
-  /** Runs PID Command and keeps running it after it reaches setpoint
-   * @param setpoint the setpoint in meters
-   */
-  public Command PIDCommandForever(double setpoint) {
-    return new FunctionalCommand(
-        () -> setSetpoint(setpoint),
-        () -> setSetpoint(setpoint),
-        (interrupted) -> move(0),
-        () -> false,
-        this);
-  }
-  /** Runs PID Command and keeps running it after it reaches setpoint
-   * @param setpoint the setpoint in meters
-   */
-  public Command PIDCommandForever(DoubleSupplier setpointSupplier) {
-    return PIDCommandForever(setpointSupplier.getAsDouble());
-  }
-
-  /** Runs PID and stops when at setpoint
+  /**
+   * Runs PID and stops when at setpoint
+   *
    * @param setpoint the setpoint in meters
    */
   public Command PIDCommand(double setpoint) {
-    return new FunctionalCommand(
-        () -> setSetpoint(setpoint),
-        () -> setSetpoint(setpoint),
-        (interrupted) -> move(0),
-        () -> atSetpoint(),
-        this);
+    return new RunCommand(() -> setPID(setpoint), this)
+        .until(() -> atSetpoint())
+        .andThen(() -> move(0));
   }
-  /** Runs PID and stops when at setpoint
-   * @param setpoint the setpoint in meters
-   */
-  public Command PIDCommand(DoubleSupplier setpointSupplier) {
-    return new FunctionalCommand(
-        () -> setSetpoint(setpointSupplier.getAsDouble()),
-        () -> setSetpoint(setpointSupplier.getAsDouble()),
-        (interrupted) -> move(0),
-        () -> atSetpoint(),
-        this);
+
+  public Command InstantPIDCommand(double setpoint) {
+    return new InstantCommand(() -> setPID(setpoint));
   }
 
   /** Control the elevator by providing a velocity from -1 to 1 */
   public Command ManualCommand(double speed) {
     return new FunctionalCommand(
-        () -> move(speed),
-        () -> move(speed),
-        (interrupted) -> move(0),
-        () -> false,
-        this);
+        () -> move(speed), () -> move(speed), (interrupted) -> move(0), () -> false, this);
   }
+
   /** Control the elevator by providing a velocity from -1 to 1 */
   public Command ManualCommand(DoubleSupplier speedSupplier) {
-    return new FunctionalCommand(
-        () -> move(speedSupplier.getAsDouble()),
-        () -> move(speedSupplier.getAsDouble()),
-        (interrupted) -> move(0),
-        () -> false,
-        this);
+    return new RunCommand(() -> setManual(speedSupplier.getAsDouble()), this)
+        .andThen(
+            () -> {
+              manualSpeed = 0;
+              move(0);
+            });
   }
 
   public Command quasistaticForward() {
+    elevatorState = State.SYSID;
     return SysId.quasistatic(Direction.kForward)
         .until(() -> io.getPosition() > ElevatorConstants.ELEVATOR_MAX_HEIGHT)
         .alongWith(
@@ -200,6 +207,7 @@ public class Elevator extends SubsystemBase {
   }
 
   public Command quasistaticBack() {
+    elevatorState = State.SYSID;
     return SysId.quasistatic(Direction.kReverse)
         .until(() -> io.getPosition() > ElevatorConstants.ELEVATOR_MIN_HEIGHT)
         .alongWith(
@@ -208,6 +216,7 @@ public class Elevator extends SubsystemBase {
   }
 
   public Command dynamicForward() {
+    elevatorState = State.SYSID;
     return SysId.dynamic(Direction.kForward)
         .until(() -> io.getPosition() > ElevatorConstants.ELEVATOR_MAX_HEIGHT)
         .alongWith(
@@ -216,6 +225,7 @@ public class Elevator extends SubsystemBase {
   }
 
   public Command dynamicBack() {
+    elevatorState = State.SYSID;
     return SysId.dynamic(Direction.kReverse)
         .until(() -> io.getPosition() > ElevatorConstants.ELEVATOR_MIN_HEIGHT)
         .alongWith(
@@ -223,5 +233,3 @@ public class Elevator extends SubsystemBase {
                 () -> Logger.recordOutput("Elevator/sysid-test-state-", "dynamic-reverse")));
   }
 }
-
-// add quasistatic and dynamic for sysid later !!!!!
