@@ -276,6 +276,7 @@ public class Drive extends SubsystemBase {
 
     poseEstimator.update(rawGyroRotation, modulePositions);
     odometry.update(rawGyroRotation, modulePositions);
+    poseEstimator.resetRotation(rawGyroRotation); // Remove this if gyro drifts a lot
 
     Logger.recordOutput("Odometry/Odometry", odometry.getPoseMeters());
   }
