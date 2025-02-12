@@ -17,7 +17,11 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.FeedForwardCharacterization;
-// this is for the coralPivot
+import frc.robot.subsystems.coralIntake.CoralIntake;
+import frc.robot.subsystems.coralIntake.CoralIntakeConstants;
+import frc.robot.subsystems.coralIntake.CoralIntakeIO;
+import frc.robot.subsystems.coralIntake.CoralIntakeIOSim;
+import frc.robot.subsystems.coralIntake.CoralIntakeIOSparkMax;
 import frc.robot.subsystems.coralPivot.CoralPivot;
 import frc.robot.subsystems.coralPivot.CoralPivotIO;
 import frc.robot.subsystems.coralPivot.CoralPivotIOSim;
@@ -46,6 +50,7 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 public class RobotContainer {
   // Subsystems
   private final Drive drive;
+  private final CoralIntake coralIntake;
   private final CoralPivot coralPivot;
   private final Elevator elevator;
 
@@ -68,10 +73,9 @@ public class RobotContainer {
                 new ModuleIOSparkMax(2),
                 new ModuleIOSparkMax(3),
                 new VisionIOPhoton());
-        
+        coralIntake = new CoralIntake(new CoralIntakeIOSparkMax());
         coralPivot = new CoralPivot(new CoralPivotIOSparkMax());
         elevator = new Elevator(new ElevatorIOSparkMax());
-
         break;
 
         // Sim robot, instantiate physics sim IO implementations
@@ -84,7 +88,7 @@ public class RobotContainer {
                 new ModuleIOSim(),
                 new ModuleIOSim(),
                 new VisionIOSim());
-
+        coralIntake = new CoralIntake(new CoralIntakeIOSim());
         coralPivot = new CoralPivot(new CoralPivotIOSim());
         elevator = new Elevator(new ElevatorIOSim());
         break;
@@ -99,7 +103,7 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new VisionIO() {});
-
+        coralIntake = new CoralIntake(new CoralIntakeIO() {});
         coralPivot = new CoralPivot(new CoralPivotIO() {});
         elevator = new Elevator(new ElevatorIO() {});
         break;
@@ -155,6 +159,10 @@ public class RobotContainer {
               drive.resetYaw();
             },
             drive));
+
+    // Coral Intake Controls
+    INTAKE_CORAL.whileTrue(coralIntake.ManualCommand(CoralIntakeConstants.CORAL_INTAKE_IN_VOLTAGE));
+    SHOOT_CORAL.whileTrue(coralIntake.ManualCommand(CoralIntakeConstants.CORAL_INTAKE_OUT_VOLTAGE));
 
     coralPivot.setDefaultCommand(coralPivot.ManualCommand(CORAL_PIVOT_ROTATE));
     CORAL_PIVOT_L2_3.onTrue(coralPivot.InstantPIDCommand(-0.2));

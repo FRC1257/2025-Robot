@@ -78,6 +78,9 @@ public final class Constants {
     public static final int DRIVE_FRONT_RIGHT = 2;
     public static final int DRIVE_BACK_LEFT = 3;
     public static final int DRIVE_BACK_RIGHT = 4;
+
+    // Coral Intake
+    public static final int CORAL_INTAKE_MOTOR = 6;
   }
   ;
 

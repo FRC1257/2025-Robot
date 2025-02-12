@@ -40,6 +40,10 @@ public class DriveControls {
   // Potential Hail Marry Program [Suggested by Owen]
   public static Trigger SHOOT_FROM_SOURCE;
 
+  // Coral Intake Controls
+  public static Trigger INTAKE_CORAL;
+  public static Trigger SHOOT_CORAL;
+
   // Elevator Controls
   public static DoubleSupplier ELEVATOR_SPEED;
   public static Trigger ELEVATOR_L1;
@@ -69,6 +73,9 @@ public class DriveControls {
       case PROGRAMMERS:
       default:
         // Operator controls
+        INTAKE_CORAL = operator.a();
+        SHOOT_CORAL = operator.b();
+
         CORAL_PIVOT_ROTATE = () -> (operator.getLeftY());
         CORAL_PIVOT_L2_3 = operator.a();
         CORAL_PIVOT_DOWN = operator.b();
