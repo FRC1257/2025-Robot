@@ -19,7 +19,6 @@ public class CoralIntake extends SubsystemBase {
 
   public void periodic() {
     io.updateInputs(inputs);
-    // Update PID constants to ensure they are up to date
 
     Logger.processInputs("CoralIntake", inputs);
 
@@ -41,30 +40,17 @@ public class CoralIntake extends SubsystemBase {
     io.setBrake(brake);
   }
 
-  /**
-   * Uses input from controller to set speed of the flywheel and is used as the default command for
-   * the intake
-   */
-  public Command speedCommand(DoubleSupplier speed) {
-    return new FunctionalCommand(
-        () -> {},
-        () -> io.setSpeed(speed.getAsDouble()),
-        (stop) -> io.setSpeed(0),
-        () -> false,
-        this);
-  }
   // Allows manual command of the flywheel for testing
-  public Command manualCommand(DoubleSupplier velocity) {
+  public Command ManualCommand(DoubleSupplier velocitySupplier) {
     return new FunctionalCommand(
         () -> {},
-        () -> io.setVoltage(velocity.getAsDouble()),
+        () -> io.setVoltage(velocitySupplier.getAsDouble() * 12),
         (stop) -> io.setVoltage(0),
         () -> false,
         this);
   }
 
-  public Command stop() {
-    return new FunctionalCommand(
-        () -> {}, () -> io.setVoltage(0), (stop) -> io.setVoltage(0), () -> false, this);
+  public Command ManualCommand(double velocity) {
+    return ManualCommand(() -> velocity);
   }
 }

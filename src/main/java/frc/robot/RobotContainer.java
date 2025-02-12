@@ -137,8 +137,8 @@ public class RobotContainer {
             drive));
 
     // Coral Intake Controls
-    INTAKE_CORAL.whileTrue(coralIntake.manualCommand(CoralIntakeConstants.CORAL_INTAKE_IN_VOLTAGE));
-    SHOOT_CORAL.whileTrue(coralIntake.manualCommand(CoralIntakeConstants.CORAL_INTAKE_OUT_VOLTAGE));
+    INTAKE_CORAL.whileTrue(coralIntake.ManualCommand(CoralIntakeConstants.CORAL_INTAKE_IN_VOLTAGE));
+    SHOOT_CORAL.whileTrue(coralIntake.ManualCommand(CoralIntakeConstants.CORAL_INTAKE_OUT_VOLTAGE));
   }
 
   /**

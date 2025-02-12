@@ -18,8 +18,6 @@ public class CoralIntakeIOSparkMax implements CoralIntakeIO {
   private SparkMax motor;
   private RelativeEncoder encoder;
 
-  private double desiredSpeed;
-
   public CoralIntakeIOSparkMax() {
     /** ID needs to be assigned from constants */
     // setPIDConstants(kGroundIntakeP, kGroundIntakeI, kGroundIntakeD);
@@ -43,7 +41,6 @@ public class CoralIntakeIOSparkMax implements CoralIntakeIO {
     inputs.currentAmps = new double[] {motor.getOutputCurrent()};
     inputs.tempCelcius = new double[] {motor.getMotorTemperature()};
     inputs.velocityRadsPerSec = encoder.getVelocity();
-    inputs.speedSetpoint = desiredSpeed;
   }
 
   /** sets voltage to run motor if necessary */

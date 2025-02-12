@@ -14,7 +14,6 @@ public class CoralIntakeIOSim implements CoralIntakeIO {
           DCMotor.getNEO(1));
 
   private double appliedVoltage = 0.0;
-  private double desiredSpeed;
 
   public CoralIntakeIOSim() {}
 
@@ -25,17 +24,11 @@ public class CoralIntakeIOSim implements CoralIntakeIO {
     inputs.appliedVoltage = appliedVoltage;
     inputs.currentAmps = new double[] {sim.getCurrentDrawAmps()};
     inputs.tempCelcius = new double[] {60};
-    inputs.speedSetpoint = desiredSpeed;
   }
 
   @Override
   public void setVoltage(double volts) {
     appliedVoltage = volts;
     sim.setInputVoltage(volts);
-  }
-
-  @Override
-  public void setSpeed(double speed) {
-    desiredSpeed = speed;
   }
 }
