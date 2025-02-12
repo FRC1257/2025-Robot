@@ -24,6 +24,11 @@ public class DriveControls {
   public static Trigger DRIVE_STOP;
   public static Trigger DRIVE_ROBOT_RELATIVE;
 
+  // Coral pivot controls
+  public static DoubleSupplier CORAL_PIVOT_ROTATE;
+  public static Trigger CORAL_PIVOT_L2_3;
+  public static Trigger CORAL_PIVOT_DOWN;
+
   // Drive Turns
   public static Trigger TURN_90;
   public static Trigger TURN_180;
@@ -64,10 +69,13 @@ public class DriveControls {
       case PROGRAMMERS:
       default:
         // Operator controls
+        CORAL_PIVOT_ROTATE = () -> (operator.getLeftY());
+        CORAL_PIVOT_L2_3 = operator.a();
+        CORAL_PIVOT_DOWN = operator.b();
+
         ELEVATOR_SPEED = () -> operator.getLeftYD();
         ELEVATOR_L1 = operator.a();
         ELEVATOR_DOWN = operator.b();
-
         break;
 
         // bottom right Left joystick to intake

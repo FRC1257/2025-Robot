@@ -7,6 +7,7 @@ package frc.robot;
 import static frc.robot.util.drive.DriveControls.*;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
@@ -16,6 +17,11 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.FeedForwardCharacterization;
+// this is for the coralPivot
+import frc.robot.subsystems.coralPivot.CoralPivot;
+import frc.robot.subsystems.coralPivot.CoralPivotIO;
+import frc.robot.subsystems.coralPivot.CoralPivotIOSim;
+import frc.robot.subsystems.coralPivot.CoralPivotIOSparkMax;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOReal;
@@ -40,9 +46,11 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 public class RobotContainer {
   // Subsystems
   private final Drive drive;
+  private final CoralPivot coralPivot;
   private final Elevator elevator;
 
-  private Mechanism2d mech = new Mechanism2d(3, 3);
+  private Mechanism2d coralPivotMech = new Mechanism2d(3, 3);
+  private Mechanism2d elevatorMech = new Mechanism2d(3, 3);
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -60,7 +68,10 @@ public class RobotContainer {
                 new ModuleIOSparkMax(2),
                 new ModuleIOSparkMax(3),
                 new VisionIOPhoton());
+        
+        coralPivot = new CoralPivot(new CoralPivotIOSparkMax());
         elevator = new Elevator(new ElevatorIOSparkMax());
+
         break;
 
         // Sim robot, instantiate physics sim IO implementations
@@ -73,6 +84,8 @@ public class RobotContainer {
                 new ModuleIOSim(),
                 new ModuleIOSim(),
                 new VisionIOSim());
+
+        coralPivot = new CoralPivot(new CoralPivotIOSim());
         elevator = new Elevator(new ElevatorIOSim());
         break;
 
@@ -86,16 +99,23 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new VisionIO() {});
+
+        coralPivot = new CoralPivot(new CoralPivotIO() {});
         elevator = new Elevator(new ElevatorIO() {});
         break;
     }
 
     // Set up robot state manager
 
-    MechanismRoot2d root = mech.getRoot("elevator", 1, 0.5);
-    root.append(elevator.getElevatorMechanism());
+    MechanismRoot2d coralPivotRoot = coralPivotMech.getRoot("coral pivot", 1, 0.5);
+    coralPivotRoot.append(coralPivot.getArmMechanism());
     // add subsystem mechanisms
-    SmartDashboard.putData("Elevator Mechanism", mech);
+    SmartDashboard.putData("Coral Pivot Mechanism", coralPivotMech);
+
+    MechanismRoot2d elevatorRoot = elevatorMech.getRoot("elevator", 1, 0.5);
+    elevatorRoot.append(elevator.getElevatorMechanism());
+    // add subsystem mechanisms
+    SmartDashboard.putData("Elevator Mechanism", elevatorMech);
 
     // Set up auto routines
     /* NamedCommands.registerCommand(
@@ -135,6 +155,10 @@ public class RobotContainer {
               drive.resetYaw();
             },
             drive));
+
+    coralPivot.setDefaultCommand(coralPivot.ManualCommand(CORAL_PIVOT_ROTATE));
+    CORAL_PIVOT_L2_3.onTrue(coralPivot.InstantPIDCommand(-0.2));
+    CORAL_PIVOT_DOWN.onTrue(coralPivot.InstantPIDCommand(Units.degreesToRadians(-70)));
 
     elevator.setDefaultCommand(elevator.ManualCommand(ELEVATOR_SPEED));
     ELEVATOR_L1.onTrue(elevator.InstantPIDCommand(0.5));
