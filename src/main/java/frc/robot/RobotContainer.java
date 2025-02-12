@@ -7,6 +7,7 @@ package frc.robot;
 import static frc.robot.util.drive.DriveControls.*;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
@@ -21,12 +22,20 @@ import frc.robot.subsystems.coralIntake.CoralIntakeConstants;
 import frc.robot.subsystems.coralIntake.CoralIntakeIO;
 import frc.robot.subsystems.coralIntake.CoralIntakeIOSim;
 import frc.robot.subsystems.coralIntake.CoralIntakeIOSparkMax;
+import frc.robot.subsystems.coralPivot.CoralPivot;
+import frc.robot.subsystems.coralPivot.CoralPivotIO;
+import frc.robot.subsystems.coralPivot.CoralPivotIOSim;
+import frc.robot.subsystems.coralPivot.CoralPivotIOSparkMax;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOReal;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOSparkMax;
+import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.subsystems.elevator.ElevatorIO;
+import frc.robot.subsystems.elevator.ElevatorIOSim;
+import frc.robot.subsystems.elevator.ElevatorIOSparkMax;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOPhoton;
 import frc.robot.subsystems.vision.VisionIOSim;
@@ -42,8 +51,11 @@ public class RobotContainer {
   // Subsystems
   private final Drive drive;
   private final CoralIntake coralIntake;
+  private final CoralPivot coralPivot;
+  private final Elevator elevator;
 
-  private Mechanism2d mech = new Mechanism2d(3, 3);
+  private Mechanism2d coralPivotMech = new Mechanism2d(3, 3);
+  private Mechanism2d elevatorMech = new Mechanism2d(3, 3);
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -62,6 +74,8 @@ public class RobotContainer {
                 new ModuleIOSparkMax(3),
                 new VisionIOPhoton());
         coralIntake = new CoralIntake(new CoralIntakeIOSparkMax());
+        coralPivot = new CoralPivot(new CoralPivotIOSparkMax());
+        elevator = new Elevator(new ElevatorIOSparkMax());
         break;
 
         // Sim robot, instantiate physics sim IO implementations
@@ -75,6 +89,8 @@ public class RobotContainer {
                 new ModuleIOSim(),
                 new VisionIOSim());
         coralIntake = new CoralIntake(new CoralIntakeIOSim());
+        coralPivot = new CoralPivot(new CoralPivotIOSim());
+        elevator = new Elevator(new ElevatorIOSim());
         break;
 
         // Replayed robot, disable IO implementations
@@ -88,14 +104,22 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new VisionIO() {});
         coralIntake = new CoralIntake(new CoralIntakeIO() {});
+        coralPivot = new CoralPivot(new CoralPivotIO() {});
+        elevator = new Elevator(new ElevatorIO() {});
         break;
     }
 
     // Set up robot state manager
 
-    MechanismRoot2d root = mech.getRoot("pivot", 1, 0.5);
+    MechanismRoot2d coralPivotRoot = coralPivotMech.getRoot("coral pivot", 1, 0.5);
+    coralPivotRoot.append(coralPivot.getArmMechanism());
     // add subsystem mechanisms
-    SmartDashboard.putData("Arm Mechanism", mech);
+    SmartDashboard.putData("Coral Pivot Mechanism", coralPivotMech);
+
+    MechanismRoot2d elevatorRoot = elevatorMech.getRoot("elevator", 1, 0.5);
+    elevatorRoot.append(elevator.getElevatorMechanism());
+    // add subsystem mechanisms
+    SmartDashboard.putData("Elevator Mechanism", elevatorMech);
 
     // Set up auto routines
     /* NamedCommands.registerCommand(
@@ -139,6 +163,14 @@ public class RobotContainer {
     // Coral Intake Controls
     INTAKE_CORAL.whileTrue(coralIntake.ManualCommand(CoralIntakeConstants.CORAL_INTAKE_IN_VOLTAGE));
     SHOOT_CORAL.whileTrue(coralIntake.ManualCommand(CoralIntakeConstants.CORAL_INTAKE_OUT_VOLTAGE));
+
+    coralPivot.setDefaultCommand(coralPivot.ManualCommand(CORAL_PIVOT_ROTATE));
+    CORAL_PIVOT_L2_3.onTrue(coralPivot.InstantPIDCommand(-0.2));
+    CORAL_PIVOT_DOWN.onTrue(coralPivot.InstantPIDCommand(Units.degreesToRadians(-70)));
+
+    elevator.setDefaultCommand(elevator.ManualCommand(ELEVATOR_SPEED));
+    ELEVATOR_L1.onTrue(elevator.InstantPIDCommand(0.5));
+    ELEVATOR_DOWN.onTrue(elevator.InstantPIDCommand(0));
   }
 
   /**
