@@ -1,12 +1,13 @@
 package frc.robot.subsystems.coralPivot;
 
-import edu.wpi.first.math.controller.ProfiledPIDController;//
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.controller.ArmFeedforward;
+import edu.wpi.first.math.controller.ProfiledPIDController; //
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.simulation.EncoderSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
+import frc.robot.subsystems.coralPivot.CoralPivotConstants.CoralPivotSimConstants;
 
 public class CoralPivotIOSim implements CoralPivotIO {
 
@@ -15,8 +16,10 @@ public class CoralPivotIOSim implements CoralPivotIO {
 
   // Standard classes for controlling our arm
   private final ProfiledPIDController m_controller;
-  private SimpleMotorFeedforward m_feedforward = new SimpleMotorFeedforward(0, 0);
+  private ArmFeedforward m_feedforward = new ArmFeedforward(0, 0, 0, 0);
   private final Encoder m_encoder;
+
+  private double appliedVoltage = 0;
 
   // Simulation classes help us simulate what's going on, including gravity.
 
@@ -51,6 +54,13 @@ public class CoralPivotIOSim implements CoralPivotIO {
             new TrapezoidProfile.Constraints(2.45, 2.45));
 
     m_controller.setTolerance(0.1, 0.05);
+
+    m_feedforward =
+        new ArmFeedforward(
+            CoralPivotSimConstants.kPivotSimFF[0],
+            CoralPivotSimConstants.kPivotSimFF[1],
+            CoralPivotSimConstants.kPivotSimFF[2],
+            CoralPivotSimConstants.kPivotSimFF[3]);
   }
 
   @Override
@@ -60,11 +70,13 @@ public class CoralPivotIOSim implements CoralPivotIO {
     inputs.angVelocityRadsPerSec = sim.getVelocityRadPerSec();
     inputs.currentAmps = new double[] {sim.getCurrentDrawAmps()};
     inputs.setpointAngleRads = m_controller.getSetpoint().position;
+    inputs.appliedVolts = appliedVoltage;
   }
 
   @Override
   public void setVoltage(double motorVolts) {
     sim.setInputVoltage(motorVolts);
+    appliedVoltage = motorVolts;
   }
 
   @Override
@@ -72,14 +84,20 @@ public class CoralPivotIOSim implements CoralPivotIO {
     m_controller.setGoal(setpoint);
     // With the setpoint value we run PID control like normal
     double pidOutput = m_controller.calculate(getAngle());
-    double feedforwardOutput = m_feedforward.calculate(m_controller.getSetpoint().velocity);
+    double feedforwardOutput =
+        m_feedforward.calculate(getAngle(), m_controller.getSetpoint().velocity);
 
-    sim.setInputVoltage(feedforwardOutput + pidOutput);
+    setVoltage(feedforwardOutput + pidOutput);
   }
 
   @Override
   public double getAngle() {
     return sim.getAngleRads();
+  }
+
+  @Override
+  public double getAngVelocity() {
+    return sim.getVelocityRadPerSec();
   }
 
   @Override
@@ -104,12 +122,26 @@ public class CoralPivotIOSim implements CoralPivotIO {
 
   @Override
   public void setkS(double kS) {
-    m_feedforward = new SimpleMotorFeedforward(kS, m_feedforward.getKv());
+    m_feedforward =
+        new ArmFeedforward(kS, m_feedforward.getKg(), m_feedforward.getKv(), m_feedforward.getKa());
+  }
+
+  @Override
+  public void setkG(double kG) {
+    m_feedforward =
+        new ArmFeedforward(m_feedforward.getKs(), kG, m_feedforward.getKv(), m_feedforward.getKa());
   }
 
   @Override
   public void setkV(double kV) {
-    m_feedforward = new SimpleMotorFeedforward(m_feedforward.getKs(), kV);
+    m_feedforward =
+        new ArmFeedforward(m_feedforward.getKs(), m_feedforward.getKg(), kV, m_feedforward.getKa());
+  }
+
+  @Override
+  public void setkA(double kA) {
+    m_feedforward =
+        new ArmFeedforward(m_feedforward.getKs(), m_feedforward.getKg(), m_feedforward.getKv(), kA);
   }
 
   @Override
@@ -133,7 +165,17 @@ public class CoralPivotIOSim implements CoralPivotIO {
   }
 
   @Override
+  public double getkG() {
+    return m_feedforward.getKg();
+  }
+
+  @Override
   public double getkV() {
     return m_feedforward.getKv();
+  }
+
+  @Override
+  public double getkA() {
+    return m_feedforward.getKa();
   }
 }

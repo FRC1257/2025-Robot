@@ -20,8 +20,8 @@ public class CoralPivotConstants {
 
   public static final double PIVOT_MAX_PID_TIME = 3;
 
-  public static final double CORAL_PIVOT_MAX_ANGLE = Units.degreesToRadians(110.0);
-  public static final double CORAL_PIVOT_MIN_ANGLE = Units.degreesToRadians(2.0);
+  public static final double CORAL_PIVOT_MAX_ANGLE = Units.degreesToRadians(90);
+  public static final double CORAL_PIVOT_MIN_ANGLE = Units.degreesToRadians(-70);
 
   // deleted the old constants from last years code, this intake angle is from last year still
   public static final double CORAL_PIVOT_INTAKE_ANGLE = Units.degreesToRadians(2.0);
@@ -33,8 +33,12 @@ public class CoralPivotConstants {
 
   public static final double CORAL_PIVOT_CONTROL_SPEED_FACTOR = 1.0;
 
+  public static final double CORAL_PIVOT_MAX_VELOCITY = 0.3;
+  public static final double CORAL_PIVOT_MAX_ACCELERATION = 0.3;
+
   public static class CoralPivotSimConstants {
     public static final double[] kPivotSimPID = {15, 0, 0, 0};
+    public static final double[] kPivotSimFF = {0, 0.574, 0, 0};
 
     public static final int kMotorPort = 2;
     public static final int kEncoderAChannel = 2;
@@ -50,8 +54,7 @@ public class CoralPivotConstants {
     public static final double kArmReduction = 200;
     public static final double kArmMass = 10.0; // Kilograms
     public static final double kArmLength = Units.inchesToMeters(20);
-    public static final double kMinAngleRads = Units.degreesToRadians(0);
-    public static final double kMaxAngleRads = Units.degreesToRadians(180);
-
+    public static final double kMinAngleRads = Units.degreesToRadians(-70);
+    public static final double kMaxAngleRads = Units.degreesToRadians(90);
   }
 }

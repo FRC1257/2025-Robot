@@ -24,13 +24,13 @@ public interface CoralPivotIO {
     return 0.0;
   }
 
-  /** Sets the pivot arm voltage to 0 */
-  public default void stop() {}
+  /** Returns the angular velocity of the arm in radians per second */
+  public default double getAngVelocity() {
+    return 0.0;
+  }
 
   /** Go to Setpoint */
   public default void goToSetpoint(double setpoint) {}
-
-  public default void holdSetpoint(double setpoint) {}
 
   public default void setBrake(boolean brake) {}
 

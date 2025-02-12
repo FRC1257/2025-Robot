@@ -6,8 +6,6 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Volts;
 
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.MutAngle;
 import edu.wpi.first.units.measure.MutAngularVelocity;
@@ -17,8 +15,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
@@ -56,6 +54,15 @@ public class CoralPivot extends SubsystemBase {
 
   private SysIdRoutine SysId;
 
+  public static enum State {
+    MANUAL,
+    PID,
+    SYSID
+  }
+
+  private State armState = State.MANUAL;
+  private double manualSpeed = 0;
+
   public CoralPivot(CoralPivotIO io) {
     this.io = io;
 
@@ -67,9 +74,9 @@ public class CoralPivot extends SubsystemBase {
     logFF = new LoggedNetworkNumber("/SmartDashboard/CoralPivot/FF", io.getFF());
 
     logkS = new LoggedNetworkNumber("/SmartDashboard/CoralPivot/kS", io.getkS());
-    logkG = new LoggedNetworkNumber("/Smart Dashboard/CoralPivot/kG", io.getkG());
-    logkV = new LoggedNetworkNumber("/Smart Dashboard/CoralPivot/kV", io.getkV());
-    logkA = new LoggedNetworkNumber("/Smart Dashboard/CoralPivot/kG", io.getkA());
+    logkG = new LoggedNetworkNumber("/SmartDashboard/CoralPivot/kG", io.getkG());
+    logkV = new LoggedNetworkNumber("/SmartDashboard/CoralPivot/kV", io.getkV());
+    logkA = new LoggedNetworkNumber("/SmartDashboard/CoralPivot/kA", io.getkA());
 
     SysId =
         new SysIdRoutine(
@@ -97,6 +104,18 @@ public class CoralPivot extends SubsystemBase {
     ;
 
     armMechanism.setAngle(Units.radiansToDegrees(inputs.angleRads));
+
+    // Move arm based on state
+    switch (armState) {
+      case MANUAL:
+        setVoltage(manualSpeed * 12);
+        break;
+      case PID:
+        io.goToSetpoint(setpoint);
+        break;
+      default:
+        break;
+    }
 
     // Update the PID constants if they have changed
     if (logP.get() != io.getP()) io.setP(logP.get());
@@ -141,6 +160,8 @@ public class CoralPivot extends SubsystemBase {
       motorVolts = 0;
     }
 
+    io.setVoltage(motorVolts);
+
     isVoltageClose(motorVolts);
   }
 
@@ -150,39 +171,24 @@ public class CoralPivot extends SubsystemBase {
 
   public void setPID(double setpoint) {
     this.setpoint = setpoint;
+    armState = State.PID;
     Logger.recordOutput("CoralPivot/Setpoint", setpoint);
   }
 
-  public void addPID(double setpointAdd) {
-    this.setpoint += setpointAdd;
-    this.setpoint =
-        MathUtil.clamp(
-            this.setpoint,
-            CoralPivotConstants.CORAL_PIVOT_MIN_ANGLE,
-            CoralPivotConstants.CORAL_PIVOT_MAX_ANGLE);
-
-    Logger.recordOutput("CoralPivot/Setpoint", setpoint);
+  public void setManual(double speed) {
+    manualSpeed = speed;
+    if (speed != 0) {
+      armState = State.MANUAL;
+    }
   }
 
   public boolean atSetpoint() {
     return Math.abs(io.getAngle() - setpoint) < CoralPivotConstants.CORAL_PIVOT_PID_TOLERANCE
-        && Math.abs(getVelocity()) < CoralPivotConstants.CORAL_PIVOT_PID_VELOCITY_TOLERANCE;
+        && Math.abs(io.getAngVelocity()) < CoralPivotConstants.CORAL_PIVOT_PID_VELOCITY_TOLERANCE;
   }
 
   public void setMechanism(MechanismLigament2d mechanism) {
     armMechanism = mechanism;
-  }
-
-  public Rotation2d getAngle() {
-    return new Rotation2d(inputs.angleRads);
-  }
-
-  public double getVelocity() {
-    return inputs.angVelocityRadsPerSec;
-  }
-
-  public Rotation2d getSetpoint() {
-    return new Rotation2d(setpoint);
   }
 
   public MechanismLigament2d append(MechanismLigament2d mechanism) {
@@ -190,112 +196,64 @@ public class CoralPivot extends SubsystemBase {
   }
 
   public MechanismLigament2d getArmMechanism() {
-    return new MechanismLigament2d("Pivot Arm", 0.4, 0, 5, new Color8Bit(Color.kAqua));
+    armMechanism = new MechanismLigament2d("Pivot Arm", 0.4, 0, 5, new Color8Bit(Color.kAqua));
+    return armMechanism;
   }
 
   public Command PIDCommand(double setpoint) {
-    return new FunctionalCommand(
-        () -> setPID(setpoint), () -> runPID(), (stop) -> setVoltage(0), this::atSetpoint, this);
+    return new RunCommand(() -> setPID(setpoint), this)
+        .until(() -> atSetpoint())
+        .andThen(() -> setVoltage(0));
   }
 
-  public Command PIDCommandForever(DoubleSupplier setpointSupplier) {
-    return new FunctionalCommand(
-        () -> setPID(setpointSupplier.getAsDouble()),
-        () -> {
-          setPID(setpointSupplier.getAsDouble());
-          runPID();
-        },
-        (stop) -> setVoltage(0),
-        () -> false,
-        this);
-  }
-
-  public Command PIDCommandForever(double setpoint) {
-    return new FunctionalCommand(
-        () -> setPID(setpoint), () -> runPID(), (stop) -> setVoltage(0), () -> false, this);
-  }
-
-  public Command PIDHoldCommand() {
-    return new FunctionalCommand(
-        () -> setPID(getAngle().getRadians()),
-        () -> {},
-        (stop) -> setVoltage(0),
-        () -> false,
-        this);
-  }
-
-  public Command PIDCommand(DoubleSupplier setpointSupplier) {
-    return new FunctionalCommand(
-        () -> setPID(setpointSupplier.getAsDouble()),
-        () -> {
-          Logger.recordOutput("CoralPivotSpeakerAngle", setpointSupplier.getAsDouble());
-          setPID(setpointSupplier.getAsDouble());
-          runPID();
-        },
-        (stop) -> setVoltage(0),
-        this::atSetpoint,
-        this);
+  public Command InstantPIDCommand(double setpoint) {
+    return new InstantCommand(() -> setPID(setpoint));
   }
 
   // Allows manual control of the pivot arm for PID tuning
   public Command ManualCommand(DoubleSupplier speedSupplier) {
-    return new FunctionalCommand(
-        () -> setVoltage(speedSupplier.getAsDouble()),
-        () -> setVoltage(speedSupplier.getAsDouble()),
-        (stop) -> setVoltage(0),
-        () -> false,
-        this);
+    return new RunCommand(() -> setManual(speedSupplier.getAsDouble()), this)
+        .andThen(
+            () -> {
+              manualSpeed = 0;
+            });
   }
 
-  public Command stop() {
-    return new FunctionalCommand(
-        () -> {}, () -> io.setVoltage(0), (stop) -> io.stop(), () -> false, this);
-  }
-  // no commmand yalee
-
-  public Command bringDownCommand() {
-    return new FunctionalCommand(
-        () -> {},
-        () -> {
-          setVoltage(-1);
-          setpoint = 0;
-        },
-        (interrupted) -> {
-          setVoltage(0);
-        },
-        () -> {
-          return io.getAngle() < 0.1;
-        },
-        this);
+  public Command ManualCommand(double speed) {
+    return ManualCommand(() -> speed);
   }
 
   public Command quasistaticForward() {
+    armState = State.SYSID;
     return SysId.quasistatic(Direction.kForward)
-        .until(() -> getAngle().getRadians() > CoralPivotConstants.CORAL_PIVOT_MAX_ANGLE)
+        .until(() -> io.getAngle() > CoralPivotConstants.CORAL_PIVOT_MAX_ANGLE)
         .alongWith(
             new InstantCommand(
                 () -> Logger.recordOutput("CoralPivot/sysid-test-state-", "quasistatic-forward")));
   }
 
   public Command quasistaticBack() {
+    armState = State.SYSID;
     return SysId.quasistatic(Direction.kReverse)
-        .until(() -> getAngle().getRadians() < CoralPivotConstants.CORAL_PIVOT_MIN_ANGLE)
+        .until(() -> io.getAngle() < CoralPivotConstants.CORAL_PIVOT_MIN_ANGLE)
         .alongWith(
             new InstantCommand(
                 () -> Logger.recordOutput("CoralPivot/sysid-test-state-", "quasistatic-reverse")));
   }
 
   public Command dynamicForward() {
+    armState = State.SYSID;
     return SysId.dynamic(Direction.kForward)
-        .until(() -> getAngle().getRadians() > CoralPivotConstants.CORAL_PIVOT_MAX_ANGLE)
+        .until(() -> io.getAngle() > CoralPivotConstants.CORAL_PIVOT_MAX_ANGLE)
         .alongWith(
             new InstantCommand(
                 () -> Logger.recordOutput("CoralPivot/sysid-test-state-", "dynamic-forward")));
   }
 
   public Command dynamicBack() {
+    armState = State.SYSID;
     return SysId.dynamic(Direction.kReverse)
-        .until(() -> getAngle().getRadians() < CoralPivotConstants.CORAL_PIVOT_MIN_ANGLE)
+        .until(() -> io.getAngle() < CoralPivotConstants.CORAL_PIVOT_MIN_ANGLE)
         .alongWith(
             new InstantCommand(
                 () -> Logger.recordOutput("CoralPivot/sysid-test-state-", "dynamic-reverse")));

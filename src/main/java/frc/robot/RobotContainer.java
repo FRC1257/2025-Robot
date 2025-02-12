@@ -7,6 +7,7 @@ package frc.robot;
 import static frc.robot.util.drive.DriveControls.*;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
@@ -98,8 +99,9 @@ public class RobotContainer {
     // Set up robot state manager
 
     MechanismRoot2d root = mech.getRoot("pivot", 1, 0.5);
+    root.append(coralPivot.getArmMechanism());
     // add subsystem mechanisms
-    SmartDashboard.putData("Arm Mechanism", mech);
+    SmartDashboard.putData("Coral Pivot Mechanism", mech);
 
     // Set up auto routines
     /* NamedCommands.registerCommand(
@@ -139,9 +141,9 @@ public class RobotContainer {
               drive.resetYaw();
             },
             drive));
-    coralPivot.setDefaultCommand(
-      coralPivot.ManualCommand(CORAL_PIVOT_ROTATE)
-    );
+    coralPivot.setDefaultCommand(coralPivot.ManualCommand(CORAL_PIVOT_ROTATE));
+    CORAL_PIVOT_L2_3.onTrue(coralPivot.InstantPIDCommand(-0.2));
+    CORAL_PIVOT_DOWN.onTrue(coralPivot.InstantPIDCommand(Units.degreesToRadians(-70)));
   }
 
   /**
