@@ -7,37 +7,18 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 public class AlgaeIntake extends SubsystemBase {
   private final AlgaeIntakeIO io;
   AlgaeIntakeIOInputsAutoLogged inputs = new AlgaeIntakeIOInputsAutoLogged();
 
-  private LoggedNetworkNumber logP;
-  private LoggedNetworkNumber logI;
-  private LoggedNetworkNumber logD;
-
   public AlgaeIntake(AlgaeIntakeIO io) {
     this.io = io;
     SmartDashboard.putData(getName(), this);
-
-    logP = new LoggedNetworkNumber("/SmartDashboard/AlgaeIntake/P", io.getP());
-    logI = new LoggedNetworkNumber("/SmartDashboard/AlgaeIntake/I", io.getI());
-    logD = new LoggedNetworkNumber("/SmartDashboard/AlgaeIntake/D", io.getD());
   }
 
   public void periodic() {
     io.updateInputs(inputs);
-    // Update PID constants to ensure they are up to date
-    if (logP.get() != io.getP()) {
-      io.setP(logP.get());
-    }
-    if (logI.get() != io.getI()) {
-      io.setI(logI.get());
-    }
-    if (logD.get() != io.getD()) {
-      io.setD(logD.get());
-    }
     Logger.processInputs("AlgaeIntake", inputs);
 
     Logger.recordOutput("AlgaeIntake/AIntakeMotorConnected", inputs.velocityRadsPerSec != 0);
@@ -58,31 +39,18 @@ public class AlgaeIntake extends SubsystemBase {
     io.setBrake(brake);
   }
 
-  /**
-   * Uses input from controller to set speed of the flywheel and is used as the default command for
-   * the intake
-   */
-  public Command speedCommand(DoubleSupplier speed) {
-    return new FunctionalCommand(
-        () -> {}, () -> io.setSpeed(speed.getAsDouble()), (stop) -> io.stop(), () -> false, this);
-  }
   // Allows manual command of the flywheel for testing
-  public Command manualCommand(DoubleSupplier voltage) {
+  public Command manualCommand(DoubleSupplier velocitySupplier) {
     return new FunctionalCommand(
         () -> {},
-        () -> io.setVoltage(voltage.getAsDouble()),
-        (stop) -> io.stop(),
+        () -> io.setVoltage(velocitySupplier.getAsDouble() * 12),
+        (stop) -> io.setVoltage(0),
         () -> false,
         this);
   }
 
   // Allows manual command of the flywheel for testing
-  public Command manualCommand(double voltage) {
-    return manualCommand(() -> voltage);
-  }
-
-  public Command stop() {
-    return new FunctionalCommand(
-        () -> {}, () -> io.setVoltage(0), (stop) -> io.stop(), () -> false, this);
+  public Command manualCommand(double velocity) {
+    return manualCommand(() -> velocity);
   }
 }

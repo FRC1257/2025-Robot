@@ -5,7 +5,6 @@ import static frc.robot.subsystems.algaeIntake.AlgaeIntakeConstants.AlgaeIntakeP
 import static frc.robot.subsystems.algaeIntake.AlgaeIntakeConstants.AlgaeIntakePhysicalConstants.*;
 
 import com.revrobotics.RelativeEncoder;
-import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkClosedLoopController;
@@ -57,7 +56,6 @@ public class AlgaeIntakeIOSparkMax implements AlgaeIntakeIO {
     inputs.currentAmps = new double[] {motor.getOutputCurrent()};
     inputs.tempCelcius = new double[] {motor.getMotorTemperature()};
     inputs.velocityRadsPerSec = encoder.getVelocity();
-    inputs.speedSetpoint = desiredSpeed;
   }
 
   /** sets voltage to run motor if necessary */
@@ -71,62 +69,5 @@ public class AlgaeIntakeIOSparkMax implements AlgaeIntakeIO {
   public void setBrake(boolean brake) {
     config.idleMode(brake ? IdleMode.kBrake : IdleMode.kCoast);
     motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-  }
-
-  /** sets speed of motor */
-  @Override
-  public void setSpeed(double speed) {
-    desiredSpeed = speed;
-    velocityPID.setReference(speed, ControlType.kVelocity);
-  }
-
-  @Override
-  public void setP(double p) {
-    config.closedLoop.p(p);
-    motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-    kP = p;
-  }
-
-  @Override
-  public void setI(double i) {
-    config.closedLoop.i(i);
-    motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-    kI = i;
-  }
-
-  @Override
-  public void setD(double d) {
-    config.closedLoop.d(d);
-    motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-    kD = d;
-  }
-
-  @Override
-  public double getP() {
-    return kP;
-  }
-
-  @Override
-  public double getI() {
-    return kI;
-  }
-
-  @Override
-  public double getD() {
-    return kD;
-  }
-
-  @Override
-  public void stop() {
-    setVoltage(0.0);
-  }
-
-  @Override
-  public void setPIDConstants(double p, double i, double d) {
-    config.closedLoop.pid(p, i, d);
-    motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-    kP = p;
-    kI = i;
-    kD = d;
   }
 }
