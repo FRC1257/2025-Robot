@@ -16,7 +16,9 @@ public class ElevatorIOSim implements ElevatorIO {
 
   // Standard classes for controlling our arm
   private final ProfiledPIDController m_controller;
-  private double kFF = ElevatorSimConstants.ELEVATOR_SIM_PID[3];
+  private double ffOutput = ElevatorSimConstants.ELEVATOR_SIM_PID[3];
+
+  private double appliedVoltage = 0;
 
   // Simulation classes help us simulate what's going on, including gravity.
   // This arm sim represents an arm that can travel from -75 degrees (rotated down
@@ -52,7 +54,7 @@ public class ElevatorIOSim implements ElevatorIO {
     inputs.velocityMetersPerSec = sim.getVelocityMetersPerSecond();
     inputs.motorCurrent = new double[] {sim.getCurrentDrawAmps()};
     inputs.setpointMeters = m_controller.getSetpoint().position;
-    inputs.appliedVoltage = 0;
+    inputs.appliedVoltage = appliedVoltage;
   }
 
   @Override
@@ -66,7 +68,7 @@ public class ElevatorIOSim implements ElevatorIO {
     // With the setpoint value we run PID control like normal
     double pidOutput = m_controller.calculate(getPosition());
 
-    sim.setInputVoltage(kFF + pidOutput);
+    setVoltage(ffOutput + pidOutput);
   }
 
   @Override
@@ -85,8 +87,9 @@ public class ElevatorIOSim implements ElevatorIO {
   }
 
   @Override
-  public void setSpeed(double speed) {
-    sim.setInputVoltage(speed * 12);
+  public void setVoltage(double voltage) {
+    appliedVoltage = voltage;
+    sim.setInputVoltage(voltage);
   }
 
   @Override
@@ -106,7 +109,7 @@ public class ElevatorIOSim implements ElevatorIO {
 
   @Override
   public void setFF(double ff) {
-    this.kFF = ff;
+    this.ffOutput = ff;
   }
 
   @Override
@@ -126,6 +129,6 @@ public class ElevatorIOSim implements ElevatorIO {
 
   @Override
   public double getFF() {
-    return kFF;
+    return ffOutput;
   }
 }

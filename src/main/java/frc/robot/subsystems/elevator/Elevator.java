@@ -61,7 +61,7 @@ public class Elevator extends SubsystemBase {
                 Volts.of(ElevatorConstants.STEP_VOLTAGE),
                 null),
             new SysIdRoutine.Mechanism(
-                v -> io.setSpeed(v.in(Volts) / 12.0),
+                v -> io.setVoltage(v.in(Volts) / 12.0),
                 (sysidLog) -> {
                   sysidLog
                       .motor("Elevator")
@@ -122,63 +122,71 @@ public class Elevator extends SubsystemBase {
     return io.atSetpoint();
   }
 
-  public void setSpeed(double speed) {
+  public void move(double speed) {
     if ((io.getPosition() < ElevatorConstants.ELEVATOR_MIN_HEIGHT && speed < 0)
         || (io.getPosition() > ElevatorConstants.ELEVATOR_MAX_HEIGHT && speed > 0)) {
-      io.setSpeed(0);
+      io.setVoltage(0);
     } else {
-      io.setSpeed(speed);
+      io.setVoltage(speed * 12);
     }
   }
 
-  /** Runs PID Command and keeps running it after it reaches setpoint */
+  /** Runs PID Command and keeps running it after it reaches setpoint
+   * @param setpoint the setpoint in meters
+   */
   public Command PIDCommandForever(double setpoint) {
     return new FunctionalCommand(
         () -> setSetpoint(setpoint),
         () -> setSetpoint(setpoint),
-        (interrupted) -> setSpeed(0),
+        (interrupted) -> move(0),
         () -> false,
         this);
   }
-  /** Runs PID Command and keeps running it after it reaches setpoint */
+  /** Runs PID Command and keeps running it after it reaches setpoint
+   * @param setpoint the setpoint in meters
+   */
   public Command PIDCommandForever(DoubleSupplier setpointSupplier) {
     return PIDCommandForever(setpointSupplier.getAsDouble());
   }
 
-  /** Runs PID and stops when at setpoint */
+  /** Runs PID and stops when at setpoint
+   * @param setpoint the setpoint in meters
+   */
   public Command PIDCommand(double setpoint) {
     return new FunctionalCommand(
         () -> setSetpoint(setpoint),
         () -> setSetpoint(setpoint),
-        (interrupted) -> setSpeed(0),
+        (interrupted) -> move(0),
         () -> atSetpoint(),
         this);
   }
-  /** Runs PID and stops when at setpoint */
+  /** Runs PID and stops when at setpoint
+   * @param setpoint the setpoint in meters
+   */
   public Command PIDCommand(DoubleSupplier setpointSupplier) {
     return new FunctionalCommand(
         () -> setSetpoint(setpointSupplier.getAsDouble()),
         () -> setSetpoint(setpointSupplier.getAsDouble()),
-        (interrupted) -> setSpeed(0),
+        (interrupted) -> move(0),
         () -> atSetpoint(),
         this);
   }
 
-  /** Control the elevator by providing a velocity */
+  /** Control the elevator by providing a velocity from -1 to 1 */
   public Command ManualCommand(double speed) {
     return new FunctionalCommand(
-        () -> setSpeed(speed),
-        () -> setSpeed(speed),
-        (interrupted) -> setSpeed(0),
+        () -> move(speed),
+        () -> move(speed),
+        (interrupted) -> move(0),
         () -> false,
         this);
   }
-  /** Control the elevator by providing a velocity */
+  /** Control the elevator by providing a velocity from -1 to 1 */
   public Command ManualCommand(DoubleSupplier speedSupplier) {
     return new FunctionalCommand(
-        () -> setSpeed(speedSupplier.getAsDouble()),
-        () -> setSpeed(speedSupplier.getAsDouble()),
-        (interrupted) -> setSpeed(0),
+        () -> move(speedSupplier.getAsDouble()),
+        () -> move(speedSupplier.getAsDouble()),
+        (interrupted) -> move(0),
         () -> false,
         this);
   }

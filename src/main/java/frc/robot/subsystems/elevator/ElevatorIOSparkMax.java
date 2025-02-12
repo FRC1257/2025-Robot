@@ -117,8 +117,8 @@ public class ElevatorIOSparkMax implements ElevatorIO {
   }
 
   @Override
-  public void setSpeed(double speed) {
-    leftMotor.set(speed);
+  public void setVoltage(double voltage) {
+    leftMotor.set(voltage);
   }
 
   @Override

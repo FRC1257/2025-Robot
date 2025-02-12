@@ -50,11 +50,11 @@ public interface ElevatorIO {
   }
 
   /**
-   * Sets the elevator's speed
+   * Sets the elevator's voltage
    *
-   * @param speed speed factor from -1 to 1
+   * @param voltage voltage fed into motor from -12 to 12
    */
-  public default void setSpeed(double speed) {}
+  public default void setVoltage(double voltage) {}
 
   /**
    * Sets the brakemode of both motors
