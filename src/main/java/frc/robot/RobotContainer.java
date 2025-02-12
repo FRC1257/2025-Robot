@@ -113,7 +113,7 @@ public class RobotContainer {
     SmartDashboard.putData("Coral Pivot Mechanism", coralPivotMech);
 
     MechanismRoot2d elevatorRoot = elevatorMech.getRoot("elevator", 1, 0.5);
-    elevatorRootoot.append(elevator.getElevatorMechanism());
+    elevatorRoot.append(elevator.getElevatorMechanism());
     // add subsystem mechanisms
     SmartDashboard.putData("Elevator Mechanism", elevatorMech);
 
