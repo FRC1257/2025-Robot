@@ -44,12 +44,15 @@ public class ElevatorIOSparkMax implements ElevatorIO {
         .voltageCompensation(12.0)
         .inverted(true);
     leftConfig
-        .encoder
+        .absoluteEncoder
         .positionConversionFactor(ElevatorConstants.POSITION_CONVERSION_FACTOR)
-        .velocityConversionFactor(ElevatorConstants.POSITION_CONVERSION_FACTOR / 60.0);
+        .velocityConversionFactor(ElevatorConstants.POSITION_CONVERSION_FACTOR / 60.0)
+        .zeroOffset(ElevatorConstants.ELEVATOR_OFFSET_METERS);
 
     leftConfig.closedLoop.pidf(kP, kI, kD, 0);
-    leftConfig.closedLoop.maxMotion.maxVelocity(1).maxAcceleration(1);
+    leftConfig.closedLoop.maxMotion
+      .maxVelocity(ElevatorConstants.MAX_VELOCITY)
+      .maxAcceleration(ElevatorConstants.MAX_ACCELERATION);
 
     SparkMaxConfig rightConfig = new SparkMaxConfig();
     rightConfig.apply(leftConfig);
@@ -94,7 +97,7 @@ public class ElevatorIOSparkMax implements ElevatorIO {
   @Override
   public double getPosition() {
     // get the absolute position in radians, then convert to meters
-    return (leftEncoder.getPosition() + ElevatorConstants.ELEVATOR_OFFSET_METERS);
+    return leftEncoder.getPosition();
   }
 
   @Override
