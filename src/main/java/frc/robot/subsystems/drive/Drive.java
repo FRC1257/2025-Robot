@@ -38,6 +38,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.subsystems.vision.VisionIO;
@@ -441,5 +442,20 @@ public class Drive extends SubsystemBase {
             // differential drivetrain, the rotation will have no effect.
             );
     return AutoBuilder.followPath(path);
+  }
+
+  /**
+   * Follows PathPlanner GUI-created path from file
+   *
+   * @param filename the name of the file read
+   * @return a command that follows the path
+   */
+  public Command followPathFileCommand(String filename) {
+    try {
+      return AutoBuilder.followPath(PathPlannerPath.fromPathFile(filename));
+    } catch (Exception e) {
+      e.printStackTrace();
+      return new InstantCommand();
+    }
   }
 }

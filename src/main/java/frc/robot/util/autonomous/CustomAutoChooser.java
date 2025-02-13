@@ -1,45 +1,106 @@
 package frc.robot.util.autonomous;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.FieldConstants;
+import frc.robot.subsystems.drive.Drive;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import frc.robot.FieldConstants;
-
 public class CustomAutoChooser {
-    public static enum Positions {
-        S1, S2, S3,
-        C1, C2,
-        A1, A2, A3,
-        R1, R2, R3, R4, R5, R6, R7, R8, R9, R10, R11, R12,
-        P
+  public static enum StartPositions {
+    s1,
+    s2,
+    s3
+  }
+
+  public static enum NextPositions {
+    c1,
+    c2,
+    a1,
+    a2,
+    a3,
+    r1,
+    r2,
+    r3,
+    r4,
+    r5,
+    r6,
+    r7,
+    r8,
+    r9,
+    r10,
+    r11,
+    r12,
+    p,
+    NONE
+  }
+
+  private LoggedDashboardChooser<StartPositions> startChooser;
+  private LoggedDashboardChooser<NextPositions>[] positionChoosers = new LoggedDashboardChooser[5];
+
+  private Drive drive;
+
+  public CustomAutoChooser(Drive drive) {
+    this.drive = drive;
+
+    startChooser = new LoggedDashboardChooser<>("Starting Position ");
+    startChooser.addDefaultOption("Starting Position 1", StartPositions.s1);
+    startChooser.addOption("Starting Position 2", StartPositions.s2);
+    startChooser.addOption("Starting Position 3", StartPositions.s3);
+
+    for (int i = 0; i < positionChoosers.length; i++) {
+      positionChoosers[i] = new LoggedDashboardChooser<>("Position " + (i + 1));
+      positionChoosers[i].addDefaultOption("", NextPositions.NONE);
+
+      for (NextPositions position : NextPositions.values()) {
+        if (position == NextPositions.NONE) continue;
+        positionChoosers[i].addOption(position.toString(), position);
+      }
+    }
+  }
+
+  public Command getAutoCommand() {
+    StartPositions startPos = startChooser.get();
+    NextPositions nextPoses[] = new NextPositions[positionChoosers.length];
+    SequentialCommandGroup commandGroup = new SequentialCommandGroup();
+
+    Pose2d startPose2d;
+    switch (startPos) {
+      case s1:
+        startPose2d = FieldConstants.StartingPositions.startPos1;
+        break;
+      case s2:
+        startPose2d = FieldConstants.StartingPositions.startPos2;
+        break;
+      case s3:
+        startPose2d = FieldConstants.StartingPositions.startPos3;
+        break;
+      default:
+        startPose2d = new Pose2d();
+        break;
     }
 
-    private LoggedDashboardChooser<Positions> startChooser;
-    private LoggedDashboardChooser<Positions>[] positionChoosers = new LoggedDashboardChooser[5];
-    
+    commandGroup.addCommands(
+        new InstantCommand(
+            () -> {
+              drive.setPose(startPose2d);
+            },
+            drive));
 
-    public CustomAutoChooser() {
-        
-        startChooser = new LoggedDashboardChooser<>("Starting Position ");
-        startChooser.addDefaultOption("Starting Position 1", Positions.S1);
-        startChooser.addOption("Starting Position 2", Positions.S2);
-        startChooser.addOption("Starting Position 3", Positions.S3);
+    nextPoses[0] = positionChoosers[0].get();
+    if (nextPoses[0] != NextPositions.NONE)
+      commandGroup.addCommands(
+          drive.followPathFileCommand(startPos.toString() + "-" + nextPoses[0].toString()));
 
-        for(int i = 0; i < positionChoosers.length; i++) {
-            positionChoosers[i] = new LoggedDashboardChooser<>("Position " + (i + 1));
-            positionChoosers[i].addDefaultOption("R1", Positions.R1);
-
-            for(Positions position : Positions.values()) {
-                positionChoosers[i].addOption(position.toString(), position);
-            }
-        }
-
-
+    for (int i = 1; i < positionChoosers.length; i++) {
+      nextPoses[i] = positionChoosers[i].get();
+      if (nextPoses[i] == NextPositions.NONE) continue;
+      commandGroup.addCommands(
+          drive.followPathFileCommand(nextPoses[i - 1].toString() + "-" + nextPoses[i].toString()));
     }
 
-    public Pose2d getStartPosition() {
-        return startChooser.get();
-    }
-
+    return commandGroup;
+  }
 }
