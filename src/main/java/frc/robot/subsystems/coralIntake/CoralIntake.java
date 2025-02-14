@@ -44,8 +44,8 @@ public class CoralIntake extends SubsystemBase {
   public Command ManualCommand(DoubleSupplier velocitySupplier) {
     return new FunctionalCommand(
         () -> {},
-        () -> io.setVoltage(velocitySupplier.getAsDouble() * 12),
-        (stop) -> io.setVoltage(0),
+        () -> setVoltage(velocitySupplier.getAsDouble() * 12),
+        (stop) -> setVoltage(0),
         () -> false,
         this);
   }
