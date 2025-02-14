@@ -1,13 +1,15 @@
 package frc.robot.subsystems.algaePivot;
 
 import edu.wpi.first.math.util.Units;
+import frc.robot.Constants;
 
 public class AlgaePivotConstants {
   // May have to change these constants, same as pivot arm from last year right now
 
   public static final int ALGAE_PIVOT_ID = 0; // Change later
 
-  public static final double POSITION_CONVERSION_FACTOR = 21.0 / 35.0;
+  public static final double ALGAE_PIVOT_GEARING = 1.0 / 16.0;
+  public static final double POSITION_CONVERSION_FACTOR = 2 * Constants.PI * ALGAE_PIVOT_GEARING;
   public static final double ALGAE_PIVOT_ROTATION_DIAM_M = 1;
 
   public static final double[] ALGAE_PIVOT_PID_REAL = {3.6, 0, 0, 0.01};
@@ -40,6 +42,7 @@ public class AlgaePivotConstants {
   public static final double ALGAE_PIVOT_MAX_ACCELERATION = 0.3;
 
   public static final int BREAK_BEAM_CHANNEL = 0;
+  public static final int ABSOLUTE_ENCODER_CHANNEL = 1;
 
   public static class AlgaePivotSimConstants {
     public static final double[] kPivotSimPID = {15, 0, 0, 0};

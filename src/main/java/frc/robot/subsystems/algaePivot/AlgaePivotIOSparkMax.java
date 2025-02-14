@@ -3,7 +3,7 @@
 
 package frc.robot.subsystems.algaePivot;
 
-import com.revrobotics.AbsoluteEncoder;
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
@@ -16,6 +16,7 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import frc.robot.Constants;
 import org.littletonrobotics.junction.Logger;
 
@@ -26,7 +27,9 @@ public class AlgaePivotIOSparkMax implements AlgaePivotIO {
   private final SparkClosedLoopController pidController;
   private ArmFeedforward feedforward = new ArmFeedforward(0, 0, 0, 0);
 
-  private AbsoluteEncoder absoluteEncoder;
+  // We use 2 separate encoders because electronics said so
+  private RelativeEncoder motorEncoder;
+  private DutyCycleEncoder absoluteEncoder;
 
   private DigitalInput breakBeam;
 
@@ -43,14 +46,12 @@ public class AlgaePivotIOSparkMax implements AlgaePivotIO {
 
     config.voltageCompensation(12.0).smartCurrentLimit(Constants.NEO_CURRENT_LIMIT);
 
-    absoluteEncoder = pivotMotor.getAbsoluteEncoder();
+    motorEncoder = pivotMotor.getEncoder();
 
     config
-        .absoluteEncoder
-        .positionConversionFactor(2 * Constants.PI * AlgaePivotConstants.POSITION_CONVERSION_FACTOR)
-        .velocityConversionFactor(
-            2 * Constants.PI * AlgaePivotConstants.POSITION_CONVERSION_FACTOR / 60.0)
-        .zeroOffset(AlgaePivotConstants.ALGAE_PIVOT_OFFSET);
+        .encoder
+        .positionConversionFactor(AlgaePivotConstants.POSITION_CONVERSION_FACTOR)
+        .velocityConversionFactor(AlgaePivotConstants.POSITION_CONVERSION_FACTOR / 60.0);
 
     // absoluteEncoder.reset();
     // make sure the pivot starts at the bottom position every time
@@ -77,9 +78,15 @@ public class AlgaePivotIOSparkMax implements AlgaePivotIO {
     pivotMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     configureFeedForward();
 
-    Logger.recordOutput("Absolute Encoder Starting Position: ", absoluteEncoder.getPosition());
+    Logger.recordOutput("Absolute Encoder Starting Position: ", motorEncoder.getPosition());
 
     breakBeam = new DigitalInput(AlgaePivotConstants.BREAK_BEAM_CHANNEL);
+
+    absoluteEncoder = new DutyCycleEncoder(AlgaePivotConstants.ABSOLUTE_ENCODER_CHANNEL);
+    absoluteEncoder.setDutyCycleRange(1.0 / 1025.0, 1024.0 / 1025.0);
+    absoluteEncoder.setAssumedFrequency(975.6);
+
+    motorEncoder.setPosition(getAngle());
   }
 
   private void configureFeedForward() {
@@ -93,7 +100,8 @@ public class AlgaePivotIOSparkMax implements AlgaePivotIO {
   @Override
   public void updateInputs(AlgaePivotIOInputs inputs) {
     inputs.angleRads = getAngle();
-    inputs.angVelocityRadsPerSec = absoluteEncoder.getVelocity();
+    Logger.recordOutput("AlgaePivot/RelativePosition", motorEncoder.getPosition());
+    inputs.angVelocityRadsPerSec = motorEncoder.getVelocity();
     inputs.appliedVolts = pivotMotor.getAppliedOutput() * pivotMotor.getBusVoltage();
     inputs.setpointAngleRads = setpoint;
     inputs.breakBeamBroken = isBreakBeamBroken();
@@ -112,12 +120,13 @@ public class AlgaePivotIOSparkMax implements AlgaePivotIO {
   /** Returns the current distance measurement. */
   @Override
   public double getAngle() {
-    return absoluteEncoder.getPosition();
+    return absoluteEncoder.get() * AlgaePivotConstants.POSITION_CONVERSION_FACTOR
+        + AlgaePivotConstants.ALGAE_PIVOT_OFFSET;
   }
 
   @Override
   public double getAngVelocity() {
-    return absoluteEncoder.getVelocity();
+    return motorEncoder.getVelocity();
   }
 
   /** Go to Setpoint */
