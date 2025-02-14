@@ -24,6 +24,11 @@ public class DriveControls {
   public static Trigger DRIVE_STOP;
   public static Trigger DRIVE_ROBOT_RELATIVE;
 
+  // Algae Pivot Controls
+  public static DoubleSupplier ALGAE_PIVOT_SPEED;
+  public static Trigger ALGAE_PIVOT_STOW;
+  public static Trigger ALGAE_PIVOT_DOWN;
+
   // Drive Turns
   public static Trigger TURN_90;
   public static Trigger TURN_180;

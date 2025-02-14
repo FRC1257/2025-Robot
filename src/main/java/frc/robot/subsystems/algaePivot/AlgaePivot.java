@@ -68,15 +68,15 @@ public class AlgaePivot extends SubsystemBase {
 
     SmartDashboard.putData(getName(), this);
 
-    logP = new LoggedNetworkNumber("/SmartDashboard/CoralPivot/P", io.getP());
-    logI = new LoggedNetworkNumber("/SmartDashboard/CoralPivot/I", io.getI());
-    logD = new LoggedNetworkNumber("/SmartDashboard/CoralPivot/D", io.getD());
-    logFF = new LoggedNetworkNumber("/SmartDashboard/CoralPivot/FF", io.getFF());
+    logP = new LoggedNetworkNumber("/SmartDashboard/AlgaePivot/P", io.getP());
+    logI = new LoggedNetworkNumber("/SmartDashboard/AlgaePivot/I", io.getI());
+    logD = new LoggedNetworkNumber("/SmartDashboard/AlgaePivot/D", io.getD());
+    logFF = new LoggedNetworkNumber("/SmartDashboard/AlgaePivot/FF", io.getFF());
 
-    logkS = new LoggedNetworkNumber("/SmartDashboard/CoralPivot/kS", io.getkS());
-    logkG = new LoggedNetworkNumber("/SmartDashboard/CoralPivot/kG", io.getkG());
-    logkV = new LoggedNetworkNumber("/SmartDashboard/CoralPivot/kV", io.getkV());
-    logkA = new LoggedNetworkNumber("/SmartDashboard/CoralPivot/kA", io.getkA());
+    logkS = new LoggedNetworkNumber("/SmartDashboard/AlgaePivot/kS", io.getkS());
+    logkG = new LoggedNetworkNumber("/SmartDashboard/AlgaePivot/kG", io.getkG());
+    logkV = new LoggedNetworkNumber("/SmartDashboard/AlgaePivot/kV", io.getkV());
+    logkA = new LoggedNetworkNumber("/SmartDashboard/AlgaePivot/kA", io.getkA());
 
     SysId =
         new SysIdRoutine(
@@ -111,7 +111,7 @@ public class AlgaePivot extends SubsystemBase {
         setVoltage(manualSpeed * 12);
         break;
       case PID:
-        io.goToSetpoint(setpoint);
+        runPID();
         break;
       default:
         break;
@@ -135,28 +135,28 @@ public class AlgaePivot extends SubsystemBase {
     if (logkA.get() != io.getkA()) io.setkG(logkA.get());
 
     // Log Inputs
-    Logger.processInputs("CoralPivot", inputs);
+    Logger.processInputs("AlgaePivot", inputs);
 
     Logger.recordOutput(
-        "CoralPivot/PivotAbsoluteEncoderConnected",
-        inputs.angleRads != AlgaePivotConstants.CORAL_PIVOT_OFFSET);
+        "AlgaePivot/PivotAbsoluteEncoderConnected",
+        inputs.angleRads != AlgaePivotConstants.ALGAE_PIVOT_OFFSET);
   }
 
   public void setBrake(boolean brake) {
     io.setBrake(brake);
   }
 
-  @AutoLogOutput(key = "CoralPivot/Close")
+  @AutoLogOutput(key = "AlgaePivot/Close")
   public boolean isVoltageClose(double setVoltage) {
     double voltageDifference = Math.abs(setVoltage - inputs.appliedVolts);
-    return voltageDifference <= AlgaePivotConstants.CORAL_PIVOT_TOLERANCE;
+    return voltageDifference <= AlgaePivotConstants.ALGAE_PIVOT_TOLERANCE;
   }
 
   public void setVoltage(double motorVolts) {
     // limit the arm if its past the limit
-    if (io.getAngle() > AlgaePivotConstants.CORAL_PIVOT_MAX_ANGLE && motorVolts > 0) {
+    if (io.getAngle() > AlgaePivotConstants.ALGAE_PIVOT_MAX_ANGLE && motorVolts > 0) {
       motorVolts = 0;
-    } else if (io.getAngle() < AlgaePivotConstants.CORAL_PIVOT_MIN_ANGLE && motorVolts < 0) {
+    } else if (io.getAngle() < AlgaePivotConstants.ALGAE_PIVOT_MIN_ANGLE && motorVolts < 0) {
       motorVolts = 0;
     }
 
@@ -166,13 +166,18 @@ public class AlgaePivot extends SubsystemBase {
   }
 
   public void runPID() {
-    io.goToSetpoint(setpoint);
+    double angle = io.getAngle();
+    if ((angle < AlgaePivotConstants.ALGAE_PIVOT_MIN_ANGLE && setpoint < angle)
+        || (angle > AlgaePivotConstants.ALGAE_PIVOT_MAX_ANGLE && setpoint > angle)) {
+      io.setVoltage(0);
+      io.goToSetpoint(angle);
+    } else io.goToSetpoint(setpoint);
   }
 
   public void setPID(double setpoint) {
     this.setpoint = setpoint;
     armState = State.PID;
-    Logger.recordOutput("CoralPivot/Setpoint", setpoint);
+    Logger.recordOutput("AlgaePivot/Setpoint", setpoint);
   }
 
   public void setManual(double speed) {
@@ -183,8 +188,8 @@ public class AlgaePivot extends SubsystemBase {
   }
 
   public boolean atSetpoint() {
-    return Math.abs(io.getAngle() - setpoint) < AlgaePivotConstants.CORAL_PIVOT_PID_TOLERANCE
-        && Math.abs(io.getAngVelocity()) < AlgaePivotConstants.CORAL_PIVOT_PID_VELOCITY_TOLERANCE;
+    return Math.abs(io.getAngle() - setpoint) < AlgaePivotConstants.ALGAE_PIVOT_PID_TOLERANCE
+        && Math.abs(io.getAngVelocity()) < AlgaePivotConstants.ALGAE_PIVOT_PID_VELOCITY_TOLERANCE;
   }
 
   public void setMechanism(MechanismLigament2d mechanism) {
@@ -196,7 +201,7 @@ public class AlgaePivot extends SubsystemBase {
   }
 
   public MechanismLigament2d getArmMechanism() {
-    armMechanism = new MechanismLigament2d("Pivot Arm", 0.4, 0, 5, new Color8Bit(Color.kAqua));
+    armMechanism = new MechanismLigament2d("Algae Pivot", 0.4, 0, 5, new Color8Bit(Color.kAqua));
     return armMechanism;
   }
 
@@ -226,36 +231,36 @@ public class AlgaePivot extends SubsystemBase {
   public Command quasistaticForward() {
     armState = State.SYSID;
     return SysId.quasistatic(Direction.kForward)
-        .until(() -> io.getAngle() > AlgaePivotConstants.CORAL_PIVOT_MAX_ANGLE)
+        .until(() -> io.getAngle() > AlgaePivotConstants.ALGAE_PIVOT_MAX_ANGLE)
         .alongWith(
             new InstantCommand(
-                () -> Logger.recordOutput("CoralPivot/sysid-test-state-", "quasistatic-forward")));
+                () -> Logger.recordOutput("AlgaePivot/sysid-test-state-", "quasistatic-forward")));
   }
 
   public Command quasistaticBack() {
     armState = State.SYSID;
     return SysId.quasistatic(Direction.kReverse)
-        .until(() -> io.getAngle() < AlgaePivotConstants.CORAL_PIVOT_MIN_ANGLE)
+        .until(() -> io.getAngle() < AlgaePivotConstants.ALGAE_PIVOT_MIN_ANGLE)
         .alongWith(
             new InstantCommand(
-                () -> Logger.recordOutput("CoralPivot/sysid-test-state-", "quasistatic-reverse")));
+                () -> Logger.recordOutput("AlgaePivot/sysid-test-state-", "quasistatic-reverse")));
   }
 
   public Command dynamicForward() {
     armState = State.SYSID;
     return SysId.dynamic(Direction.kForward)
-        .until(() -> io.getAngle() > AlgaePivotConstants.CORAL_PIVOT_MAX_ANGLE)
+        .until(() -> io.getAngle() > AlgaePivotConstants.ALGAE_PIVOT_MAX_ANGLE)
         .alongWith(
             new InstantCommand(
-                () -> Logger.recordOutput("CoralPivot/sysid-test-state-", "dynamic-forward")));
+                () -> Logger.recordOutput("AlgaePivot/sysid-test-state-", "dynamic-forward")));
   }
 
   public Command dynamicBack() {
     armState = State.SYSID;
     return SysId.dynamic(Direction.kReverse)
-        .until(() -> io.getAngle() < AlgaePivotConstants.CORAL_PIVOT_MIN_ANGLE)
+        .until(() -> io.getAngle() < AlgaePivotConstants.ALGAE_PIVOT_MIN_ANGLE)
         .alongWith(
             new InstantCommand(
-                () -> Logger.recordOutput("CoralPivot/sysid-test-state-", "dynamic-reverse")));
+                () -> Logger.recordOutput("AlgaePivot/sysid-test-state-", "dynamic-reverse")));
   }
 }

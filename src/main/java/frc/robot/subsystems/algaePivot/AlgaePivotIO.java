@@ -21,7 +21,7 @@ public interface AlgaePivotIO {
 
   /** Returns the current distance measurement. */
   public default double getAngle() {
-    return 0.0;lg
+    return 0.0;
   }
 
   /** Returns the angular velocity of the arm in radians per second */

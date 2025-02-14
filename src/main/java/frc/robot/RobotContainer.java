@@ -16,6 +16,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.FeedForwardCharacterization;
+import frc.robot.subsystems.algaePivot.AlgaePivot;
+import frc.robot.subsystems.algaePivot.AlgaePivotIO;
+import frc.robot.subsystems.algaePivot.AlgaePivotIOSim;
+import frc.robot.subsystems.algaePivot.AlgaePivotIOSparkMax;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOReal;
@@ -36,8 +40,9 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 public class RobotContainer {
   // Subsystems
   private final Drive drive;
+  private final AlgaePivot algaePivot;
 
-  private Mechanism2d mech = new Mechanism2d(3, 3);
+  private Mechanism2d algaePivotMech = new Mechanism2d(3, 3);
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -55,6 +60,7 @@ public class RobotContainer {
                 new ModuleIOSparkMax(2),
                 new ModuleIOSparkMax(3),
                 new VisionIOPhoton());
+        algaePivot = new AlgaePivot(new AlgaePivotIOSparkMax());
         break;
 
         // Sim robot, instantiate physics sim IO implementations
@@ -67,6 +73,7 @@ public class RobotContainer {
                 new ModuleIOSim(),
                 new ModuleIOSim(),
                 new VisionIOSim());
+        algaePivot = new AlgaePivot(new AlgaePivotIOSim());
         break;
 
         // Replayed robot, disable IO implementations
@@ -79,14 +86,16 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new VisionIO() {});
+        algaePivot = new AlgaePivot(new AlgaePivotIO() {});
         break;
     }
 
     // Set up robot state manager
 
-    MechanismRoot2d root = mech.getRoot("pivot", 1, 0.5);
+    MechanismRoot2d algaePivotRoot = algaePivotMech.getRoot("pivot", 1, 0.5);
+    algaePivotRoot.append(algaePivot.getArmMechanism());
     // add subsystem mechanisms
-    SmartDashboard.putData("Arm Mechanism", mech);
+    SmartDashboard.putData("Algae Pivot Mechanism", algaePivotMech);
 
     // Set up auto routines
     /* NamedCommands.registerCommand(
@@ -116,6 +125,7 @@ public class RobotContainer {
   private void configureButtonBindings() {
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(drive, DRIVE_FORWARD, DRIVE_STRAFE, DRIVE_ROTATE));
+    algaePivot.setDefaultCommand(algaePivot.ManualCommand(ALGAE_PIVOT_SPEED));
 
     DRIVE_SLOW.onTrue(new InstantCommand(DriveCommands::toggleSlowMode));
 
@@ -126,6 +136,9 @@ public class RobotContainer {
               drive.resetYaw();
             },
             drive));
+  
+    ALGAE_PIVOT_DOWN.onTrue(algaePivot.InstantPIDCommand(0.3));
+    ALGAE_PIVOT_STOW.onTrue(algaePivot.InstantPIDCommand(Constants.PI));
   }
 
   /**

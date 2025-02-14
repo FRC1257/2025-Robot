@@ -11,10 +11,9 @@ import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
-import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
-
 import edu.wpi.first.math.controller.ArmFeedforward;
 import frc.robot.Constants;
 import org.littletonrobotics.junction.Logger;
@@ -33,7 +32,7 @@ public class AlgaePivotIOSparkMax implements AlgaePivotIO {
   private double kP = 0, kI = 0, kD = 0;
 
   public AlgaePivotIOSparkMax() {
-    pivotMotor = new SparkMax(AlgaePivotConstants.CORAL_PIVOT_ID, MotorType.kBrushless);
+    pivotMotor = new SparkMax(AlgaePivotConstants.ALGAE_PIVOT_ID, MotorType.kBrushless);
 
     config = new SparkMaxConfig();
 
@@ -47,8 +46,8 @@ public class AlgaePivotIOSparkMax implements AlgaePivotIO {
         .absoluteEncoder
         .positionConversionFactor(2 * Constants.PI * AlgaePivotConstants.POSITION_CONVERSION_FACTOR)
         .velocityConversionFactor(
-            2 * Constants.PI *AlgaePivotConstants.CoralPivotSimConstants.kPivotSimPID[0],.POSITION_CONVERSION_FACTOR / 60.0)
-        .zeroOffset(AlgaePivotConstants.CORAL_PIVOT_OFFSET);
+            2 * Constants.PI * AlgaePivotConstants.POSITION_CONVERSION_FACTOR / 60.0)
+        .zeroOffset(AlgaePivotConstants.ALGAE_PIVOT_OFFSET);
 
     // absoluteEncoder.reset();
     // make sure the pivot starts at the bottom position every time
@@ -56,15 +55,19 @@ public class AlgaePivotIOSparkMax implements AlgaePivotIO {
 
     pidController = pivotMotor.getClosedLoopController();
 
-    config.closedLoop.pid(
-        AlgaePivotConstants.ALGAE_PIVOT_PID_REAL[0],
-        AlgaePivotConstants.ALGAE_PIVOT_PID_REAL[1],
-        AlgaePivotConstants.ALGAE_PIVOT_PID_REAL[2])
+    config
+        .closedLoop
+        .pid(
+            AlgaePivotConstants.ALGAE_PIVOT_PID_REAL[0],
+            AlgaePivotConstants.ALGAE_PIVOT_PID_REAL[1],
+            AlgaePivotConstants.ALGAE_PIVOT_PID_REAL[2])
         .feedbackSensor(FeedbackSensor.kAbsoluteEncoder);
 
-    config.closedLoop.maxMotion
-      .maxVelocity(AlgaePivotConstants.ALGAE_PIVOT_MAX_VELOCITY)
-      .maxAcceleration(AlgaePivotConstants.ALGAE_PIVOT_MAX_ACCELERATION);
+    config
+        .closedLoop
+        .maxMotion
+        .maxVelocity(AlgaePivotConstants.ALGAE_PIVOT_MAX_VELOCITY)
+        .maxAcceleration(AlgaePivotConstants.ALGAE_PIVOT_MAX_ACCELERATION);
 
     // 0 position for absolute encoder is at 0.2585 rad, so subtract that value from everything
 
@@ -83,7 +86,7 @@ public class AlgaePivotIOSparkMax implements AlgaePivotIO {
 
   /** Updates the set of loggable inputs. */
   @Override
-  public void updateInputs(CoralPivotIOInputs inputs) {
+  public void updateInputs(AlgaePivotIOInputs inputs) {
     inputs.angleRads = getAngle();
     Logger.recordOutput("AlgaePivot/Absolute", absoluteEncoder.getPosition());
     inputs.angVelocityRadsPerSec = absoluteEncoder.getVelocity();
@@ -117,7 +120,7 @@ public class AlgaePivotIOSparkMax implements AlgaePivotIO {
     // With the setpoint value we run PID control like normal
     double feedforwardOutput = feedforward.calculate(getAngle(), 0);
 
-    Logger.recordOutput("CoralPivot/FeedforwardOutput", feedforwardOutput);
+    Logger.recordOutput("AlgaePivot/FeedforwardOutput", feedforwardOutput);
 
     pidController.setReference(
         setpoint, ControlType.kMAXMotionPositionControl, ClosedLoopSlot.kSlot0, feedforwardOutput);
@@ -133,7 +136,7 @@ public class AlgaePivotIOSparkMax implements AlgaePivotIO {
 
   @Override
   public boolean atSetpoint() {
-    return Math.abs(getAngle() - setpoint) < AlgaePivotConstants.CORAL_PIVOT_PID_TOLERANCE;
+    return Math.abs(getAngle() - setpoint) < AlgaePivotConstants.ALGAE_PIVOT_PID_TOLERANCE;
   }
 
   @Override

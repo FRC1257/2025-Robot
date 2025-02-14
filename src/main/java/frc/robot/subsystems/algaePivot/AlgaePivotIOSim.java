@@ -1,11 +1,9 @@
-package frc.robot.subsystems.AlgaePivot;
+package frc.robot.subsystems.algaePivot;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController; //
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.simulation.EncoderSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import frc.robot.subsystems.algaePivot.AlgaePivotConstants.AlgaePivotSimConstants;
 
@@ -17,7 +15,6 @@ public class AlgaePivotIOSim implements AlgaePivotIO {
   // Standard classes for controlling our arm
   private final ProfiledPIDController m_controller;
   private ArmFeedforward m_feedforward = new ArmFeedforward(0, 0, 0, 0);
-  private final Encoder m_encoder;
 
   private double appliedVoltage = 0;
 
@@ -36,16 +33,7 @@ public class AlgaePivotIOSim implements AlgaePivotIO {
           true,
           0.1);
 
-  private final EncoderSim m_encoderSim;
-
   public AlgaePivotIOSim() {
-    m_encoder =
-        new Encoder(
-            AlgaePivotConstants.AlgaePivotSimConstants.kEncoderAChannel,
-            AlgaePivotConstants.AlgaePivotSimConstants.kEncoderBChannel);
-    m_encoderSim = new EncoderSim(m_encoder);
-    m_encoderSim.setDistancePerPulse(
-        AlgaePivotConstants.AlgaePivotSimConstants.kArmEncoderDistPerPulse);
     m_controller =
         new ProfiledPIDController(
             AlgaePivotConstants.AlgaePivotSimConstants.kPivotSimPID[0],
