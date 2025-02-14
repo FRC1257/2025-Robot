@@ -16,6 +16,11 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.FeedForwardCharacterization;
+import frc.robot.subsystems.algaePivot.AlgaePivot;
+import frc.robot.subsystems.algaePivot.AlgaePivotConstants;
+import frc.robot.subsystems.algaePivot.AlgaePivotIO;
+import frc.robot.subsystems.algaePivot.AlgaePivotIOSim;
+import frc.robot.subsystems.algaePivot.AlgaePivotIOSparkMax;
 import frc.robot.subsystems.algaeIntake.AlgaeIntake;
 import frc.robot.subsystems.algaeIntake.AlgaeIntakeConstants;
 import frc.robot.subsystems.algaeIntake.AlgaeIntakeIO;
@@ -55,6 +60,7 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 public class RobotContainer {
   // Subsystems
   private final Drive drive;
+  private final AlgaePivot algaePivot;
   private final AlgaeIntake algaeIntake;
   private final CoralIntake coralIntake;
   private final CoralPivot coralPivot;
@@ -62,6 +68,7 @@ public class RobotContainer {
 
   private Mechanism2d coralPivotMech = new Mechanism2d(3, 3);
   private Mechanism2d elevatorMech = new Mechanism2d(3, 3);
+  private Mechanism2d algaePivotMech = new Mechanism2d(3, 3);
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -79,6 +86,7 @@ public class RobotContainer {
                 new ModuleIOSparkMax(2),
                 new ModuleIOSparkMax(3),
                 new VisionIOPhoton());
+        algaePivot = new AlgaePivot(new AlgaePivotIOSparkMax());
         algaeIntake = new AlgaeIntake(new AlgaeIntakeIOSparkMax());
         coralIntake = new CoralIntake(new CoralIntakeIOSparkMax());
         coralPivot = new CoralPivot(new CoralPivotIOSparkMax());
@@ -95,6 +103,7 @@ public class RobotContainer {
                 new ModuleIOSim(),
                 new ModuleIOSim(),
                 new VisionIOSim());
+        algaePivot = new AlgaePivot(new AlgaePivotIOSim());
         algaeIntake = new AlgaeIntake(new AlgaeIntakeIOSim());
         coralIntake = new CoralIntake(new CoralIntakeIOSim());
         coralPivot = new CoralPivot(new CoralPivotIOSim());
@@ -111,6 +120,7 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new VisionIO() {});
+        algaePivot = new AlgaePivot(new AlgaePivotIO() {});
         algaeIntake = new AlgaeIntake(new AlgaeIntakeIO() {});
         coralIntake = new CoralIntake(new CoralIntakeIO() {});
         coralPivot = new CoralPivot(new CoralPivotIO() {});
@@ -119,6 +129,11 @@ public class RobotContainer {
     }
 
     // Set up robot state manager
+
+    MechanismRoot2d algaePivotRoot = algaePivotMech.getRoot("pivot", 1, 0.5);
+    algaePivotRoot.append(algaePivot.getArmMechanism());
+    // add subsystem mechanisms
+    SmartDashboard.putData("Algae Pivot Mechanism", algaePivotMech);
 
     MechanismRoot2d coralPivotRoot = coralPivotMech.getRoot("coral pivot", 1, 0.5);
     coralPivotRoot.append(coralPivot.getArmMechanism());
@@ -158,6 +173,7 @@ public class RobotContainer {
   private void configureButtonBindings() {
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(drive, DRIVE_FORWARD, DRIVE_STRAFE, DRIVE_ROTATE));
+    algaePivot.setDefaultCommand(algaePivot.ManualCommand(ALGAE_PIVOT_SPEED));
 
     DRIVE_SLOW.onTrue(new InstantCommand(DriveCommands::toggleSlowMode));
 
@@ -168,6 +184,13 @@ public class RobotContainer {
               drive.resetYaw();
             },
             drive));
+
+    ALGAE_PIVOT_DOWN.onTrue(
+        algaePivot.InstantPIDCommand(AlgaePivotConstants.ALGAE_PIVOT_DOWN_ANGLE));
+    ALGAE_PIVOT_STOW.onTrue(
+        algaePivot.InstantPIDCommand(AlgaePivotConstants.ALGAE_PIVOT_STOW_ANGLE));
+    ALGAE_PIVOT_PROCESSOR.onTrue(
+        algaePivot.InstantPIDCommand(AlgaePivotConstants.ALGAE_PIVOT_PROCESSOR_ANGLE));
 
     // Algae Intake Controls
     INTAKE_ALGAE.whileTrue(algaeIntake.manualCommand(AlgaeIntakeConstants.ALGAE_INTAKE_IN_VOLTAGE));

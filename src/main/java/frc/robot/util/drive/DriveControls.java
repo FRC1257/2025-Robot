@@ -25,6 +25,12 @@ public class DriveControls {
   public static Trigger DRIVE_STOP;
   public static Trigger DRIVE_ROBOT_RELATIVE;
 
+  // Algae Pivot Controls
+  public static DoubleSupplier ALGAE_PIVOT_SPEED;
+  public static Trigger ALGAE_PIVOT_STOW;
+  public static Trigger ALGAE_PIVOT_DOWN;
+  public static Trigger ALGAE_PIVOT_PROCESSOR;
+
   // Coral pivot controls
   public static DoubleSupplier CORAL_PIVOT_ROTATE;
   public static Trigger CORAL_PIVOT_L1;
@@ -80,6 +86,11 @@ public class DriveControls {
       case PROGRAMMERS:
       default:
         // Operator controls
+        ALGAE_PIVOT_SPEED = () -> operator.getLeftYD();
+        ALGAE_PIVOT_DOWN = operator.a();
+        ALGAE_PIVOT_STOW = operator.b();
+        ALGAE_PIVOT_PROCESSOR = operator.x();
+
         INTAKE_CORAL = operator.a();
         SHOOT_CORAL = operator.b();
 
