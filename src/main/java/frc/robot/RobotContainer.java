@@ -7,7 +7,6 @@ package frc.robot;
 import static frc.robot.util.drive.DriveControls.*;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
@@ -159,9 +158,12 @@ public class RobotContainer {
 
     coralPivot.setDefaultCommand(coralPivot.ManualCommand(CORAL_PIVOT_ROTATE));
     CORAL_PIVOT_L1.onTrue(coralPivot.InstantPIDCommand(CoralPivotConstants.CORAL_PIVOT_L1_ANGLE));
-    CORAL_PIVOT_L2_L3.onTrue(coralPivot.InstantPIDCommand(CoralPivotConstants.CORAL_PIVOT_L2_L3_ANGLE));
-    CORAL_PIVOT_INTAKE.onTrue(coralPivot.InstantPIDCommand(CoralPivotConstants.CORAL_PIVOT_INTAKE_ANGLE));
-    CORAL_PIVOT_STOW.onTrue(coralPivot.InstantPIDCommand(CoralPivotConstants.CORAL_PIVOT_STOW_ANGLE));
+    CORAL_PIVOT_L2_L3.onTrue(
+        coralPivot.InstantPIDCommand(CoralPivotConstants.CORAL_PIVOT_L2_L3_ANGLE));
+    CORAL_PIVOT_INTAKE.onTrue(
+        coralPivot.InstantPIDCommand(CoralPivotConstants.CORAL_PIVOT_INTAKE_ANGLE));
+    CORAL_PIVOT_STOW.onTrue(
+        coralPivot.InstantPIDCommand(CoralPivotConstants.CORAL_PIVOT_STOW_ANGLE));
 
     elevator.setDefaultCommand(elevator.ManualCommand(ELEVATOR_SPEED));
     ELEVATOR_L1.onTrue(elevator.InstantPIDCommand(0.5));

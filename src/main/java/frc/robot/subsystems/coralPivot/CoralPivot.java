@@ -166,12 +166,18 @@ public class CoralPivot extends SubsystemBase {
   }
 
   public void runPID() {
-    double angle = io.getAngle();
-    if ((angle < CoralPivotConstants.CORAL_PIVOT_MIN_ANGLE && setpoint < angle)
-        || (angle > CoralPivotConstants.CORAL_PIVOT_MAX_ANGLE && setpoint > angle)) {
+    if (setpoint > CoralPivotConstants.CORAL_PIVOT_MAX_ANGLE) {
+      setpoint = CoralPivotConstants.CORAL_PIVOT_MAX_ANGLE;
+    } else if (setpoint < CoralPivotConstants.CORAL_PIVOT_MIN_ANGLE) {
+      setpoint = CoralPivotConstants.CORAL_PIVOT_MIN_ANGLE;
+    }
+    if ((io.getAngle() <= CoralPivotConstants.CORAL_PIVOT_MIN_ANGLE && io.getAngVelocity() < 0)
+        || (io.getAngle() >= CoralPivotConstants.CORAL_PIVOT_MAX_ANGLE
+            && io.getAngVelocity() > 0)) {
       io.setVoltage(0);
-      io.goToSetpoint(angle);
-    } else io.goToSetpoint(setpoint);
+    } else {
+      io.goToSetpoint(setpoint);
+    }
   }
 
   public void setPID(double setpoint) {
@@ -205,9 +211,7 @@ public class CoralPivot extends SubsystemBase {
   }
 
   public Command PIDCommand(double setpoint) {
-    return new RunCommand(() -> setPID(setpoint), this)
-        .until(() -> atSetpoint())
-        .andThen(() -> move(0));
+    return new RunCommand(() -> setPID(setpoint), this).until(() -> atSetpoint());
   }
 
   public Command InstantPIDCommand(double setpoint) {
