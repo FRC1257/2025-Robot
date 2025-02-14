@@ -37,9 +37,10 @@ public class CoralPivotIOSparkMax implements CoralPivotIO {
 
     config = new SparkMaxConfig();
 
-    setBrake(true);
-
-    config.voltageCompensation(12.0).smartCurrentLimit(Constants.NEO_CURRENT_LIMIT);
+    config
+        .idleMode(IdleMode.kBrake)
+        .voltageCompensation(12.0)
+        .smartCurrentLimit(Constants.NEO_CURRENT_LIMIT);
 
     motorEncoder = pivotMotor.getEncoder();
 

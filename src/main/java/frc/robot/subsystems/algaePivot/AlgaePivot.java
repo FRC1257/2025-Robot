@@ -212,8 +212,7 @@ public class AlgaePivot extends SubsystemBase {
   }
 
   public Command PIDCommand(double setpoint) {
-    return new RunCommand(() -> setPID(setpoint), this)
-        .until(() -> atSetpoint());
+    return new RunCommand(() -> setPID(setpoint), this).until(() -> atSetpoint());
   }
 
   public Command InstantPIDCommand(double setpoint) {
