@@ -42,6 +42,14 @@ public class DriveControls {
   // Potential Hail Marry Program [Suggested by Owen]
   public static Trigger SHOOT_FROM_SOURCE;
 
+  // Algae Intake Controls
+  public static Trigger INTAKE_ALGAE;
+  public static Trigger SHOOT_ALGAE;
+
+  // Coral Intake Controls
+  public static Trigger INTAKE_CORAL;
+  public static Trigger SHOOT_CORAL;
+
   // Elevator Controls
   public static DoubleSupplier ELEVATOR_SPEED;
   public static Trigger ELEVATOR_L1;
@@ -71,11 +79,17 @@ public class DriveControls {
       case PROGRAMMERS:
       default:
         // Operator controls
+        INTAKE_CORAL = operator.a();
+        SHOOT_CORAL = operator.b();
+
         CORAL_PIVOT_ROTATE = () -> (operator.getLeftY());
         CORAL_PIVOT_L1 = operator.x();
         CORAL_PIVOT_L2_L3 = operator.a();
         CORAL_PIVOT_STOW = operator.b();
         CORAL_PIVOT_INTAKE = operator.y();
+
+        INTAKE_ALGAE = operator.leftBumper();
+        SHOOT_ALGAE = operator.rightBumper();
 
         ELEVATOR_SPEED = () -> operator.getLeftYD();
         ELEVATOR_L1 = operator.a();

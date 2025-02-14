@@ -16,7 +16,16 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.FeedForwardCharacterization;
-// this is for the coralPivot
+import frc.robot.subsystems.algaeIntake.AlgaeIntake;
+import frc.robot.subsystems.algaeIntake.AlgaeIntakeConstants;
+import frc.robot.subsystems.algaeIntake.AlgaeIntakeIO;
+import frc.robot.subsystems.algaeIntake.AlgaeIntakeIOSim;
+import frc.robot.subsystems.algaeIntake.AlgaeIntakeIOSparkMax;
+import frc.robot.subsystems.coralIntake.CoralIntake;
+import frc.robot.subsystems.coralIntake.CoralIntakeConstants;
+import frc.robot.subsystems.coralIntake.CoralIntakeIO;
+import frc.robot.subsystems.coralIntake.CoralIntakeIOSim;
+import frc.robot.subsystems.coralIntake.CoralIntakeIOSparkMax;
 import frc.robot.subsystems.coralPivot.CoralPivot;
 import frc.robot.subsystems.coralPivot.CoralPivotConstants;
 import frc.robot.subsystems.coralPivot.CoralPivotIO;
@@ -46,6 +55,8 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 public class RobotContainer {
   // Subsystems
   private final Drive drive;
+  private final AlgaeIntake algaeIntake;
+  private final CoralIntake coralIntake;
   private final CoralPivot coralPivot;
   private final Elevator elevator;
 
@@ -68,10 +79,10 @@ public class RobotContainer {
                 new ModuleIOSparkMax(2),
                 new ModuleIOSparkMax(3),
                 new VisionIOPhoton());
-
+        algaeIntake = new AlgaeIntake(new AlgaeIntakeIOSparkMax());
+        coralIntake = new CoralIntake(new CoralIntakeIOSparkMax());
         coralPivot = new CoralPivot(new CoralPivotIOSparkMax());
         elevator = new Elevator(new ElevatorIOSparkMax());
-
         break;
 
         // Sim robot, instantiate physics sim IO implementations
@@ -84,7 +95,8 @@ public class RobotContainer {
                 new ModuleIOSim(),
                 new ModuleIOSim(),
                 new VisionIOSim());
-
+        algaeIntake = new AlgaeIntake(new AlgaeIntakeIOSim());
+        coralIntake = new CoralIntake(new CoralIntakeIOSim());
         coralPivot = new CoralPivot(new CoralPivotIOSim());
         elevator = new Elevator(new ElevatorIOSim());
         break;
@@ -99,7 +111,8 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new VisionIO() {});
-
+        algaeIntake = new AlgaeIntake(new AlgaeIntakeIO() {});
+        coralIntake = new CoralIntake(new CoralIntakeIO() {});
         coralPivot = new CoralPivot(new CoralPivotIO() {});
         elevator = new Elevator(new ElevatorIO() {});
         break;
@@ -155,6 +168,14 @@ public class RobotContainer {
               drive.resetYaw();
             },
             drive));
+
+    // Algae Intake Controls
+    INTAKE_ALGAE.whileTrue(algaeIntake.manualCommand(AlgaeIntakeConstants.ALGAE_INTAKE_IN_VOLTAGE));
+    SHOOT_ALGAE.whileTrue(algaeIntake.manualCommand(AlgaeIntakeConstants.ALGAE_INTAKE_OUT_VOLTAGE));
+
+    // Coral Intake Controls
+    INTAKE_CORAL.whileTrue(coralIntake.ManualCommand(CoralIntakeConstants.CORAL_INTAKE_IN_VOLTAGE));
+    SHOOT_CORAL.whileTrue(coralIntake.ManualCommand(CoralIntakeConstants.CORAL_INTAKE_OUT_VOLTAGE));
 
     coralPivot.setDefaultCommand(coralPivot.ManualCommand(CORAL_PIVOT_ROTATE));
     CORAL_PIVOT_L1.onTrue(coralPivot.InstantPIDCommand(CoralPivotConstants.CORAL_PIVOT_L1_ANGLE));
