@@ -3,7 +3,7 @@
 
 package frc.robot.subsystems.coralPivot;
 
-import com.revrobotics.AbsoluteEncoder;
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
@@ -14,6 +14,7 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.controller.ArmFeedforward;
+import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import frc.robot.Constants;
 import org.littletonrobotics.junction.Logger;
 
@@ -24,7 +25,8 @@ public class CoralPivotIOSparkMax implements CoralPivotIO {
   private final SparkClosedLoopController pidController;
   private ArmFeedforward feedforward = new ArmFeedforward(0, 0, 0, 0);
 
-  private AbsoluteEncoder absoluteEncoder;
+  private RelativeEncoder motorEncoder;
+  private DutyCycleEncoder absoluteEncoder;
 
   private double setpoint = 0;
 
@@ -39,10 +41,10 @@ public class CoralPivotIOSparkMax implements CoralPivotIO {
 
     config.voltageCompensation(12.0).smartCurrentLimit(Constants.NEO_CURRENT_LIMIT);
 
-    absoluteEncoder = pivotMotor.getAbsoluteEncoder();
+    motorEncoder = pivotMotor.getEncoder();
 
     config
-        .absoluteEncoder
+        .encoder
         .positionConversionFactor(2 * Constants.PI * CoralPivotConstants.POSITION_CONVERSION_FACTOR)
         .velocityConversionFactor(
             2 * Constants.PI * CoralPivotConstants.POSITION_CONVERSION_FACTOR / 60.0);
@@ -58,12 +60,23 @@ public class CoralPivotIOSparkMax implements CoralPivotIO {
         CoralPivotConstants.CORAL_PIVOT_PID_REAL[1],
         CoralPivotConstants.CORAL_PIVOT_PID_REAL[2]);
 
+    config
+        .closedLoop
+        .maxMotion
+        .maxVelocity(CoralPivotConstants.CORAL_PIVOT_MAX_VELOCITY)
+        .maxAcceleration(CoralPivotConstants.CORAL_PIVOT_MAX_ACCELERATION);
+
     // 0 position for absolute encoder is at 0.2585 rad, so subtract that value from everything
 
     pivotMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     configureFeedForward();
 
-    Logger.recordOutput("Absolute Encoder Starting Position: ", absoluteEncoder.getPosition());
+    absoluteEncoder = new DutyCycleEncoder(CoralPivotConstants.ABSOLUTE_ENCODER_CHANNEL);
+    absoluteEncoder.setDutyCycleRange(1.0 / 1025.0, 1024.0 / 1025.0);
+    absoluteEncoder.setAssumedFrequency(975.6);
+    Logger.recordOutput("Absolute Encoder Starting Position: ", absoluteEncoder.get());
+
+    motorEncoder.setPosition(getAngle());
   }
 
   private void configureFeedForward() {
@@ -77,8 +90,8 @@ public class CoralPivotIOSparkMax implements CoralPivotIO {
   @Override
   public void updateInputs(CoralPivotIOInputs inputs) {
     inputs.angleRads = getAngle();
-    Logger.recordOutput("CoralPivot/Absolute", absoluteEncoder.getPosition());
-    inputs.angVelocityRadsPerSec = absoluteEncoder.getVelocity();
+    Logger.recordOutput("CoralPivot/RelativePosition", motorEncoder.getPosition());
+    inputs.angVelocityRadsPerSec = motorEncoder.getVelocity();
     inputs.appliedVolts = pivotMotor.getAppliedOutput() * pivotMotor.getBusVoltage();
     inputs.currentAmps = new double[] {pivotMotor.getOutputCurrent()};
     inputs.tempCelsius = new double[] {pivotMotor.getMotorTemperature()};
@@ -95,12 +108,13 @@ public class CoralPivotIOSparkMax implements CoralPivotIO {
   /** Returns the current distance measurement. */
   @Override
   public double getAngle() {
-    return absoluteEncoder.getPosition() + CoralPivotConstants.CORAL_PIVOT_OFFSET;
+    return absoluteEncoder.get() * CoralPivotConstants.POSITION_CONVERSION_FACTOR
+        + CoralPivotConstants.CORAL_PIVOT_OFFSET;
   }
 
   @Override
   public double getAngVelocity() {
-    return absoluteEncoder.getVelocity();
+    return motorEncoder.getVelocity();
   }
 
   /** Go to Setpoint */

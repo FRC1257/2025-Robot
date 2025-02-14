@@ -95,7 +95,7 @@ public class Elevator extends SubsystemBase {
         move(manualSpeed);
         break;
       case PID:
-        io.goToSetpoint(setpoint);
+        runPID();
         break;
       default:
         break;
@@ -149,20 +149,32 @@ public class Elevator extends SubsystemBase {
     io.setBrakeMode(brake);
   }
 
-  public void setSetpoint(double setpoint) {
-    io.goToSetpoint(setpoint);
-  }
-
   public boolean atSetpoint() {
     return io.atSetpoint();
   }
 
   public void move(double speed) {
-    if ((io.getPosition() < ElevatorConstants.ELEVATOR_MIN_HEIGHT && speed < 0)
-        || (io.getPosition() > ElevatorConstants.ELEVATOR_MAX_HEIGHT && speed > 0)) {
+    if ((io.getPosition() <= ElevatorConstants.ELEVATOR_MIN_HEIGHT && io.getVelocity() < 0)
+        || ((io.getPosition() >= ElevatorConstants.ELEVATOR_MAX_HEIGHT || io.isLimitSwitchPressed())
+            && io.getVelocity() > 0)) {
       io.setVoltage(0);
     } else {
       io.setVoltage(speed * 12);
+    }
+  }
+
+  public void runPID() {
+    if (setpoint > ElevatorConstants.ELEVATOR_MAX_HEIGHT) {
+      setpoint = ElevatorConstants.ELEVATOR_MAX_HEIGHT;
+    } else if (setpoint < ElevatorConstants.ELEVATOR_MAX_HEIGHT) {
+      setpoint = ElevatorConstants.ELEVATOR_MAX_HEIGHT;
+    }
+    if ((io.getPosition() <= ElevatorConstants.ELEVATOR_MIN_HEIGHT && io.getVelocity() < 0)
+        || ((io.getPosition() >= ElevatorConstants.ELEVATOR_MAX_HEIGHT || io.isLimitSwitchPressed())
+            && io.getVelocity() > 0)) {
+      io.setVoltage(0);
+    } else {
+      io.goToSetpoint(setpoint);
     }
   }
 
@@ -172,9 +184,7 @@ public class Elevator extends SubsystemBase {
    * @param setpoint the setpoint in meters
    */
   public Command PIDCommand(double setpoint) {
-    return new RunCommand(() -> setPID(setpoint), this)
-        .until(() -> atSetpoint())
-        .andThen(() -> move(0));
+    return new RunCommand(() -> setPID(setpoint), this).until(() -> atSetpoint());
   }
 
   public Command InstantPIDCommand(double setpoint) {

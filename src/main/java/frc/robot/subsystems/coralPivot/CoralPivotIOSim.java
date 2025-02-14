@@ -4,8 +4,6 @@ import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController; //
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.simulation.EncoderSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import frc.robot.subsystems.coralPivot.CoralPivotConstants.CoralPivotSimConstants;
 
@@ -17,7 +15,6 @@ public class CoralPivotIOSim implements CoralPivotIO {
   // Standard classes for controlling our arm
   private final ProfiledPIDController m_controller;
   private ArmFeedforward m_feedforward = new ArmFeedforward(0, 0, 0, 0);
-  private final Encoder m_encoder;
 
   private double appliedVoltage = 0;
 
@@ -36,16 +33,7 @@ public class CoralPivotIOSim implements CoralPivotIO {
           true,
           0.1);
 
-  private final EncoderSim m_encoderSim;
-
   public CoralPivotIOSim() {
-    m_encoder =
-        new Encoder(
-            CoralPivotConstants.CoralPivotSimConstants.kEncoderAChannel,
-            CoralPivotConstants.CoralPivotSimConstants.kEncoderBChannel);
-    m_encoderSim = new EncoderSim(m_encoder);
-    m_encoderSim.setDistancePerPulse(
-        CoralPivotConstants.CoralPivotSimConstants.kArmEncoderDistPerPulse);
     m_controller =
         new ProfiledPIDController(
             CoralPivotConstants.CoralPivotSimConstants.kPivotSimPID[0],

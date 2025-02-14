@@ -9,6 +9,7 @@ public interface ElevatorIO {
     public double positionMeters = 0.0;
     public double velocityMetersPerSec = 0.0;
     public double appliedVoltage = 0.0;
+    public boolean limitSwitchPressed = false;
 
     // arrays are used because we have multiple motors
     public double[] motorTemperature = new double[] {};
@@ -62,6 +63,15 @@ public interface ElevatorIO {
    * @param brakeEnabled true = brake, false = coast
    */
   public default void setBrakeMode(boolean brakeEnabled) {}
+
+  /**
+   * Returns the status of the limit switch
+   *
+   * @return true if limit switch is pressed, false otherwise
+   */
+  public default boolean isLimitSwitchPressed() {
+    return false;
+  }
 
   /**
    * Only use individual getters and setters for spontaneous changes during runtime. All PID
