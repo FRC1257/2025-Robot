@@ -69,7 +69,7 @@ public interface ElevatorIO {
    *
    * @return true if limit switch is pressed, false otherwise
    */
-  public default boolean limitSwitchPressed() {
+  public default boolean isLimitSwitchPressed() {
     return false;
   }
 

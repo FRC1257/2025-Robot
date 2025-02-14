@@ -5,6 +5,8 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
+import frc.robot.util.drive.CommandSnailController.DPad;
+
 import java.util.function.DoubleSupplier;
 
 public class DriveControls {
@@ -65,8 +67,11 @@ public class DriveControls {
       default:
         // Operator controls
         ELEVATOR_SPEED = () -> operator.getLeftYD();
-        ELEVATOR_L1 = operator.a();
+        ELEVATOR_L1 = operator.getDPad(DPad.LEFT);
+        ELEVATOR_L2 = operator.getDPad(DPad.RIGHT);
+        ELEVATOR_L3 = operator.getDPad(DPad.UP);
         ELEVATOR_DOWN = operator.b();
+        ELEVATOR_INTAKE = operator.getDPad(DPad.DOWN);
 
         break;
 

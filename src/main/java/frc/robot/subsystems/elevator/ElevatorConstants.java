@@ -20,7 +20,7 @@ public class ElevatorConstants {
   /** Used for converting angular displacement into linear displacement */
   public static double DRUM_RADIUS_METERS = 0.02;
   /** Gear ratio of the elevator motors */
-  public static double GEAR_RATIO = 1;
+  public static double GEAR_RATIO = 1.0/20.0;
 
   /** Final position conversion factor based on drum radius and gear ratio */
   public static double POSITION_CONVERSION_FACTOR =
@@ -35,8 +35,15 @@ public class ElevatorConstants {
   public static final double MAX_VELOCITY = 2;
   public static final double MAX_ACCELERATION = 2;
 
-  // Limit switch channel
+  // Digital input channels
+  public static final int ABSOLUTE_ENCODER_CHANNEL = 1;
   public static final int LIMIT_SWITCH_CHANNEL = 0;
+
+  // Height setpoints for elevator
+  public static final double ELEVATOR_INTAKE_HEIGHT = 0.3;
+  public static final double ELEVATOR_L1_HEIGHT = 0.4;
+  public static final double ELEVATOR_L2_HEIGHT = 0.6;
+  public static final double ELEVATOR_L3_HEIGHT = 0.7;
 
   // PID Constants
   public static final double[] ELEVATOR_REAL_PID = {0.1, 0, 0, 0};
