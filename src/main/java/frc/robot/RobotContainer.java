@@ -43,6 +43,7 @@ import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOSparkMax;
 import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.subsystems.elevator.ElevatorConstants;
 import frc.robot.subsystems.elevator.ElevatorIO;
 import frc.robot.subsystems.elevator.ElevatorIOSim;
 import frc.robot.subsystems.elevator.ElevatorIOSparkMax;
@@ -210,7 +211,10 @@ public class RobotContainer {
         coralPivot.InstantPIDCommand(CoralPivotConstants.CORAL_PIVOT_STOW_ANGLE));
 
     elevator.setDefaultCommand(elevator.ManualCommand(ELEVATOR_SPEED));
-    ELEVATOR_L1.onTrue(elevator.InstantPIDCommand(0.5));
+    ELEVATOR_L1.onTrue(elevator.InstantPIDCommand(ElevatorConstants.ELEVATOR_L1_HEIGHT));
+    ELEVATOR_L2.onTrue(elevator.InstantPIDCommand(ElevatorConstants.ELEVATOR_L2_HEIGHT));
+    ELEVATOR_L3.onTrue(elevator.InstantPIDCommand(ElevatorConstants.ELEVATOR_L3_HEIGHT));
+    ELEVATOR_INTAKE.onTrue(elevator.InstantPIDCommand(ElevatorConstants.ELEVATOR_INTAKE_HEIGHT));
     ELEVATOR_DOWN.onTrue(elevator.InstantPIDCommand(0));
   }
 
