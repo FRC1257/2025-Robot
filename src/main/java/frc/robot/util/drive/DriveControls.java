@@ -43,7 +43,7 @@ public class DriveControls {
   // Algae Intake Controls
   public static Trigger INTAKE_ALGAE;
   public static Trigger SHOOT_ALGAE;
-  
+
   // Coral Intake Controls
   public static Trigger INTAKE_CORAL;
   public static Trigger SHOOT_CORAL;
