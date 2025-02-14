@@ -95,7 +95,7 @@ public class Elevator extends SubsystemBase {
         move(manualSpeed);
         break;
       case PID:
-        goToSetpoint(setpoint);
+        runPID();
         break;
       default:
         break;
@@ -163,7 +163,7 @@ public class Elevator extends SubsystemBase {
     }
   }
 
-  public void goToSetpoint(double setpoint) {
+  public void runPID() {
     double position = io.getPosition();
 
     if ((position < ElevatorConstants.ELEVATOR_MIN_HEIGHT && setpoint < position)
