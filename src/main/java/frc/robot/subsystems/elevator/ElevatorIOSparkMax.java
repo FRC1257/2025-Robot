@@ -77,8 +77,6 @@ public class ElevatorIOSparkMax implements ElevatorIO {
     absoluteEncoder.setAssumedFrequency(975.6);
     Logger.recordOutput("Absolute Encoder Starting Position: ", absoluteEncoder.get());
 
-    leftEncoder.setPosition(getPosition());
-
     // reset safe kResetSafeParameters switches the motor to default paramaters, then adds the
     // changes from the config object
     // persist paramaters saves these changes to the motor memory so it doesn't get cooked during
@@ -87,6 +85,8 @@ public class ElevatorIOSparkMax implements ElevatorIO {
     leftMotor.configure(leftConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     rightMotor.configure(
         rightConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+
+    leftEncoder.setPosition(getPosition());
 
     limitSwitch = new DigitalInput(ElevatorConstants.LIMIT_SWITCH_CHANNEL);
   }
