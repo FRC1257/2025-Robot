@@ -68,7 +68,7 @@ public class RobotContainer {
                 new ModuleIOSparkMax(2),
                 new ModuleIOSparkMax(3),
                 new VisionIOPhoton());
-        
+
         coralPivot = new CoralPivot(new CoralPivotIOSparkMax());
         elevator = new Elevator(new ElevatorIOSparkMax());
 

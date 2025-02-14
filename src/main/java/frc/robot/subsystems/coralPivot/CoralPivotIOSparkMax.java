@@ -11,10 +11,9 @@ import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
-import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
-
 import edu.wpi.first.math.controller.ArmFeedforward;
 import frc.robot.Constants;
 import org.littletonrobotics.junction.Logger;
@@ -56,15 +55,19 @@ public class CoralPivotIOSparkMax implements CoralPivotIO {
 
     pidController = pivotMotor.getClosedLoopController();
 
-    config.closedLoop.pid(
-        CoralPivotConstants.CORAL_PIVOT_PID_REAL[0],
-        CoralPivotConstants.CORAL_PIVOT_PID_REAL[1],
-        CoralPivotConstants.CORAL_PIVOT_PID_REAL[2])
+    config
+        .closedLoop
+        .pid(
+            CoralPivotConstants.CORAL_PIVOT_PID_REAL[0],
+            CoralPivotConstants.CORAL_PIVOT_PID_REAL[1],
+            CoralPivotConstants.CORAL_PIVOT_PID_REAL[2])
         .feedbackSensor(FeedbackSensor.kAbsoluteEncoder);
 
-    config.closedLoop.maxMotion
-      .maxVelocity(CoralPivotConstants.CORAL_PIVOT_MAX_VELOCITY)
-      .maxAcceleration(CoralPivotConstants.CORAL_PIVOT_MAX_ACCELERATION);
+    config
+        .closedLoop
+        .maxMotion
+        .maxVelocity(CoralPivotConstants.CORAL_PIVOT_MAX_VELOCITY)
+        .maxAcceleration(CoralPivotConstants.CORAL_PIVOT_MAX_ACCELERATION);
 
     // 0 position for absolute encoder is at 0.2585 rad, so subtract that value from everything
 

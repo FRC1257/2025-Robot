@@ -111,7 +111,7 @@ public class CoralPivot extends SubsystemBase {
         setVoltage(manualSpeed * 12);
         break;
       case PID:
-        io.goToSetpoint(setpoint);
+        runPID();
         break;
       default:
         break;
@@ -166,7 +166,12 @@ public class CoralPivot extends SubsystemBase {
   }
 
   public void runPID() {
-    io.goToSetpoint(setpoint);
+    double angle = io.getAngle();
+    if ((angle < CoralPivotConstants.CORAL_PIVOT_MIN_ANGLE && setpoint < angle)
+        || (angle > CoralPivotConstants.CORAL_PIVOT_MAX_ANGLE && setpoint > angle)) {
+      io.setVoltage(0);
+      io.goToSetpoint(angle);
+    } else io.goToSetpoint(setpoint);
   }
 
   public void setPID(double setpoint) {
