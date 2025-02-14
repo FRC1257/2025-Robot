@@ -25,6 +25,13 @@ public class DriveControls {
   public static Trigger DRIVE_STOP;
   public static Trigger DRIVE_ROBOT_RELATIVE;
 
+  // Coral pivot controls
+  public static DoubleSupplier CORAL_PIVOT_ROTATE;
+  public static Trigger CORAL_PIVOT_L1;
+  public static Trigger CORAL_PIVOT_L2_L3;
+  public static Trigger CORAL_PIVOT_STOW;
+  public static Trigger CORAL_PIVOT_INTAKE;
+
   // Drive Turns
   public static Trigger TURN_90;
   public static Trigger TURN_180;
@@ -35,6 +42,14 @@ public class DriveControls {
 
   // Potential Hail Marry Program [Suggested by Owen]
   public static Trigger SHOOT_FROM_SOURCE;
+
+  // Algae Intake Controls
+  public static Trigger INTAKE_ALGAE;
+  public static Trigger SHOOT_ALGAE;
+
+  // Coral Intake Controls
+  public static Trigger INTAKE_CORAL;
+  public static Trigger SHOOT_CORAL;
 
   // Elevator Controls
   public static DoubleSupplier ELEVATOR_SPEED;
@@ -65,13 +80,24 @@ public class DriveControls {
       case PROGRAMMERS:
       default:
         // Operator controls
+        INTAKE_CORAL = operator.a();
+        SHOOT_CORAL = operator.b();
+
+        CORAL_PIVOT_ROTATE = () -> (operator.getLeftY());
+        CORAL_PIVOT_L1 = operator.x();
+        CORAL_PIVOT_L2_L3 = operator.a();
+        CORAL_PIVOT_STOW = operator.b();
+        CORAL_PIVOT_INTAKE = operator.y();
+
+        INTAKE_ALGAE = operator.leftBumper();
+        SHOOT_ALGAE = operator.rightBumper();
+
         ELEVATOR_SPEED = () -> operator.getLeftYD();
         ELEVATOR_L1 = operator.getDPad(DPad.LEFT);
         ELEVATOR_L2 = operator.getDPad(DPad.RIGHT);
         ELEVATOR_L3 = operator.getDPad(DPad.UP);
         ELEVATOR_DOWN = operator.b();
         ELEVATOR_INTAKE = operator.getDPad(DPad.DOWN);
-
         break;
 
         // bottom right Left joystick to intake
