@@ -20,7 +20,7 @@ public class ElevatorConstants {
   /** Used for converting angular displacement into linear displacement */
   public static double DRUM_RADIUS_METERS = 0.02;
   /** Gear ratio of the elevator motors */
-  public static double GEAR_RATIO = 1.0/20.0;
+  public static double GEAR_RATIO = 1.0 / 20.0;
 
   /** Final position conversion factor based on drum radius and gear ratio */
   public static double POSITION_CONVERSION_FACTOR =

@@ -1,23 +1,19 @@
 package frc.robot.subsystems.elevator;
 
-import org.littletonrobotics.junction.Logger;
-
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.ClosedLoopSlot;
-import com.revrobotics.spark.SparkAbsoluteEncoder;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.SparkRelativeEncoder;
-import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import frc.robot.Constants;
+import org.littletonrobotics.junction.Logger;
 
 public class ElevatorIOSparkMax implements ElevatorIO {
   private SparkMax leftMotor;
@@ -25,8 +21,9 @@ public class ElevatorIOSparkMax implements ElevatorIO {
   private SparkMax rightMotor;
   private SparkClosedLoopController leftController;
   private RelativeEncoder leftEncoder;
-  
-  // Separate absolute encoder because we are too broke to afford absolute encoder adapters to connect to spark max
+
+  // Separate absolute encoder because we are too broke to afford absolute encoder adapters to
+  // connect to spark max
   private DutyCycleEncoder absoluteEncoder;
 
   // Limit switch used to block elevator if it goes too high
@@ -73,7 +70,7 @@ public class ElevatorIOSparkMax implements ElevatorIO {
     rightConfig.follow(leftMotor, true);
 
     absoluteEncoder = new DutyCycleEncoder(ElevatorConstants.ABSOLUTE_ENCODER_CHANNEL);
-    absoluteEncoder.setDutyCycleRange(1.0/1025.0, 1024.0/1025.0);
+    absoluteEncoder.setDutyCycleRange(1.0 / 1025.0, 1024.0 / 1025.0);
     absoluteEncoder.setAssumedFrequency(975.6);
     Logger.recordOutput("Absolute Encoder Starting Position: ", absoluteEncoder.get());
 
@@ -122,7 +119,8 @@ public class ElevatorIOSparkMax implements ElevatorIO {
   @Override
   public double getPosition() {
     // get the absolute position in radians, then convert to meters
-    return absoluteEncoder.get() * ElevatorConstants.POSITION_CONVERSION_FACTOR + ElevatorConstants.ELEVATOR_OFFSET_METERS;
+    return absoluteEncoder.get() * ElevatorConstants.POSITION_CONVERSION_FACTOR
+        + ElevatorConstants.ELEVATOR_OFFSET_METERS;
   }
 
   @Override

@@ -154,9 +154,9 @@ public class Elevator extends SubsystemBase {
   }
 
   public void move(double speed) {
-    if ((io.getPosition() < ElevatorConstants.ELEVATOR_MIN_HEIGHT && speed < 0)
-        || (io.getPosition() > ElevatorConstants.ELEVATOR_MAX_HEIGHT && speed > 0)
-        || (io.isLimitSwitchPressed() && speed > 0)) {
+    if ((io.getPosition() <= ElevatorConstants.ELEVATOR_MIN_HEIGHT && io.getVelocity() < 0)
+        || ((io.getPosition() >= ElevatorConstants.ELEVATOR_MAX_HEIGHT || io.isLimitSwitchPressed())
+            && io.getVelocity() > 0)) {
       io.setVoltage(0);
     } else {
       io.setVoltage(speed * 12);
@@ -164,13 +164,15 @@ public class Elevator extends SubsystemBase {
   }
 
   public void runPID() {
-    double position = io.getPosition();
-
-    if ((position < ElevatorConstants.ELEVATOR_MIN_HEIGHT && setpoint < position)
-        || (position > ElevatorConstants.ELEVATOR_MAX_HEIGHT && setpoint > position)
-        || (io.isLimitSwitchPressed() && setpoint > position)) {
+    if (setpoint > ElevatorConstants.ELEVATOR_MAX_HEIGHT) {
+      setpoint = ElevatorConstants.ELEVATOR_MAX_HEIGHT;
+    } else if (setpoint < ElevatorConstants.ELEVATOR_MAX_HEIGHT) {
+      setpoint = ElevatorConstants.ELEVATOR_MAX_HEIGHT;
+    }
+    if ((io.getPosition() <= ElevatorConstants.ELEVATOR_MIN_HEIGHT && io.getVelocity() < 0)
+        || ((io.getPosition() >= ElevatorConstants.ELEVATOR_MAX_HEIGHT || io.isLimitSwitchPressed())
+            && io.getVelocity() > 0)) {
       io.setVoltage(0);
-      io.goToSetpoint(position);
     } else {
       io.goToSetpoint(setpoint);
     }
@@ -182,9 +184,7 @@ public class Elevator extends SubsystemBase {
    * @param setpoint the setpoint in meters
    */
   public Command PIDCommand(double setpoint) {
-    return new RunCommand(() -> setPID(setpoint), this)
-        .until(() -> atSetpoint())
-        .andThen(() -> move(0));
+    return new RunCommand(() -> setPID(setpoint), this).until(() -> atSetpoint());
   }
 
   public Command InstantPIDCommand(double setpoint) {
