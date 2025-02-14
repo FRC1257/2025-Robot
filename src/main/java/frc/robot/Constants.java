@@ -68,19 +68,6 @@ public final class Constants {
     public static final double kFreeSpeedRpm = 5676;
   }
 
-  public static class ElectricalLayout {
-    // Controllers
-    public static final int CONTROLLER_DRIVER_ID = 0;
-    public static final int CONTROLLER_OPERATOR_ID = 1;
-
-    // Drivetrain Main
-    public static final int DRIVE_FRONT_LEFT = 1;
-    public static final int DRIVE_FRONT_RIGHT = 2;
-    public static final int DRIVE_BACK_LEFT = 3;
-    public static final int DRIVE_BACK_RIGHT = 4;
-  }
-  ;
-
   public static double PI = 3.141592653589793238462643;
   public static double UPDATE_PERIOD = 0.010; // seconds
   public static final int NEO_550_CURRENT_LIMIT = 25; // amps
