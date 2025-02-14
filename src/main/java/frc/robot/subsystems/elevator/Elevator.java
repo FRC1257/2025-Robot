@@ -95,7 +95,7 @@ public class Elevator extends SubsystemBase {
         move(manualSpeed);
         break;
       case PID:
-        io.goToSetpoint(setpoint);
+        goToSetpoint(setpoint);
         break;
       default:
         break;
@@ -149,20 +149,30 @@ public class Elevator extends SubsystemBase {
     io.setBrakeMode(brake);
   }
 
-  public void setSetpoint(double setpoint) {
-    io.goToSetpoint(setpoint);
-  }
-
   public boolean atSetpoint() {
     return io.atSetpoint();
   }
 
   public void move(double speed) {
     if ((io.getPosition() < ElevatorConstants.ELEVATOR_MIN_HEIGHT && speed < 0)
-        || (io.getPosition() > ElevatorConstants.ELEVATOR_MAX_HEIGHT && speed > 0)) {
+        || (io.getPosition() > ElevatorConstants.ELEVATOR_MAX_HEIGHT && speed > 0)
+        || (io.limitSwitchPressed() && speed > 0)) {
       io.setVoltage(0);
     } else {
       io.setVoltage(speed * 12);
+    }
+  }
+
+  public void goToSetpoint(double setpoint) {
+    double position = io.getPosition();
+
+    if ((position < ElevatorConstants.ELEVATOR_MIN_HEIGHT && setpoint < position)
+        || (position > ElevatorConstants.ELEVATOR_MAX_HEIGHT && setpoint > position)
+        || (io.limitSwitchPressed() && setpoint > position)) {
+      io.setVoltage(0);
+      io.goToSetpoint(position);
+    } else {
+      io.goToSetpoint(setpoint);
     }
   }
 

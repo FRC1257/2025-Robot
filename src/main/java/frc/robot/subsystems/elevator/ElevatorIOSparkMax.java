@@ -10,6 +10,7 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
+import edu.wpi.first.wpilibj.DigitalInput;
 import frc.robot.Constants;
 
 public class ElevatorIOSparkMax implements ElevatorIO {
@@ -18,6 +19,9 @@ public class ElevatorIOSparkMax implements ElevatorIO {
   private SparkMax rightMotor;
   private SparkClosedLoopController leftController;
   private AbsoluteEncoder leftEncoder;
+
+  // Limit switch used to block elevator if it goes too high
+  private DigitalInput limitSwitch;
 
   // used to track the target setpoint of the robot
   private double setpoint = 0;
@@ -50,9 +54,11 @@ public class ElevatorIOSparkMax implements ElevatorIO {
         .zeroOffset(ElevatorConstants.ELEVATOR_OFFSET_METERS);
 
     leftConfig.closedLoop.pidf(kP, kI, kD, 0);
-    leftConfig.closedLoop.maxMotion
-      .maxVelocity(ElevatorConstants.MAX_VELOCITY)
-      .maxAcceleration(ElevatorConstants.MAX_ACCELERATION);
+    leftConfig
+        .closedLoop
+        .maxMotion
+        .maxVelocity(ElevatorConstants.MAX_VELOCITY)
+        .maxAcceleration(ElevatorConstants.MAX_ACCELERATION);
 
     SparkMaxConfig rightConfig = new SparkMaxConfig();
     rightConfig.apply(leftConfig);
@@ -66,6 +72,8 @@ public class ElevatorIOSparkMax implements ElevatorIO {
     leftMotor.configure(leftConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     rightMotor.configure(
         rightConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+
+    limitSwitch = new DigitalInput(ElevatorConstants.LIMIT_SWITCH_CHANNEL);
   }
 
   private void updateMotorConfig(SparkMaxConfig config) {
@@ -82,6 +90,7 @@ public class ElevatorIOSparkMax implements ElevatorIO {
     inputs.positionMeters = getPosition();
     inputs.velocityMetersPerSec = getVelocity();
     inputs.appliedVoltage = leftMotor.getAppliedOutput() * leftMotor.getBusVoltage();
+    inputs.limitSwitchPressed = limitSwitchPressed();
 
     inputs.motorCurrent =
         new double[] {leftMotor.getOutputCurrent(), rightMotor.getOutputCurrent()};
@@ -129,6 +138,11 @@ public class ElevatorIOSparkMax implements ElevatorIO {
     SparkMaxConfig config = new SparkMaxConfig();
     config.idleMode(brakeEnabled ? IdleMode.kBrake : IdleMode.kCoast);
     updateMotorConfig(config);
+  }
+
+  @Override
+  public boolean limitSwitchPressed() {
+    return limitSwitch.get();
   }
 
   @Override

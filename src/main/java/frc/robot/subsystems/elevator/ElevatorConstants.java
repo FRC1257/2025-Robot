@@ -35,6 +35,9 @@ public class ElevatorConstants {
   public static final double MAX_VELOCITY = 2;
   public static final double MAX_ACCELERATION = 2;
 
+  // Limit switch channel
+  public static final int LIMIT_SWITCH_CHANNEL = 0;
+
   // PID Constants
   public static final double[] ELEVATOR_REAL_PID = {0.1, 0, 0, 0};
   /** Tolerance used when checking if the elevator is at the setpoint */
