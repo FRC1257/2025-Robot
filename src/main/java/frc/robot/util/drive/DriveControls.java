@@ -28,6 +28,7 @@ public class DriveControls {
   public static DoubleSupplier ALGAE_PIVOT_SPEED;
   public static Trigger ALGAE_PIVOT_STOW;
   public static Trigger ALGAE_PIVOT_DOWN;
+  public static Trigger ALGAE_PIVOT_PROCESSOR;
 
   // Drive Turns
   public static Trigger TURN_90;
@@ -61,7 +62,10 @@ public class DriveControls {
       case PROGRAMMERS:
       default:
         // Operator controls
-
+        ALGAE_PIVOT_SPEED = () -> operator.getLeftYD();
+        ALGAE_PIVOT_DOWN = operator.a();
+        ALGAE_PIVOT_STOW = operator.b();
+        ALGAE_PIVOT_PROCESSOR = operator.x();
         break;
 
         // bottom right Left joystick to intake

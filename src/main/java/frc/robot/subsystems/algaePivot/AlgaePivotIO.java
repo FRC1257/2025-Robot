@@ -9,6 +9,8 @@ public interface AlgaePivotIO {
     public double angVelocityRadsPerSec = 0.0;
     public double appliedVolts = 0.0;
     public double setpointAngleRads = 0.0;
+    public boolean breakBeamBroken = false;
+
     public double[] currentAmps = new double[] {};
     public double[] tempCelsius = new double[] {};
   }
@@ -35,6 +37,10 @@ public interface AlgaePivotIO {
   public default void setBrake(boolean brake) {}
 
   public default boolean atSetpoint() {
+    return false;
+  }
+
+  public default boolean isBreakBeamBroken() {
     return false;
   }
 

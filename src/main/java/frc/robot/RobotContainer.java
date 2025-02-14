@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.FeedForwardCharacterization;
 import frc.robot.subsystems.algaePivot.AlgaePivot;
+import frc.robot.subsystems.algaePivot.AlgaePivotConstants;
 import frc.robot.subsystems.algaePivot.AlgaePivotIO;
 import frc.robot.subsystems.algaePivot.AlgaePivotIOSim;
 import frc.robot.subsystems.algaePivot.AlgaePivotIOSparkMax;
@@ -136,9 +137,13 @@ public class RobotContainer {
               drive.resetYaw();
             },
             drive));
-  
-    ALGAE_PIVOT_DOWN.onTrue(algaePivot.InstantPIDCommand(0.3));
-    ALGAE_PIVOT_STOW.onTrue(algaePivot.InstantPIDCommand(Constants.PI));
+
+    ALGAE_PIVOT_DOWN.onTrue(
+        algaePivot.InstantPIDCommand(AlgaePivotConstants.ALGAE_PIVOT_DOWN_ANGLE));
+    ALGAE_PIVOT_STOW.onTrue(
+        algaePivot.InstantPIDCommand(AlgaePivotConstants.ALGAE_PIVOT_STOW_ANGLE));
+    ALGAE_PIVOT_PROCESSOR.onTrue(
+        algaePivot.InstantPIDCommand(AlgaePivotConstants.ALGAE_PIVOT_PROCESSOR_ANGLE));
   }
 
   /**

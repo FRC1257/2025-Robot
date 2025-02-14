@@ -167,8 +167,8 @@ public class AlgaePivot extends SubsystemBase {
 
   public void runPID() {
     double angle = io.getAngle();
-    if ((angle < AlgaePivotConstants.ALGAE_PIVOT_MIN_ANGLE && setpoint < angle)
-        || (angle > AlgaePivotConstants.ALGAE_PIVOT_MAX_ANGLE && setpoint > angle)) {
+    if ((angle <= AlgaePivotConstants.ALGAE_PIVOT_MIN_ANGLE && setpoint < angle)
+        || (angle >= AlgaePivotConstants.ALGAE_PIVOT_MAX_ANGLE && setpoint > angle)) {
       io.setVoltage(0);
       io.goToSetpoint(angle);
     } else io.goToSetpoint(setpoint);
@@ -221,6 +221,7 @@ public class AlgaePivot extends SubsystemBase {
         .andThen(
             () -> {
               manualSpeed = 0;
+              setVoltage(0);
             });
   }
 

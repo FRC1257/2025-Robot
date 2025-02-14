@@ -28,8 +28,8 @@ public class AlgaePivotIOSim implements AlgaePivotIO {
               AlgaePivotConstants.AlgaePivotSimConstants.kArmLength,
               AlgaePivotConstants.AlgaePivotSimConstants.kArmMass),
           AlgaePivotConstants.AlgaePivotSimConstants.kArmLength,
-          AlgaePivotConstants.AlgaePivotSimConstants.kMinAngleRads,
-          AlgaePivotConstants.AlgaePivotSimConstants.kMaxAngleRads,
+          AlgaePivotConstants.ALGAE_PIVOT_MIN_ANGLE,
+          AlgaePivotConstants.ALGAE_PIVOT_MAX_ANGLE,
           true,
           0.1);
 

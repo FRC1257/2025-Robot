@@ -15,6 +15,7 @@ import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.controller.ArmFeedforward;
+import edu.wpi.first.wpilibj.DigitalInput;
 import frc.robot.Constants;
 import org.littletonrobotics.junction.Logger;
 
@@ -26,6 +27,8 @@ public class AlgaePivotIOSparkMax implements AlgaePivotIO {
   private ArmFeedforward feedforward = new ArmFeedforward(0, 0, 0, 0);
 
   private AbsoluteEncoder absoluteEncoder;
+
+  private DigitalInput breakBeam;
 
   private double setpoint = 0;
 
@@ -75,6 +78,8 @@ public class AlgaePivotIOSparkMax implements AlgaePivotIO {
     configureFeedForward();
 
     Logger.recordOutput("Absolute Encoder Starting Position: ", absoluteEncoder.getPosition());
+
+    breakBeam = new DigitalInput(AlgaePivotConstants.BREAK_BEAM_CHANNEL);
   }
 
   private void configureFeedForward() {
@@ -88,12 +93,13 @@ public class AlgaePivotIOSparkMax implements AlgaePivotIO {
   @Override
   public void updateInputs(AlgaePivotIOInputs inputs) {
     inputs.angleRads = getAngle();
-    Logger.recordOutput("AlgaePivot/Absolute", absoluteEncoder.getPosition());
     inputs.angVelocityRadsPerSec = absoluteEncoder.getVelocity();
     inputs.appliedVolts = pivotMotor.getAppliedOutput() * pivotMotor.getBusVoltage();
+    inputs.setpointAngleRads = setpoint;
+    inputs.breakBeamBroken = isBreakBeamBroken();
+
     inputs.currentAmps = new double[] {pivotMotor.getOutputCurrent()};
     inputs.tempCelsius = new double[] {pivotMotor.getMotorTemperature()};
-    inputs.setpointAngleRads = setpoint;
   }
 
   /** Run open loop at the specified voltage. */
@@ -137,6 +143,11 @@ public class AlgaePivotIOSparkMax implements AlgaePivotIO {
   @Override
   public boolean atSetpoint() {
     return Math.abs(getAngle() - setpoint) < AlgaePivotConstants.ALGAE_PIVOT_PID_TOLERANCE;
+  }
+
+  @Override
+  public boolean isBreakBeamBroken() {
+    return breakBeam.get();
   }
 
   @Override
