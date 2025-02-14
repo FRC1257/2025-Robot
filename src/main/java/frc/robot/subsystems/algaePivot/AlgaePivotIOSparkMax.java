@@ -78,13 +78,12 @@ public class AlgaePivotIOSparkMax implements AlgaePivotIO {
     pivotMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     configureFeedForward();
 
-    Logger.recordOutput("Absolute Encoder Starting Position: ", motorEncoder.getPosition());
-
     breakBeam = new DigitalInput(AlgaePivotConstants.BREAK_BEAM_CHANNEL);
 
     absoluteEncoder = new DutyCycleEncoder(AlgaePivotConstants.ABSOLUTE_ENCODER_CHANNEL);
     absoluteEncoder.setDutyCycleRange(1.0 / 1025.0, 1024.0 / 1025.0);
     absoluteEncoder.setAssumedFrequency(975.6);
+    Logger.recordOutput("Absolute Encoder Starting Position: ", absoluteEncoder.get());
 
     motorEncoder.setPosition(getAngle());
   }
