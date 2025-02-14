@@ -26,8 +26,10 @@ public class DriveControls {
 
   // Coral pivot controls
   public static DoubleSupplier CORAL_PIVOT_ROTATE;
-  public static Trigger CORAL_PIVOT_L2_3;
-  public static Trigger CORAL_PIVOT_DOWN;
+  public static Trigger CORAL_PIVOT_L1;
+  public static Trigger CORAL_PIVOT_L2_L3;
+  public static Trigger CORAL_PIVOT_STOW;
+  public static Trigger CORAL_PIVOT_INTAKE;
 
   // Drive Turns
   public static Trigger TURN_90;
@@ -70,8 +72,10 @@ public class DriveControls {
       default:
         // Operator controls
         CORAL_PIVOT_ROTATE = () -> (operator.getLeftY());
-        CORAL_PIVOT_L2_3 = operator.a();
-        CORAL_PIVOT_DOWN = operator.b();
+        CORAL_PIVOT_L1 = operator.x();
+        CORAL_PIVOT_L2_L3 = operator.a();
+        CORAL_PIVOT_STOW = operator.b();
+        CORAL_PIVOT_INTAKE = operator.y();
 
         ELEVATOR_SPEED = () -> operator.getLeftYD();
         ELEVATOR_L1 = operator.a();

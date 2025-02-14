@@ -108,7 +108,7 @@ public class CoralPivot extends SubsystemBase {
     // Move arm based on state
     switch (armState) {
       case MANUAL:
-        setVoltage(manualSpeed * 12);
+        move(manualSpeed);
         break;
       case PID:
         runPID();
@@ -152,17 +152,17 @@ public class CoralPivot extends SubsystemBase {
     return voltageDifference <= CoralPivotConstants.CORAL_PIVOT_TOLERANCE;
   }
 
-  public void setVoltage(double motorVolts) {
+  public void move(double speed) {
     // limit the arm if its past the limit
-    if (io.getAngle() > CoralPivotConstants.CORAL_PIVOT_MAX_ANGLE && motorVolts > 0) {
-      motorVolts = 0;
-    } else if (io.getAngle() < CoralPivotConstants.CORAL_PIVOT_MIN_ANGLE && motorVolts < 0) {
-      motorVolts = 0;
+    if (io.getAngle() > CoralPivotConstants.CORAL_PIVOT_MAX_ANGLE && speed > 0) {
+      speed = 0;
+    } else if (io.getAngle() < CoralPivotConstants.CORAL_PIVOT_MIN_ANGLE && speed < 0) {
+      speed = 0;
     }
 
-    io.setVoltage(motorVolts);
+    io.setVoltage(speed * 12);
 
-    isVoltageClose(motorVolts);
+    isVoltageClose(speed * 12);
   }
 
   public void runPID() {
@@ -188,8 +188,7 @@ public class CoralPivot extends SubsystemBase {
   }
 
   public boolean atSetpoint() {
-    return Math.abs(io.getAngle() - setpoint) < CoralPivotConstants.CORAL_PIVOT_PID_TOLERANCE
-        && Math.abs(io.getAngVelocity()) < CoralPivotConstants.CORAL_PIVOT_PID_VELOCITY_TOLERANCE;
+    return Math.abs(io.getAngle() - setpoint) < CoralPivotConstants.CORAL_PIVOT_PID_TOLERANCE;
   }
 
   public void setMechanism(MechanismLigament2d mechanism) {
@@ -208,7 +207,7 @@ public class CoralPivot extends SubsystemBase {
   public Command PIDCommand(double setpoint) {
     return new RunCommand(() -> setPID(setpoint), this)
         .until(() -> atSetpoint())
-        .andThen(() -> setVoltage(0));
+        .andThen(() -> move(0));
   }
 
   public Command InstantPIDCommand(double setpoint) {
@@ -221,6 +220,7 @@ public class CoralPivot extends SubsystemBase {
         .andThen(
             () -> {
               manualSpeed = 0;
+              move(0);
             });
   }
 

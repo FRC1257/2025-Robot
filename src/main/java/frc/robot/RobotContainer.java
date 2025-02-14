@@ -19,6 +19,7 @@ import frc.robot.commands.DriveCommands;
 import frc.robot.commands.FeedForwardCharacterization;
 // this is for the coralPivot
 import frc.robot.subsystems.coralPivot.CoralPivot;
+import frc.robot.subsystems.coralPivot.CoralPivotConstants;
 import frc.robot.subsystems.coralPivot.CoralPivotIO;
 import frc.robot.subsystems.coralPivot.CoralPivotIOSim;
 import frc.robot.subsystems.coralPivot.CoralPivotIOSparkMax;
@@ -157,8 +158,10 @@ public class RobotContainer {
             drive));
 
     coralPivot.setDefaultCommand(coralPivot.ManualCommand(CORAL_PIVOT_ROTATE));
-    CORAL_PIVOT_L2_3.onTrue(coralPivot.InstantPIDCommand(-0.2));
-    CORAL_PIVOT_DOWN.onTrue(coralPivot.InstantPIDCommand(Units.degreesToRadians(-70)));
+    CORAL_PIVOT_L1.onTrue(coralPivot.InstantPIDCommand(CoralPivotConstants.CORAL_PIVOT_L1_ANGLE));
+    CORAL_PIVOT_L2_L3.onTrue(coralPivot.InstantPIDCommand(CoralPivotConstants.CORAL_PIVOT_L2_L3_ANGLE));
+    CORAL_PIVOT_INTAKE.onTrue(coralPivot.InstantPIDCommand(CoralPivotConstants.CORAL_PIVOT_INTAKE_ANGLE));
+    CORAL_PIVOT_STOW.onTrue(coralPivot.InstantPIDCommand(CoralPivotConstants.CORAL_PIVOT_STOW_ANGLE));
 
     elevator.setDefaultCommand(elevator.ManualCommand(ELEVATOR_SPEED));
     ELEVATOR_L1.onTrue(elevator.InstantPIDCommand(0.5));
