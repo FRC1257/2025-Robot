@@ -121,6 +121,11 @@ public class Elevator extends SubsystemBase {
   }
 
   public void setPID(double setpoint) {
+    if (setpoint > ElevatorConstants.ELEVATOR_MAX_HEIGHT) {
+      setpoint = ElevatorConstants.ELEVATOR_MAX_HEIGHT;
+    } else if (setpoint < ElevatorConstants.ELEVATOR_MAX_HEIGHT) {
+      setpoint = ElevatorConstants.ELEVATOR_MAX_HEIGHT;
+    }
     this.setpoint = setpoint;
     elevatorState = State.PID;
   }
@@ -164,11 +169,6 @@ public class Elevator extends SubsystemBase {
   }
 
   public void runPID() {
-    if (setpoint > ElevatorConstants.ELEVATOR_MAX_HEIGHT) {
-      setpoint = ElevatorConstants.ELEVATOR_MAX_HEIGHT;
-    } else if (setpoint < ElevatorConstants.ELEVATOR_MAX_HEIGHT) {
-      setpoint = ElevatorConstants.ELEVATOR_MAX_HEIGHT;
-    }
     if ((io.getPosition() <= ElevatorConstants.ELEVATOR_MIN_HEIGHT && io.getVelocity() < 0)
         || ((io.getPosition() >= ElevatorConstants.ELEVATOR_MAX_HEIGHT || io.isLimitSwitchPressed())
             && io.getVelocity() > 0)) {

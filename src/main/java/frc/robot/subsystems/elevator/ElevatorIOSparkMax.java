@@ -22,8 +22,7 @@ public class ElevatorIOSparkMax implements ElevatorIO {
   private SparkClosedLoopController leftController;
   private RelativeEncoder leftEncoder;
 
-  // Separate absolute encoder because we are too broke to afford absolute encoder adapters to
-  // connect to spark max
+  // Separate absolute encoder because we need to microadjust the NEO encoder's position at the start
   private DutyCycleEncoder absoluteEncoder;
 
   // Limit switch used to block elevator if it goes too high
@@ -83,7 +82,7 @@ public class ElevatorIOSparkMax implements ElevatorIO {
     rightMotor.configure(
         rightConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-    leftEncoder.setPosition(getPosition());
+    leftEncoder.setPosition(getAbsolutePosition());
 
     limitSwitch = new DigitalInput(ElevatorConstants.LIMIT_SWITCH_CHANNEL);
   }
@@ -100,7 +99,7 @@ public class ElevatorIOSparkMax implements ElevatorIO {
   public void updateInputs(ElevatorIOInputs inputs) {
     inputs.setpointMeters = setpoint;
     inputs.positionMeters = getPosition();
-    Logger.recordOutput("Elevator/RelativePosition", leftEncoder.getPosition());
+    Logger.recordOutput("Elevator/AbsolutePosition", getAbsolutePosition());
     inputs.velocityMetersPerSec = getVelocity();
     inputs.appliedVoltage = leftMotor.getAppliedOutput() * leftMotor.getBusVoltage();
     inputs.limitSwitchPressed = isLimitSwitchPressed();
@@ -111,6 +110,10 @@ public class ElevatorIOSparkMax implements ElevatorIO {
         new double[] {leftMotor.getMotorTemperature(), rightMotor.getMotorTemperature()};
   }
 
+  private double getAbsolutePosition() {
+    return absoluteEncoder.get() * 2 * Constants.PI * ElevatorConstants.DRUM_RADIUS_METERS + ElevatorConstants.ELEVATOR_OFFSET_METERS;
+  }
+
   @Override
   public double getSetpoint() {
     return setpoint;
@@ -119,8 +122,7 @@ public class ElevatorIOSparkMax implements ElevatorIO {
   @Override
   public double getPosition() {
     // get the absolute position in radians, then convert to meters
-    return absoluteEncoder.get() * ElevatorConstants.POSITION_CONVERSION_FACTOR
-        + ElevatorConstants.ELEVATOR_OFFSET_METERS;
+    return leftEncoder.getPosition();
   }
 
   @Override
