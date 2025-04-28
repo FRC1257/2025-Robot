@@ -62,11 +62,14 @@ public class AlgaePivotIOSim implements AlgaePivotIO {
   @Override
   public void updateInputs(AlgaePivotIOInputs inputs) {
     sim.update(0.02);
-    inputs.angleRads = getAngle();
-    inputs.angVelocityRadsPerSec = sim.getVelocityRadPerSec();
-    inputs.currentAmps = new double[] {sim.getCurrentDrawAmps()};
-    inputs.setpointAngleRads = m_controller.getSetpoint().position;
-    inputs.appliedVolts = appliedVoltage;
+    inputs.data = new AlgaePivotIOData(
+        getAngle(),
+        sim.getVelocityRadPerSec(),
+        appliedVoltage,
+        m_controller.getSetpoint().position,
+        false,
+        new double[] {sim.getCurrentDrawAmps()},
+        null);
   }
 
   @Override

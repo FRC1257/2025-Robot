@@ -112,14 +112,15 @@ public class AlgaePivotIOSparkMax implements AlgaePivotIO {
   /** Updates the set of loggable inputs. */
   @Override
   public void updateInputs(AlgaePivotIOInputs inputs) {
-    inputs.angleRads = getAngle();
-    inputs.angVelocityRadsPerSec = motorEncoder.getVelocity();
-    inputs.appliedVolts = pivotMotor.getAppliedOutput() * pivotMotor.getBusVoltage();
-    inputs.setpointAngleRads = pidController.getSetpoint().position;
-    inputs.breakBeamBroken = isBreakBeamBroken();
-
-    inputs.currentAmps = new double[] {pivotMotor.getOutputCurrent()};
-    inputs.tempCelsius = new double[] {pivotMotor.getMotorTemperature()};
+    inputs.data = new AlgaePivotIOData(
+        getAngle(),
+        motorEncoder.getVelocity(),
+        pivotMotor.getAppliedOutput() * pivotMotor.getBusVoltage(),
+        pidController.getSetpoint().position,
+        isBreakBeamBroken(),
+        new double[] {pivotMotor.getOutputCurrent()},
+        new double[] {pivotMotor.getMotorTemperature()}
+    );
   }
 
   /** Run open loop at the specified voltage. */

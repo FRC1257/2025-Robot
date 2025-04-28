@@ -108,10 +108,10 @@ public class AlgaePivot extends SubsystemBase {
                 (sysidLog) -> {
                   sysidLog
                       .motor("pivot")
-                      .voltage(m_appliedVoltage.mut_replace(inputs.appliedVolts, Volts))
-                      .angularPosition(m_angle.mut_replace(inputs.angleRads, Rotations))
+                      .voltage(m_appliedVoltage.mut_replace(inputs.data.appliedVolts(), Volts))
+                      .angularPosition(m_angle.mut_replace(inputs.data.angleRads(), Rotations))
                       .angularVelocity(
-                          m_velocity.mut_replace(inputs.angVelocityRadsPerSec, RotationsPerSecond));
+                          m_velocity.mut_replace(inputs.data.angVelocityRadsPerSec(), RotationsPerSecond));
                 },
                 this));
   }
@@ -122,7 +122,7 @@ public class AlgaePivot extends SubsystemBase {
     Logger.processInputs(getName(), inputs);
     ;
 
-    armMechanism.setAngle(Units.radiansToDegrees(inputs.angleRads));
+    armMechanism.setAngle(Units.radiansToDegrees(inputs.data.angleRads()));
 
     // Move arm based on state
     switch (armState) {
@@ -170,7 +170,7 @@ public class AlgaePivot extends SubsystemBase {
 
     Logger.recordOutput(
         "AlgaePivot/PivotAbsoluteEncoderConnected",
-        inputs.angleRads != AlgaePivotConstants.ALGAE_PIVOT_OFFSET);
+        inputs.data.angleRads() != AlgaePivotConstants.ALGAE_PIVOT_OFFSET);
   }
 
   public void setBrake(boolean brake) {
@@ -179,7 +179,7 @@ public class AlgaePivot extends SubsystemBase {
 
   @AutoLogOutput(key = "AlgaePivot/Is Voltage Close")
   public boolean isVoltageClose(double setVoltage) {
-    double voltageDifference = Math.abs(setVoltage - inputs.appliedVolts);
+    double voltageDifference = Math.abs(setVoltage - inputs.data.appliedVolts());
     return voltageDifference <= AlgaePivotConstants.ALGAE_PIVOT_TOLERANCE;
   }
 
