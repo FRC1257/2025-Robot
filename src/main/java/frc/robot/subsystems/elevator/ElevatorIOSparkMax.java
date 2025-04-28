@@ -96,16 +96,15 @@ public class ElevatorIOSparkMax implements ElevatorIO {
 
   @Override
   public void updateInputs(ElevatorIOInputs inputs) {
-    inputs.setpointMeters = getSetpoint();
-    inputs.positionMeters = getPosition();
-    inputs.velocityMetersPerSec = getVelocity();
-    inputs.appliedVoltage = leftMotor.getAppliedOutput() * leftMotor.getBusVoltage();
-    inputs.limitSwitchPressed = isLimitSwitchPressed();
-
-    inputs.motorCurrent =
-        new double[] {leftMotor.getOutputCurrent(), rightMotor.getOutputCurrent()};
-    inputs.motorTemperature =
-        new double[] {leftMotor.getMotorTemperature(), rightMotor.getMotorTemperature()};
+    inputs.data = new ElevatorIOData( 
+        getSetpoint(),
+        getPosition(),
+        getVelocity(),
+        leftMotor.getAppliedOutput() * leftMotor.getBusVoltage(),
+        isLimitSwitchPressed(),
+        new double[] {leftMotor.getMotorTemperature(), rightMotor.getMotorTemperature()},
+        new double[] {leftMotor.getOutputCurrent(), rightMotor.getOutputCurrent()}
+    );
   }
 
   @Override

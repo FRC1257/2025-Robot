@@ -3,18 +3,21 @@ package frc.robot.subsystems.elevator;
 import org.littletonrobotics.junction.AutoLog;
 
 public interface ElevatorIO {
+
   @AutoLog
   public static class ElevatorIOInputs {
-    public double setpointMeters = 0.0;
-    public double positionMeters = 0.0;
-    public double velocityMetersPerSec = 0.0;
-    public double appliedVoltage = 0.0;
-    public boolean limitSwitchPressed = false;
-
-    // arrays are used because we have multiple motors
-    public double[] motorTemperature = new double[] {};
-    public double[] motorCurrent = new double[] {};
+    public ElevatorIOData data = new ElevatorIOData(
+        0.0, 0.0, 0.0, 0.0, false, new double[] {}, new double[] {});
   }
+
+  record ElevatorIOData(
+      double setpointMeters,
+      double positionMeters,
+      double velocityMetersPerSec,
+      double appliedVoltage,
+      boolean limitSwitchPressed,
+      double[] motorTemperature,
+      double[] motorCurrent) {}
 
   /**
    * This function updates all the loggable inputs inside the ElevatorInputs object.

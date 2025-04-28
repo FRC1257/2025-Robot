@@ -65,11 +65,14 @@ public class ElevatorIOSim implements ElevatorIO {
   @Override
   public void updateInputs(ElevatorIOInputs inputs) {
     sim.update(0.02);
-    inputs.positionMeters = getPosition();
-    inputs.velocityMetersPerSec = sim.getVelocityMetersPerSecond();
-    inputs.motorCurrent = new double[] {sim.getCurrentDrawAmps()};
-    inputs.setpointMeters = m_controller.getSetpoint().position;
-    inputs.appliedVoltage = appliedVoltage;
+    inputs.data = new ElevatorIOData(
+        m_controller.getSetpoint().position,
+        sim.getPositionMeters(),
+        sim.getVelocityMetersPerSecond(),
+        appliedVoltage,
+        false,
+        new double[] {},
+        new double[] {sim.getCurrentDrawAmps()});
   }
 
   @Override

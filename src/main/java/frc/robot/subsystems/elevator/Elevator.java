@@ -86,10 +86,10 @@ public class Elevator extends SubsystemBase {
                 (sysidLog) -> {
                   sysidLog
                       .motor("Elevator")
-                      .voltage(m_appliedVoltage.mut_replace(inputs.appliedVoltage, Volts))
-                      .linearPosition(m_position.mut_replace(inputs.positionMeters, Meters))
+                      .voltage(m_appliedVoltage.mut_replace(inputs.data.appliedVoltage(), Volts))
+                      .linearPosition(m_position.mut_replace(inputs.data.positionMeters(), Meters))
                       .linearVelocity(
-                          m_velocity.mut_replace(inputs.velocityMetersPerSec, MetersPerSecond));
+                          m_velocity.mut_replace(inputs.data.velocityMetersPerSec(), MetersPerSecond));
                 },
                 this));
   }
@@ -173,7 +173,7 @@ public class Elevator extends SubsystemBase {
 
   @AutoLogOutput(key = "Elevator/Is Voltage Close")
   public boolean isVoltageClose(double setVoltage) {
-    double voltageDifference = Math.abs(setVoltage - inputs.appliedVoltage);
+    double voltageDifference = Math.abs(setVoltage - inputs.data.appliedVoltage());
     return voltageDifference <= ElevatorConstants.ELEVATOR_VOLTAGE_TOLERANCE;
   }
 
