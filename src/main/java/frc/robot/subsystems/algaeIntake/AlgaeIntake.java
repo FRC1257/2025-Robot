@@ -26,7 +26,7 @@ public class AlgaeIntake extends SubsystemBase {
 
   @AutoLogOutput(key = "AlgaeIntake/Close")
   public boolean isVoltageClose(double setVoltage) {
-    double voltageDifference = Math.abs(setVoltage - inputs.appliedVoltage);
+    double voltageDifference = Math.abs(setVoltage - inputs.data.appliedVoltage());
     return voltageDifference <= AlgaeIntakeConstants.ALGAE_INTAKE_TOLERANCE;
   }
 

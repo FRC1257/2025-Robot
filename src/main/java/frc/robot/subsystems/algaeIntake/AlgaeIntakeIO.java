@@ -6,12 +6,15 @@ public interface AlgaeIntakeIO {
   @AutoLog
   public static class AlgaeIntakeIOInputs {
     /** Some of these may be unnecessary if no NEOs are used. */
-    public double velocityRadsPerSec = 0.0;
-
-    public double appliedVoltage = 0.0;
-    public double[] currentAmps = new double[] {};
-    public double[] tempCelcius = new double[] {};
+    public AlgaeIntakeIOData data = new AlgaeIntakeIOData(
+        0.0, 0.0, new double[] {}, new double[] {});
   }
+
+  record AlgaeIntakeIOData(
+      double velocityRadsPerSec,
+      double appliedVoltage,
+      double[] currentAmps,
+      double[] tempCelcius) {}
 
   public default void updateInputs(AlgaeIntakeIOInputs inputs) {}
   /** sets voltage to run motor if necessary */

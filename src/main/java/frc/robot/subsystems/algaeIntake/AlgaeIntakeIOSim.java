@@ -22,10 +22,11 @@ public class AlgaeIntakeIOSim implements AlgaeIntakeIO {
   @Override
   public void updateInputs(AlgaeIntakeIOInputs inputs) {
     sim.update(0.02);
-    inputs.velocityRadsPerSec = sim.getAngularVelocityRadPerSec();
-    inputs.appliedVoltage = appliedVoltage;
-    inputs.currentAmps = new double[] {sim.getCurrentDrawAmps()};
-    inputs.tempCelcius = new double[] {60};
+    inputs.data = new AlgaeIntakeIOData(
+        sim.getAngularVelocityRadPerSec(),
+        appliedVoltage,
+        new double[] {sim.getCurrentDrawAmps()},
+        new double[] {60});
   }
 
   @Override
