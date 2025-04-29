@@ -216,7 +216,7 @@ public class RobotContainer {
     CORAL_PIVOT_STOW.onTrue(
         coralPivot.InstantPIDCommand(CoralPivotConstants.CORAL_PIVOT_STOW_ANGLE));
 
-    elevator.setDefaultCommand(elevator.ManualCommand(ELEVATOR_SPEED));
+    elevator.setDefaultCommand(elevator.HoldSetpointCommand());
     ELEVATOR_L1.onTrue(elevator.InstantPIDCommand(ElevatorConstants.ELEVATOR_L1_HEIGHT));
     ELEVATOR_L2.onTrue(elevator.InstantPIDCommand(ElevatorConstants.ELEVATOR_L2_HEIGHT));
     ELEVATOR_L3.onTrue(elevator.InstantPIDCommand(ElevatorConstants.ELEVATOR_L3_HEIGHT));
