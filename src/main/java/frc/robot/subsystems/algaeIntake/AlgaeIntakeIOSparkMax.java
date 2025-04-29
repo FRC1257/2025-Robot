@@ -40,11 +40,12 @@ public class AlgaeIntakeIOSparkMax implements AlgaeIntakeIO {
   /** updates inputs from robot */
   @Override
   public void updateInputs(AlgaeIntakeIOInputs inputs) {
-    inputs.data = new AlgaeIntakeIOData(
-        motor.getAppliedOutput() * motor.getBusVoltage(),
-        encoder.getVelocity(),
-        new double[] {motor.getOutputCurrent()},
-        new double[] {motor.getMotorTemperature()});
+    inputs.data =
+        new AlgaeIntakeIOData(
+            motor.getAppliedOutput() * motor.getBusVoltage(),
+            encoder.getVelocity(),
+            new double[] {motor.getOutputCurrent()},
+            new double[] {motor.getMotorTemperature()});
   }
 
   /** sets voltage to run motor if necessary */

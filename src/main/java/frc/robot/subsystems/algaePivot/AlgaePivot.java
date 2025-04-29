@@ -111,7 +111,8 @@ public class AlgaePivot extends SubsystemBase {
                       .voltage(m_appliedVoltage.mut_replace(inputs.data.appliedVolts(), Volts))
                       .angularPosition(m_angle.mut_replace(inputs.data.angleRads(), Rotations))
                       .angularVelocity(
-                          m_velocity.mut_replace(inputs.data.angVelocityRadsPerSec(), RotationsPerSecond));
+                          m_velocity.mut_replace(
+                              inputs.data.angVelocityRadsPerSec(), RotationsPerSecond));
                 },
                 this));
   }

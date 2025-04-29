@@ -5,15 +5,18 @@ import org.littletonrobotics.junction.AutoLog;
 public interface AlgaePivotIO {
   @AutoLog
   public static class AlgaePivotIOInputs {
-    public double angleRads = 0.0;
-    public double angVelocityRadsPerSec = 0.0;
-    public double appliedVolts = 0.0;
-    public double setpointAngleRads = 0.0;
-    public boolean breakBeamBroken = false;
-
-    public double[] currentAmps = new double[] {};
-    public double[] tempCelsius = new double[] {};
+    public AlgaePivotIOData data =
+        new AlgaePivotIOData(0.0, 0.0, 0.0, 0.0, false, new double[] {}, new double[] {});
   }
+
+  record AlgaePivotIOData(
+      double angleRads,
+      double angVelocityRadsPerSec,
+      double appliedVolts,
+      double setpointAngleRads,
+      boolean breakBeamBroken,
+      double[] currentAmps,
+      double[] tempCelsius) {}
 
   /** Updates the set of loggable inputs. */
   public default void updateInputs(AlgaePivotIOInputs inputs) {}

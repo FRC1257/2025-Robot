@@ -22,12 +22,12 @@ public class CoralIntake extends SubsystemBase {
 
     Logger.processInputs("CoralIntake", inputs);
 
-    Logger.recordOutput("CoralIntake/CoralIntakeMotorConnected", inputs.velocityRadsPerSec != 0);
+    Logger.recordOutput("CoralIntake/CoralIntakeMotorConnected", inputs.data.velocityRadsPerSec() != 0);
   }
 
   @AutoLogOutput(key = "CoralIntake/Close")
   public boolean isVoltageClose(double setVoltage) {
-    double voltageDifference = Math.abs(setVoltage - inputs.appliedVoltage);
+    double voltageDifference = Math.abs(setVoltage - inputs.data.appliedVoltage());
     return voltageDifference <= CoralIntakeConstants.CORAL_INTAKE_TOLERANCE;
   }
 

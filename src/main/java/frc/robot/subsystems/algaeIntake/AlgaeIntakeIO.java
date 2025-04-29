@@ -6,8 +6,8 @@ public interface AlgaeIntakeIO {
   @AutoLog
   public static class AlgaeIntakeIOInputs {
     /** Some of these may be unnecessary if no NEOs are used. */
-    public AlgaeIntakeIOData data = new AlgaeIntakeIOData(
-        0.0, 0.0, new double[] {}, new double[] {});
+    public AlgaeIntakeIOData data =
+        new AlgaeIntakeIOData(0.0, 0.0, new double[] {}, new double[] {});
   }
 
   record AlgaeIntakeIOData(

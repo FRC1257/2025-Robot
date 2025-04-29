@@ -89,7 +89,8 @@ public class Elevator extends SubsystemBase {
                       .voltage(m_appliedVoltage.mut_replace(inputs.data.appliedVoltage(), Volts))
                       .linearPosition(m_position.mut_replace(inputs.data.positionMeters(), Meters))
                       .linearVelocity(
-                          m_velocity.mut_replace(inputs.data.velocityMetersPerSec(), MetersPerSecond));
+                          m_velocity.mut_replace(
+                              inputs.data.velocityMetersPerSec(), MetersPerSecond));
                 },
                 this));
   }

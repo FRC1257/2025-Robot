@@ -6,8 +6,8 @@ public interface ElevatorIO {
 
   @AutoLog
   public static class ElevatorIOInputs {
-    public ElevatorIOData data = new ElevatorIOData(
-        0.0, 0.0, 0.0, 0.0, false, new double[] {}, new double[] {});
+    public ElevatorIOData data =
+        new ElevatorIOData(0.0, 0.0, 0.0, 0.0, false, new double[] {}, new double[] {});
   }
 
   record ElevatorIOData(
