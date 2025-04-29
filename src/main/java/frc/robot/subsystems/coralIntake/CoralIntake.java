@@ -22,7 +22,8 @@ public class CoralIntake extends SubsystemBase {
 
     Logger.processInputs("CoralIntake", inputs);
 
-    Logger.recordOutput("CoralIntake/CoralIntakeMotorConnected", inputs.data.velocityRadsPerSec() != 0);
+    Logger.recordOutput(
+        "CoralIntake/CoralIntakeMotorConnected", inputs.data.velocityRadsPerSec() != 0);
   }
 
   @AutoLogOutput(key = "CoralIntake/Close")

@@ -84,12 +84,15 @@ public class CoralPivotIOSparkMax implements CoralPivotIO {
   /** Updates the set of loggable inputs. */
   @Override
   public void updateInputs(CoralPivotIOInputs inputs) {
-    inputs.angleRads = getAngle();
-    inputs.angVelocityRadsPerSec = motorEncoder.getVelocity();
-    inputs.appliedVolts = pivotMotor.getAppliedOutput() * pivotMotor.getBusVoltage();
-    inputs.currentAmps = new double[] {pivotMotor.getOutputCurrent()};
-    inputs.tempCelsius = new double[] {pivotMotor.getMotorTemperature()};
-    inputs.setpointAngleRads = pidController.getSetpoint().position;
+
+    inputs.data =
+        new CoralPivotIOData(
+            getAngle(),
+            getAngVelocity(),
+            pivotMotor.getAppliedOutput() * pivotMotor.getBusVoltage(),
+            pidController.getSetpoint().position,
+            new double[] {pivotMotor.getOutputCurrent()},
+            new double[] {pivotMotor.getMotorTemperature()});
   }
 
   /** Run open loop at the specified voltage. */

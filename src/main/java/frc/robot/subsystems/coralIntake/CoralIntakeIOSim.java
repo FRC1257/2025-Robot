@@ -20,10 +20,13 @@ public class CoralIntakeIOSim implements CoralIntakeIO {
   @Override
   public void updateInputs(CoralIntakeIOInputs inputs) {
     sim.update(0.02);
-    inputs.velocityRadsPerSec = sim.getAngularVelocityRadPerSec();
-    inputs.appliedVoltage = appliedVoltage;
-    inputs.currentAmps = new double[] {sim.getCurrentDrawAmps()};
-    inputs.tempCelcius = new double[] {60};
+    inputs.data =
+        new CoralIntakeIOData(
+            sim.getAngularVelocityRadPerSec(),
+            appliedVoltage,
+            new double[] {sim.getCurrentDrawAmps()},
+            new double[] {60},
+            false);
   }
 
   @Override

@@ -88,10 +88,11 @@ public class CoralPivot extends SubsystemBase {
                 (sysidLog) -> {
                   sysidLog
                       .motor("pivot")
-                      .voltage(m_appliedVoltage.mut_replace(inputs.appliedVolts, Volts))
-                      .angularPosition(m_angle.mut_replace(inputs.angleRads, Rotations))
+                      .voltage(m_appliedVoltage.mut_replace(inputs.data.appliedVolts(), Volts))
+                      .angularPosition(m_angle.mut_replace(inputs.data.angleRads(), Rotations))
                       .angularVelocity(
-                          m_velocity.mut_replace(inputs.angVelocityRadsPerSec, RotationsPerSecond));
+                          m_velocity.mut_replace(
+                              inputs.data.angVelocityRadsPerSec(), RotationsPerSecond));
                 },
                 this));
   }
@@ -101,7 +102,7 @@ public class CoralPivot extends SubsystemBase {
     io.updateInputs(inputs);
     Logger.processInputs(getName(), inputs);
 
-    armMechanism.setAngle(Units.radiansToDegrees(inputs.angleRads));
+    armMechanism.setAngle(Units.radiansToDegrees(inputs.data.angleRads()));
 
     // Move arm based on state
     switch (armState) {
@@ -135,7 +136,7 @@ public class CoralPivot extends SubsystemBase {
 
     Logger.recordOutput(
         "CoralPivot/PivotAbsoluteEncoderConnected",
-        inputs.angleRads != CoralPivotConstants.CORAL_PIVOT_OFFSET);
+        inputs.data.angleRads() != CoralPivotConstants.CORAL_PIVOT_OFFSET);
   }
 
   public void setBrake(boolean brake) {
@@ -144,7 +145,7 @@ public class CoralPivot extends SubsystemBase {
 
   @AutoLogOutput(key = "CoralPivot/Is Voltage Close")
   public boolean isVoltageClose(double setVoltage) {
-    double voltageDifference = Math.abs(setVoltage - inputs.appliedVolts);
+    double voltageDifference = Math.abs(setVoltage - inputs.data.appliedVolts());
     return voltageDifference <= CoralPivotConstants.CORAL_PIVOT_VOLTAGE_TOLERANCE;
   }
 

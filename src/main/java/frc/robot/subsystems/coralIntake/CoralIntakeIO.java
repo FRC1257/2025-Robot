@@ -5,15 +5,17 @@ import org.littletonrobotics.junction.AutoLog;
 public interface CoralIntakeIO {
   @AutoLog
   public static class CoralIntakeIOInputs {
-    /** Some of these may be unnecessary if no NEOs are used. */
-    public double velocityRadsPerSec = 0.0;
 
-    public double appliedVoltage = 0.0;
-    public double[] currentAmps = new double[] {};
-    public double[] tempCelcius = new double[] {};
-
-    public boolean isBreakBeamBroken = false;
+    public CoralIntakeIOData data =
+        new CoralIntakeIOData(0.0, 0.0, new double[] {}, new double[] {}, false);
   }
+
+  record CoralIntakeIOData(
+      double velocityRadsPerSec,
+      double appliedVoltage,
+      double[] currentAmps,
+      double[] tempCelcius,
+      boolean isBreakBeamBroken) {}
 
   public default void setBrake(boolean brake) {}
 

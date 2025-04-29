@@ -5,13 +5,17 @@ import org.littletonrobotics.junction.AutoLog;
 public interface CoralPivotIO {
   @AutoLog
   public static class CoralPivotIOInputs {
-    public double angleRads = 0.0;
-    public double angVelocityRadsPerSec = 0.0;
-    public double appliedVolts = 0.0;
-    public double setpointAngleRads = 0.0;
-    public double[] currentAmps = new double[] {};
-    public double[] tempCelsius = new double[] {};
+    public CoralPivotIOData data =
+        new CoralPivotIOData(0.0, 0.0, 0.0, 0.0, new double[] {}, new double[] {});
   }
+
+  record CoralPivotIOData(
+      double angleRads,
+      double angVelocityRadsPerSec,
+      double appliedVolts,
+      double setpointAngleRads,
+      double[] currentAmps,
+      double[] tempCelsius) {}
 
   /** Updates the set of loggable inputs. */
   public default void updateInputs(CoralPivotIOInputs inputs) {}

@@ -62,11 +62,14 @@ public class CoralPivotIOSim implements CoralPivotIO {
   @Override
   public void updateInputs(CoralPivotIOInputs inputs) {
     sim.update(0.02);
-    inputs.angleRads = getAngle();
-    inputs.angVelocityRadsPerSec = sim.getVelocityRadPerSec();
-    inputs.currentAmps = new double[] {sim.getCurrentDrawAmps()};
-    inputs.setpointAngleRads = m_controller.getSetpoint().position;
-    inputs.appliedVolts = appliedVoltage;
+    inputs.data =
+        new CoralPivotIOData(
+            getAngle(),
+            sim.getVelocityRadPerSec(),
+            appliedVoltage,
+            m_controller.getSetpoint().position,
+            new double[] {sim.getCurrentDrawAmps()},
+            new double[] {60});
   }
 
   @Override

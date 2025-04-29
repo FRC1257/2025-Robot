@@ -42,12 +42,13 @@ public class CoralIntakeIOSparkMax implements CoralIntakeIO {
   /** updates inputs from robot */
   @Override
   public void updateInputs(CoralIntakeIOInputs inputs) {
-    inputs.appliedVoltage = motor.getAppliedOutput() * motor.getBusVoltage();
-    // duty cycle (scale from 0 to 1) * actual voltage given to the motor
-    inputs.currentAmps = new double[] {motor.getOutputCurrent()};
-    inputs.tempCelcius = new double[] {motor.getMotorTemperature()};
-    inputs.velocityRadsPerSec = encoder.getVelocity();
-    inputs.isBreakBeamBroken = isBreakBeamBroken();
+    inputs.data =
+        new CoralIntakeIOData(
+            encoder.getVelocity(),
+            motor.getAppliedOutput() * motor.getBusVoltage(),
+            new double[] {motor.getOutputCurrent()},
+            new double[] {motor.getMotorTemperature()},
+            isBreakBeamBroken());
   }
 
   /** sets voltage to run motor if necessary */
