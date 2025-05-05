@@ -287,7 +287,7 @@ public class ScheduledController implements Sendable, AutoCloseable {
      */
     public double calculate(double measurment){
         setFuzzyStateIndex(measurment);
-        
+
         m_measurement = measurment;
         m_haveMeasurement = true;
         m_prevError = m_error;
@@ -332,5 +332,15 @@ public class ScheduledController implements Sendable, AutoCloseable {
     @Override
     public void initSendable(SendableBuilder builder) {
         builder.setSmartDashboardType("ScheduledController");
+        builder.addDoubleArrayProperty("p", this::getM_kp, this::setM_kp);
+        builder.addDoubleArrayProperty("i", this::getM_ki, this::setM_ki);
+        builder.addDoubleArrayProperty("d", this::getM_kd, this::setM_kd);
+        builder.addDoubleProperty("iZone", this::getM_iZone, this::setIZone);
+        builder.addDoubleProperty("setpoint", this::getM_setpoint, this::setSetpoint);
+        builder.addDoubleProperty("measurement", () -> m_measurement, null);
+        builder.addDoubleProperty("error", this::getM_error, null);
+        builder.addDoubleProperty("errorDerivative", this::getM_errorDerivative, null);
+        builder.addDoubleProperty("prevError", () -> this.m_prevError, null);
+        builder.addDoubleProperty("totalError", this::getM_totalError, null);
     }
 }
