@@ -223,6 +223,9 @@ public class RobotContainer {
     ELEVATOR_STATION.onTrue(elevator.InstantPIDCommand(ElevatorConstants.ELEVATOR_STATION_HEIGHT));
     ELEVATOR_DOWN.onTrue(elevator.InstantPIDCommand(ElevatorConstants.ELEVATOR_MIN_HEIGHT));
 
+    new Trigger(() -> ELEVATOR_SPEED.getAsDouble() != 0)
+        .whileTrue(elevator.ManualCommand(ELEVATOR_SPEED));
+
     COMBINED_L1.onTrue(goToL1());
     COMBINED_L2.onTrue(goToL2());
     COMBINED_L3.onTrue(goToL3());

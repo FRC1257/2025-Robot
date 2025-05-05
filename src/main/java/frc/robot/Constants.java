@@ -23,6 +23,8 @@ public final class Constants {
 
   public static final boolean useVision = (currentMode == Mode.SIM ? true : true);
 
+  public static final boolean tuningMode = false;
+
   public static enum Mode {
     /** Running on a real robot. */
     REAL,

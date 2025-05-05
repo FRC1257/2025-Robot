@@ -52,8 +52,6 @@ public class Elevator extends SubsystemBase {
 
   private SysIdRoutine SysId;
 
-  private double manualSpeed = 0;
-
   public Elevator(ElevatorIO io) {
     this.io = io;
 
@@ -124,10 +122,6 @@ public class Elevator extends SubsystemBase {
     io.setSetpoint(setpoint);
   }
 
-  public void setManual(double speed) {
-    manualSpeed = speed;
-  }
-
   public void setMechanism(MechanismLigament2d mechanism) {
     elevatorMechanism = mechanism;
   }
@@ -192,27 +186,17 @@ public class Elevator extends SubsystemBase {
   }
 
   public Command HoldSetpointCommand() {
-    return Commands.startRun(() -> setPID(inputs.data.positionMeters()), () -> runPID(), this);
+    return Commands.startRun(() -> setPID(io.getPosition()), () -> runPID(), this);
   }
 
   /** Control the elevator by providing a velocity from -1 to 1 */
   public Command ManualCommand(double speed) {
-    return new RunCommand(() -> setManual(speed), this)
-        .finallyDo(
-            () -> {
-              manualSpeed = 0;
-              move(0);
-            });
+    return new RunCommand(() -> move(speed), this).finallyDo(() -> move(0));
   }
 
   /** Control the elevator by providing a velocity from -1 to 1 */
   public Command ManualCommand(DoubleSupplier speedSupplier) {
-    return new RunCommand(() -> setManual(speedSupplier.getAsDouble()), this)
-        .finallyDo(
-            () -> {
-              manualSpeed = 0;
-              move(0);
-            });
+    return new RunCommand(() -> move(speedSupplier.getAsDouble()), this).finallyDo(() -> move(0));
   }
 
   public Command quasistaticForward() {
