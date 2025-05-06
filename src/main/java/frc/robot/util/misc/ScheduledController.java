@@ -3,6 +3,7 @@ package frc.robot.util.misc;
 import edu.wpi.first.math.MathSharedStore;
 import edu.wpi.first.math.MathUsageId;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.util.sendable.SendableRegistry;
@@ -13,14 +14,9 @@ import lombok.Setter;
 public class ScheduledController implements Sendable, AutoCloseable {
     private static int instances;
 
-    /* Factors for Proportional Control */
-    @Getter @Setter private double[] m_kp;
-
-    /* Factors for Integral Control */
-    @Getter @Setter private double[] m_ki;
-
-    /* Factors for Derivative Control */
-    @Getter @Setter private double[] m_kd;
+    @Getter private InterpolatingDoubleTreeMap m_kpMap = new InterpolatingDoubleTreeMap();
+    @Getter private InterpolatingDoubleTreeMap m_kiMap = new InterpolatingDoubleTreeMap();
+    @Getter private InterpolatingDoubleTreeMap m_kdMap = new InterpolatingDoubleTreeMap();
 
     /* The zone in which the integral term is not applied */
     @Getter private double m_iZone = Double.POSITIVE_INFINITY;
@@ -28,17 +24,15 @@ public class ScheduledController implements Sendable, AutoCloseable {
 
     /*Fuzzy Logic States */
     @Getter @Setter private double[] m_fuzzyStates;
-    @Getter private int m_fuzzyStateIndex = 0;
 
     /* The period measured in seconds of the loop which calls the controller */
     private final double m_period;
 
-    @Getter @Setter private double m_maximumIntegral = 1.0;
-    @Getter @Setter private double m_minimumIntegral = -1.0;
+    private double m_maximumIntegral = 1.0;
+    private double m_minimumIntegral = -1.0;
 
-    @Getter @Setter private double m_maximumInput;
-
-    @Getter @Setter private double m_minimumInput;
+    private double m_maximumInput;
+    private double m_minimumInput;
 
     @Getter private boolean m_continuous;
 
@@ -91,23 +85,20 @@ public class ScheduledController implements Sendable, AutoCloseable {
      */
     @SuppressWarnings("this-escape")
     public ScheduledController(double[] kp, double[] ki, double[] kd, double[] fuzzyStates, double period) {
-        m_kp = kp;
-        m_ki = ki;
-        m_kd = kd;
 
-        for (double k : m_kp) {
+        for (double k : kp) {
             if (k < 0) {
                 throw new IllegalArgumentException("Proportional gain must be non-negative");
             }
         }
 
-        for (double k : m_ki) {
+        for (double k : ki) {
             if (k < 0) {
                 throw new IllegalArgumentException("Integral gain must be non-negative");
             }
         }
 
-        for (double k : m_kd) {
+        for (double k : kd) {
             if (k < 0) {
                 throw new IllegalArgumentException("Derivative gain must be non-negative");
             }
@@ -115,7 +106,7 @@ public class ScheduledController implements Sendable, AutoCloseable {
 
         m_fuzzyStates = fuzzyStates;
 
-        if (m_fuzzyStates.length != m_kp.length || m_fuzzyStates.length != m_ki.length || m_fuzzyStates.length != m_kd.length) {
+        if (m_fuzzyStates.length != kp.length || m_fuzzyStates.length != ki.length || m_fuzzyStates.length != kd.length) {
             throw new IllegalArgumentException("All gain arrays must be of equal length");
         }
 
@@ -124,6 +115,13 @@ public class ScheduledController implements Sendable, AutoCloseable {
         if (m_period <= 0) {
             throw new IllegalArgumentException("Period must be greater than zero");
         }
+
+        for(int i = 0; i < m_fuzzyStates.length; i++) {
+            m_kpMap.put(m_fuzzyStates[i], kp[i]);
+            m_kiMap.put(m_fuzzyStates[i], ki[i]);
+            m_kdMap.put(m_fuzzyStates[i], kd[i]);
+        }
+        
 
         instances++;
         SendableRegistry.addLW(this, "ScheduledController", instances);
@@ -146,9 +144,11 @@ public class ScheduledController implements Sendable, AutoCloseable {
      * @param kd derivative gain parameters
      */
     public void setPID(double[] kp, double[] ki, double[] kd) {
-        m_kp = kp;
-        m_ki = ki;
-        m_kd = kd;
+        for(int i = 0; i < m_fuzzyStates.length; i++) {
+            m_kpMap.put(m_fuzzyStates[i], kp[i]);
+            m_kiMap.put(m_fuzzyStates[i], ki[i]);
+            m_kdMap.put(m_fuzzyStates[i], kd[i]);
+        }
     }
 
     /**
@@ -254,21 +254,6 @@ public class ScheduledController implements Sendable, AutoCloseable {
     }
 
     /**
-     * Sets the FuzzyStateIndex based on the current measured position in comparison to the fuzzy states.
-     * @param measured the current measured position
-     */
-    public void setFuzzyStateIndex(double measured) {
-        int currentfuzzyStateIndex = 0;
-        for (int i = 0; i < m_fuzzyStates.length; i++) {
-            if (measured > m_fuzzyStates[i]) {
-                currentfuzzyStateIndex = i;
-                break;
-            }
-        }
-        m_fuzzyStateIndex = currentfuzzyStateIndex;
-    }
-
-    /**
      * Returns the next output of the ScheduledController based on the current measurement and setpoint.
      * @param measurement the current measurement
      * @param setpoint the desired setpoint
@@ -286,7 +271,6 @@ public class ScheduledController implements Sendable, AutoCloseable {
      * @return the output of the ScheduledController
      */
     public double calculate(double measurment){
-        setFuzzyStateIndex(measurment);
 
         m_measurement = measurment;
         m_haveMeasurement = true;
@@ -303,38 +287,37 @@ public class ScheduledController implements Sendable, AutoCloseable {
 
         if(Math.abs(m_error) > m_iZone) {
             m_totalError = 0;
-        } else if (m_ki[m_fuzzyStateIndex] != 0) {
+        } else if (m_kiMap.get(m_measurement) != 0) {
             m_totalError =
                 MathUtil.clamp(
                     m_totalError + m_error * m_period,
-                    m_minimumIntegral / m_ki[m_fuzzyStateIndex],
-                    m_maximumIntegral / m_ki[m_fuzzyStateIndex]);
+                    m_minimumIntegral / m_kiMap.get(m_measurement),
+                    m_maximumIntegral / m_kiMap.get(m_measurement));
         }
 
-        double percentage = (m_measurement - m_fuzzyStates[m_fuzzyStateIndex]) 
-                            / (m_fuzzyStates[m_fuzzyStateIndex + 1] - m_fuzzyStates[m_fuzzyStateIndex]);
-
-        return (m_kp[m_fuzzyStateIndex + 1]*percentage + (1 - percentage)*m_kp[m_fuzzyStateIndex]) * m_error
-            + (m_ki[m_fuzzyStateIndex + 1]*percentage + (1 - percentage)*m_ki[m_fuzzyStateIndex]) * m_totalError
-            + (m_kd[m_fuzzyStateIndex + 1]*percentage + (1 - percentage)*m_kd[m_fuzzyStateIndex] )* m_errorDerivative;
+        return m_kpMap.get(m_measurement)* m_error
+            + m_kiMap.get(m_measurement)* m_totalError
+            + m_kdMap.get(m_measurement) * m_errorDerivative;
         
     }
 
+    /**
+     * Resets the ScheduledController to its initial state.
+     */
     public void reset() {
         m_error = 0;
         m_errorDerivative = 0;
         m_prevError = 0;
         m_totalError = 0;
         m_haveMeasurement = false;
-        m_fuzzyStateIndex = 0;
     }
 
     @Override
     public void initSendable(SendableBuilder builder) {
         builder.setSmartDashboardType("ScheduledController");
-        builder.addDoubleArrayProperty("p", this::getM_kp, this::setM_kp);
-        builder.addDoubleArrayProperty("i", this::getM_ki, this::setM_ki);
-        builder.addDoubleArrayProperty("d", this::getM_kd, this::setM_kd);
+        builder.addDoubleProperty("p", () -> getM_kpMap().get(m_measurement), null);
+        builder.addDoubleProperty("i", () -> getM_kiMap().get(m_measurement), null);
+        builder.addDoubleProperty("d", () -> getM_kdMap().get(m_measurement), null);
         builder.addDoubleProperty("iZone", this::getM_iZone, this::setIZone);
         builder.addDoubleProperty("setpoint", this::getM_setpoint, this::setSetpoint);
         builder.addDoubleProperty("measurement", () -> m_measurement, null);
