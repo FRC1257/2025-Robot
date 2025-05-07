@@ -86,35 +86,25 @@ public class ScheduledController implements Sendable, AutoCloseable {
     @SuppressWarnings("this-escape")
     public ScheduledController(double[] kp, double[] ki, double[] kd, double[] fuzzyStates, double period) {
 
-        for (double k : kp) {
-            if (k < 0) {
-                throw new IllegalArgumentException("Proportional gain must be non-negative");
-            }
-        }
-
-        for (double k : ki) {
-            if (k < 0) {
-                throw new IllegalArgumentException("Integral gain must be non-negative");
-            }
-        }
-
-        for (double k : kd) {
-            if (k < 0) {
-                throw new IllegalArgumentException("Derivative gain must be non-negative");
-            }
+        if (fuzzyStates.length != kp.length || fuzzyStates.length != ki.length || fuzzyStates.length != kd.length) {
+            throw new IllegalArgumentException("All gain arrays must be of equal length");
         }
 
         m_fuzzyStates = fuzzyStates;
 
-        if (m_fuzzyStates.length != kp.length || m_fuzzyStates.length != ki.length || m_fuzzyStates.length != kd.length) {
-            throw new IllegalArgumentException("All gain arrays must be of equal length");
+        for (int i = 0; i < m_fuzzyStates.length; i++) {
+            if (kp[i] < 0 || ki[i] < 0 || kd[i] < 0) {
+                throw new IllegalArgumentException("All gain values must be non-negative");
+            }
+        }
+
+        if (period <= 0) {
+            throw new IllegalArgumentException("Period must be greater than zero");
         }
 
         m_period = period;
 
-        if (m_period <= 0) {
-            throw new IllegalArgumentException("Period must be greater than zero");
-        }
+
 
         for(int i = 0; i < m_fuzzyStates.length; i++) {
             m_kpMap.put(m_fuzzyStates[i], kp[i]);
@@ -271,7 +261,6 @@ public class ScheduledController implements Sendable, AutoCloseable {
      * @return the output of the ScheduledController
      */
     public double calculate(double measurment){
-
         m_measurement = measurment;
         m_haveMeasurement = true;
         m_prevError = m_error;
