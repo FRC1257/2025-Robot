@@ -236,6 +236,9 @@ public class RobotContainer {
     TOGGLE_REEF_POSITION_DOWN.onTrue(drive.reefPoseChooserDecrement());
     DRIVE_TO_REEF.onTrue(drive.driveToReef());
 
+    new Trigger(() -> DRIVE_STRAFE.getAsDouble() == 0 && DRIVE_FORWARD.getAsDouble() == 0)
+        .whileTrue(drive.driveToReef());
+
     JOYSTICK_REEF_POINT.whileTrue(
         DriveCommands.joystickReefPoint(drive, DRIVE_FORWARD, DRIVE_STRAFE));
     JOYSTICK_STATION_POINT.whileTrue(

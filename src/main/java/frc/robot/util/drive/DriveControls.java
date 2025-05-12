@@ -153,7 +153,7 @@ public class DriveControls {
 
         TOGGLE_REEF_POSITION_UP = driver.getDPad(DPad.UP);
         TOGGLE_REEF_POSITION_DOWN = driver.getDPad(DPad.DOWN);
-        DRIVE_TO_REEF = EMPTY_TRIGGER;
+        DRIVE_TO_REEF = driver.getDPad(DPad.LEFT);
 
         JOYSTICK_REEF_POINT = driver.b();
         JOYSTICK_STATION_POINT = driver.y();

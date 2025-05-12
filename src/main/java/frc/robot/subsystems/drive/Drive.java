@@ -50,6 +50,7 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ProxyCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.FieldConstants;
@@ -63,6 +64,7 @@ import frc.robot.util.drive.AllianceFlipUtil;
 import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import lombok.Getter;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
@@ -103,7 +105,7 @@ public class Drive extends SubsystemBase {
   private SysIdRoutine sysId;
   private SysIdRoutine turnRoutine;
 
-  private int reefPoseIndex;
+  @AutoLogOutput @Getter private static int reefPoseIndex;
 
   private double lastTime = Timer.getFPGATimestamp();
   private double deltaTime = 0;
@@ -220,8 +222,6 @@ public class Drive extends SubsystemBase {
                 },
                 null,
                 this));
-
-    reefPoseIndex = 0;
 
     // Things that will be shown on elastic
 
@@ -651,7 +651,9 @@ public class Drive extends SubsystemBase {
   }
 
   public Command driveToReef() {
-    return pathfindToPose(FieldConstants.ReefScoringPositions[reefPoseIndex]);
+    return new ProxyCommand(
+            () -> pathfindToPose(FieldConstants.ReefScoringPositions[reefPoseIndex]))
+        .withName("Pathfind " + reefPoseIndex);
   }
 
   /**
